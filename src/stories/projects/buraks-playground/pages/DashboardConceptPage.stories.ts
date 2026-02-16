@@ -1,0 +1,717 @@
+import type { Meta, StoryObj } from '@storybook/vue3';
+import { markRaw, defineComponent } from 'vue';
+import { AppNavigation, CollapsiblePanel } from '@jumpcloud/circuit/components';
+import Button from 'primevue/button';
+import Tag from 'primevue/tag';
+
+// Heroicons
+import {
+  RocketLaunchIcon,
+  HomeIcon,
+  UserGroupIcon,
+  ShieldCheckIcon,
+  ChartBarSquareIcon,
+  Cog6ToothIcon,
+  BellIcon,
+  UserIcon,
+  UsersIcon,
+  CommandLineIcon,
+  ClipboardDocumentListIcon,
+  ArrowRightStartOnRectangleIcon,
+  ArrowTopRightOnSquareIcon,
+  RectangleStackIcon,
+  EllipsisHorizontalIcon,
+  ArrowDownIcon,
+  ArrowUpIcon,
+  ArrowRightIcon,
+} from '@heroicons/vue/24/outline';
+
+import TopBar from '../../../../components/TopBar.vue';
+
+// JumpCloud custom icons
+import {
+  DeviceManagementIcon,
+  AccessIcon,
+  DeviceListsIcon,
+  DeviceGroupsIcon,
+  SsoIcon,
+  SaasManagementIcon,
+  PasswordManagerIcon,
+} from '@jumpcloud/icons';
+
+const menuItems = [
+  {
+    label: 'Get Started',
+    leftIcon: markRaw(RocketLaunchIcon),
+  },
+  {
+    label: 'Home',
+    leftIcon: markRaw(HomeIcon),
+  },
+  {
+    label: 'User Management',
+    leftIcon: markRaw(UserGroupIcon),
+    items: [
+      { label: 'Users', leftIcon: markRaw(UserIcon) },
+      { label: 'User Groups', leftIcon: markRaw(UsersIcon) },
+      { separator: true },
+      { label: 'Active Directory' },
+      { label: 'Cloud Directories' },
+      { label: 'HR Directories' },
+      { label: 'Identity Provider' },
+    ],
+  },
+  {
+    label: 'Device Management',
+    leftIcon: markRaw(DeviceManagementIcon),
+    items: [
+      { label: 'Devices', leftIcon: markRaw(DeviceListsIcon) },
+      { label: 'Device Groups', leftIcon: markRaw(DeviceGroupsIcon) },
+      { label: 'Commands', leftIcon: markRaw(CommandLineIcon) },
+      { label: 'Asset Management', leftIcon: markRaw(ClipboardDocumentListIcon), isNew: true },
+      { separator: true },
+      { label: 'Policy Management' },
+      { label: 'Policy Groups' },
+      { label: 'Software Deployment' },
+      { label: 'MDM' },
+    ],
+  },
+  {
+    label: 'Access',
+    leftIcon: markRaw(AccessIcon),
+    count: 1,
+    items: [
+      { label: 'SSO Applications', leftIcon: markRaw(SsoIcon) },
+      { label: 'Access Reports', isNew: true },
+      { label: 'SaaS Management', leftIcon: markRaw(SaasManagementIcon) },
+      { label: 'Password Management', leftIcon: markRaw(PasswordManagerIcon) },
+      { label: 'LDAP' },
+      { label: 'RADIUS' },
+    ],
+  },
+  {
+    label: 'Security',
+    leftIcon: markRaw(ShieldCheckIcon),
+    items: [
+      { label: 'Conditional Access Policies' },
+      { label: 'Conditional List' },
+      { label: 'MFA Configurations' },
+      { label: 'Device Trust' },
+    ],
+  },
+  {
+    label: 'Insights',
+    leftIcon: markRaw(ChartBarSquareIcon),
+    items: [
+      { label: 'Reports' },
+      { label: 'Directory Insights' },
+    ],
+  },
+  {
+    label: 'Settings',
+    leftIcon: markRaw(Cog6ToothIcon),
+    items: [
+      { label: 'Reports' },
+    ],
+  },
+  {
+    label: 'Alert',
+    leftIcon: markRaw(BellIcon),
+    count: 23,
+    isNew: true,
+  },
+];
+
+const profileMenuItems = [
+  {
+    label: 'Burak Başcı',
+    itemType: 'profile_compact',
+    initials: 'BB',
+    name: 'Burak Başcı',
+    items: [
+      {
+        label: 'Admin IT',
+        itemType: 'profile_large',
+        name: 'Admin IT',
+        email: 'admin_it@company.com',
+        initials: 'AT',
+      },
+      { separator: true },
+      {
+        label: 'Logout',
+        rightIcon: markRaw(ArrowRightStartOnRectangleIcon),
+      },
+      { separator: true },
+      { label: 'Change Password' },
+      {
+        label: 'Launch User Portal',
+        rightIcon: markRaw(ArrowTopRightOnSquareIcon),
+      },
+      { separator: true },
+      { label: 'Billing' },
+      { label: 'My API Key' },
+      { separator: true },
+      {
+        label: 'Use Old Navigation',
+        itemType: 'button',
+      },
+    ],
+  },
+];
+
+const DashboardConceptPage = defineComponent({
+  name: 'DashboardConceptPage',
+  components: {
+    AppNavigation,
+    PvButton: Button,
+    PvTag: Tag,
+    TopBar,
+    CollapsiblePanel,
+    RectangleStackIcon,
+    EllipsisHorizontalIcon,
+    ArrowDownIcon,
+    ArrowUpIcon,
+    ArrowRightIcon,
+  },
+  setup() {
+    const certificates = [
+      { name: 'Azure AD Connect Certificate', status: 'expired', daysLeft: null, date: 'Sep 15, 2025', type: 'SSO', action: 'Replace' },
+      { name: 'VPN Server Certificate', status: 'warning', daysLeft: '8 days left,', date: 'Oct 3, 2025', type: 'VPN', action: 'Renew' },
+      { name: 'Device Enrollment Certificate', status: 'warning', daysLeft: '9 days left,', date: 'Oct 4, 2025', type: 'Device Enrollment', action: 'Renew' },
+      { name: 'Apple Push Notification Certificate', status: 'info', daysLeft: '26 days left,', date: 'Oct 21, 2025', type: 'APNs', action: 'View' },
+      { name: 'Apple Push Notification Certificate', status: 'info', daysLeft: '27 days left', date: 'Oct 22, 2025', type: 'VPN', action: 'View' },
+      { name: 'LDAP Server Certificate', status: 'info', daysLeft: '81 days left', date: 'Dec 15, 2025', type: 'LDAP', action: 'View' },
+      { name: 'Google Workspace SSO Certificate', status: 'success', daysLeft: '120 days left', date: 'Jan 23, 2026', type: 'SSO', action: 'View' },
+    ];
+
+    const alerts = [
+      { priority: 'High Priority', count: 3, countColor: 'text-error-base', newCount: 3 },
+      { priority: 'Medium Priority', count: 2, countColor: 'text-warning-base', newCount: 1 },
+      { priority: 'Low Priority', count: 4, countColor: 'text-info-base', newCount: 2 },
+    ];
+
+    const softwarePlatforms = [
+      { name: 'Apple', icon: '\uF8FF', count: '389 Apps' },
+      { name: 'Windows', icon: '\u229E', count: '267 Apps' },
+      { name: 'Google', icon: 'G', count: '169 Apps' },
+    ];
+
+    const expiredPasswordUsers = [
+      { name: 'Sarah Chen', email: 'sarah@company.com', time: '2 minutes ago' },
+      { name: 'Marcus Rodriguez', email: 'marcus@company.com', time: '8 minutes ago' },
+      { name: 'Emily Johnson', email: 'emily@company.com', time: '8 minutes ago' },
+      { name: 'Michael Smith', email: 'michael@company.com', time: '22 minutes ago' },
+    ];
+
+    const lockedOutUsers = [
+      { name: 'Sarah Chen', email: 'sarah@company.com', time: '2 minutes ago' },
+      { name: 'Marcus Rodriguez', email: 'marcus@company.com', time: '8 minutes ago' },
+      { name: 'Emily Johnson', email: 'emily@company.com', time: '8 minutes ago' },
+      { name: 'Michael Smith', email: 'michael@company.com', time: '22 minutes ago' },
+    ];
+
+    const userGroups = [
+      { name: 'Engineering', members: 189 },
+      { name: 'Sales & Marketing', members: 189 },
+      { name: 'IT & Operations', members: 156 },
+      { name: 'HR & People Ops', members: 234 },
+    ];
+
+    const deviceBreakdown = [
+      { name: 'MacOS', percentage: 45 },
+      { name: 'Windows', percentage: 22 },
+      { name: 'Linux', percentage: 12 },
+      { name: 'Ubuntu', percentage: 2 },
+    ];
+
+    const chartMonths = ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
+
+    return {
+      menuItems, profileMenuItems, certificates, alerts, softwarePlatforms,
+      expiredPasswordUsers, lockedOutUsers, userGroups, deviceBreakdown, chartMonths,
+    };
+  },
+  template: `
+    <div class="flex h-screen overflow-hidden">
+      <AppNavigation
+        :menuItems="menuItems"
+        :profileMenuItems="profileMenuItems"
+        activeItem="home"
+        :collapsible="true"
+      />
+      <div class="flex-1 flex flex-col min-w-0 overflow-auto">
+        <!-- Top Bar -->
+        <TopBar />
+
+        <!-- Page Header -->
+        <div class="border-b border-neutral-default_solid bg-neutral-base shrink-0">
+          <div class="flex flex-wrap items-start gap-4 px-6 py-4">
+            <div class="flex-1 min-w-0 flex items-center gap-2 py-1">
+              <RectangleStackIcon class="w-6 h-6 text-neutral-base shrink-0" />
+              <h1 class="text-heading-2 text-neutral-base">Dashboard</h1>
+            </div>
+            <div class="flex items-center gap-2">
+              <PvButton label="Customize" severity="secondary" variant="outlined" />
+              <PvButton label="Export" severity="secondary" variant="outlined" />
+              <PvButton severity="secondary" variant="outlined">
+                <template #icon>
+                  <EllipsisHorizontalIcon class="w-5 h-5" />
+                </template>
+              </PvButton>
+            </div>
+          </div>
+        </div>
+
+        <!-- Page Content -->
+        <div class="flex-1 overflow-auto bg-neutral-surface p-6">
+          <div class="grid grid-cols-4 gap-4">
+
+            <!-- Row 1: Summary Stats -->
+            <!-- 1. Total Users -->
+            <CollapsiblePanel header="Total Users">
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-[7px]">
+                  <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-neutral-base">1,743</span>
+                  <span class="text-heading-3 text-neutral-base self-end">Users</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <div class="flex items-center gap-0.5">
+                    <ArrowDownIcon class="w-4 h-4 text-error-base" />
+                    <span class="text-body-sm-bold text-error-base">8%</span>
+                  </div>
+                  <span class="text-body-sm text-neutral-subtle">vs last month</span>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
+            <!-- 2. User Groups -->
+            <CollapsiblePanel header="User Groups">
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-[7px]">
+                  <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-neutral-base">12</span>
+                  <span class="text-heading-3 text-neutral-base self-end">Groups</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <div class="flex items-center gap-0.5">
+                    <ArrowUpIcon class="w-4 h-4 text-success-base" />
+                    <span class="text-body-sm-bold text-success-base">2</span>
+                  </div>
+                  <span class="text-body-sm text-neutral-subtle">new this month</span>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
+            <!-- 3. Managed Devices -->
+            <CollapsiblePanel header="Managed Devices">
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-[7px]">
+                  <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-neutral-base">2,643</span>
+                  <span class="text-heading-3 text-neutral-base self-end">Devices</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <div class="flex items-center gap-0.5">
+                    <ArrowUpIcon class="w-4 h-4 text-success-base" />
+                    <span class="text-body-sm-bold text-success-base">23%</span>
+                  </div>
+                  <span class="text-body-sm text-neutral-subtle">vs last month</span>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
+            <!-- 4. Managed Software (small) -->
+            <CollapsiblePanel header="Managed Software">
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-[7px]">
+                  <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-neutral-base">825</span>
+                  <span class="text-heading-3 text-neutral-base self-end">Apps</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <div class="flex items-center gap-0.5">
+                    <ArrowUpIcon class="w-4 h-4 text-success-base" />
+                    <span class="text-body-sm-bold text-success-base">5,3%</span>
+                  </div>
+                  <span class="text-body-sm text-neutral-subtle">vs last month</span>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
+            <!-- Row 2: Recent Certificates & Tokens (full width) -->
+            <CollapsiblePanel header="Recent Certificates & Tokens" class="col-span-4">
+              <template #actions>
+                <PvButton label="See All" severity="secondary" variant="outlined" size="small" />
+              </template>
+              <div class="flex flex-col">
+                <div class="flex items-center gap-4 mb-1">
+                  <span class="text-body-sm text-neutral-base"><span class="text-body-sm-bold">12</span> Total token</span>
+                  <span class="text-body-sm text-error-base"><span class="text-body-sm-bold">1</span> Expired / Invalid</span>
+                  <span class="text-body-sm text-warning-base"><span class="text-body-sm-bold">2</span> Within 10 days</span>
+                  <span class="text-body-sm text-neutral-base"><span class="text-body-sm-bold">3</span> Within 30 days</span>
+                  <span class="text-body-sm text-neutral-base"><span class="text-body-sm-bold">6</span> Past 30 days</span>
+                </div>
+                <span class="text-body-sm text-neutral-subtle mb-3">3 new in this week</span>
+
+                <div class="flex flex-col divide-y divide-neutral-default_solid border-t border-neutral-default_solid">
+                  <div v-for="(cert, index) in certificates" :key="index" class="flex items-center py-3 gap-3">
+                    <span class="text-body-md-bold text-neutral-base shrink-0">{{ cert.name }}</span>
+                    <PvTag v-if="cert.status === 'expired'" value="Expired" severity="danger" class="shrink-0" />
+                    <span v-if="cert.status === 'expired'" class="text-body-sm text-error-base shrink-0">9 days ago,</span>
+                    <span v-if="cert.status === 'warning'" class="text-body-sm text-warning-base shrink-0">{{ cert.daysLeft }}</span>
+                    <span v-if="cert.status === 'info'" class="text-body-sm text-success-base shrink-0">{{ cert.daysLeft }}</span>
+                    <span v-if="cert.status === 'success'" class="text-body-sm text-success-base shrink-0">{{ cert.daysLeft }}</span>
+                    <span class="text-body-sm text-neutral-subtle shrink-0">{{ cert.date }}</span>
+                    <span class="text-body-sm text-neutral-subtle shrink-0">Type: {{ cert.type }}</span>
+                    <div class="flex items-center gap-2 ml-auto shrink-0">
+                      <PvButton
+                        :label="cert.action"
+                        :severity="cert.action === 'Replace' ? 'primary' : 'secondary'"
+                        variant="outlined"
+                        size="small"
+                      >
+                        <template #icon>
+                          <ArrowRightIcon class="w-4 h-4" />
+                        </template>
+                      </PvButton>
+                      <PvButton severity="secondary" variant="text" size="small">
+                        <template #icon>
+                          <EllipsisHorizontalIcon class="w-4 h-4" />
+                        </template>
+                      </PvButton>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
+            <!-- Row 3: Open Alerts (2 cols) + Managed Software detail (2 cols) -->
+            <CollapsiblePanel header="Open Alerts" class="col-span-2">
+              <template #actions>
+                <PvButton label="See All" severity="secondary" variant="outlined" size="small" />
+              </template>
+              <div class="flex flex-col divide-y divide-neutral-default_solid">
+                <div v-for="(alert, index) in alerts" :key="index" class="flex items-center justify-between py-3">
+                  <div class="flex items-center gap-2">
+                    <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px]" :class="alert.countColor">{{ alert.count }}</span>
+                    <span class="text-heading-4 text-neutral-base">{{ alert.priority }}</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <ArrowUpIcon class="w-4 h-4 text-neutral-subtle" />
+                    <span class="text-body-sm text-neutral-subtle">{{ alert.newCount }} new today</span>
+                  </div>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
+            <CollapsiblePanel header="Managed Software" class="col-span-2">
+              <template #actions>
+                <PvButton label="See All" severity="secondary" variant="outlined" size="small" />
+              </template>
+              <div class="flex flex-col">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="text-body-sm text-neutral-base"><span class="text-body-sm-bold">825</span> Total apps</span>
+                  <div class="flex items-center gap-1.5">
+                    <ArrowUpIcon class="w-4 h-4 text-success-base" />
+                    <span class="text-body-sm-bold text-success-base">5,3%</span>
+                    <span class="text-body-sm text-neutral-subtle">vs last month</span>
+                  </div>
+                </div>
+                <div class="flex flex-col divide-y divide-neutral-default_solid border-t border-neutral-default_solid">
+                  <div v-for="(platform, index) in softwarePlatforms" :key="index" class="flex items-center justify-between py-3">
+                    <div class="flex items-center gap-2">
+                      <span class="text-body-md text-neutral-base">{{ platform.name }}</span>
+                    </div>
+                    <PvTag :value="platform.count" severity="secondary" />
+                  </div>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
+            <!-- Row 4: Four small stat panels -->
+            <!-- 8. Passwords Expiring -->
+            <CollapsiblePanel header="Passwords Expiring">
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-[7px]">
+                  <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-error-base">6</span>
+                  <span class="text-heading-3 text-neutral-base self-end">Users</span>
+                </div>
+                <span class="text-body-sm text-neutral-subtle">Next 7 days</span>
+              </div>
+            </CollapsiblePanel>
+
+            <!-- 9. Expired Passwords -->
+            <CollapsiblePanel header="Expired Passwords">
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-[7px]">
+                  <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-error-base">7</span>
+                  <span class="text-heading-3 text-neutral-base self-end">Users</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <div class="flex items-center gap-0.5">
+                    <ArrowUpIcon class="w-4 h-4 text-error-base" />
+                    <span class="text-body-sm-bold text-error-base">3</span>
+                  </div>
+                  <span class="text-body-sm text-neutral-subtle">new in this week</span>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
+            <!-- 10. User Lockouts -->
+            <CollapsiblePanel header="User Lockouts">
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-[7px]">
+                  <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-success-base">12</span>
+                  <span class="text-heading-3 text-neutral-base self-end">Lockouts</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <div class="flex items-center gap-0.5">
+                    <ArrowUpIcon class="w-4 h-4 text-success-base" />
+                    <span class="text-body-sm-bold text-success-base">3</span>
+                  </div>
+                  <span class="text-body-sm text-neutral-subtle">in last hour</span>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
+            <!-- 11. Device Policies -->
+            <CollapsiblePanel header="Device Policies">
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-[7px]">
+                  <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-neutral-base">60</span>
+                  <span class="text-heading-3 text-neutral-base self-end">Policies</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <div class="flex items-center gap-0.5">
+                    <ArrowUpIcon class="w-4 h-4 text-success-base" />
+                    <span class="text-body-sm-bold text-success-base">3</span>
+                  </div>
+                  <span class="text-body-sm text-neutral-subtle">new this month</span>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
+            <!-- Row 5: Oldest Expired Passwords (2 cols) + Recent User Lockouts (2 cols) -->
+            <CollapsiblePanel header="Oldest Expired Passwords" class="col-span-2">
+              <template #actions>
+                <PvButton label="See All" severity="secondary" variant="outlined" size="small" />
+              </template>
+              <div class="flex flex-col">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="text-body-sm text-error-base"><span class="text-body-sm-bold">7</span> Users needs to reset</span>
+                  <div class="flex items-center gap-1.5">
+                    <ArrowUpIcon class="w-4 h-4 text-error-base" />
+                    <span class="text-body-sm-bold text-error-base">3</span>
+                    <span class="text-body-sm text-neutral-subtle">new in this week</span>
+                  </div>
+                </div>
+                <div class="flex flex-col divide-y divide-neutral-default_solid border-t border-neutral-default_solid">
+                  <div v-for="(user, index) in expiredPasswordUsers" :key="index" class="flex items-center justify-between py-3">
+                    <div class="flex flex-col">
+                      <span class="text-body-md-bold text-neutral-base">{{ user.name }}</span>
+                      <span class="text-body-xs text-neutral-subtle">{{ user.email }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-body-sm text-neutral-subtle">Expired: <span class="text-error-base">{{ user.time }}</span></span>
+                      <PvButton severity="secondary" variant="text" size="small">
+                        <template #icon>
+                          <EllipsisHorizontalIcon class="w-4 h-4" />
+                        </template>
+                      </PvButton>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
+            <CollapsiblePanel header="Recent User Lockouts" class="col-span-2">
+              <template #actions>
+                <PvButton label="See All" severity="secondary" variant="outlined" size="small" />
+              </template>
+              <div class="flex flex-col">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="text-body-sm text-success-base"><span class="text-body-sm-bold">12</span> Total lockouts</span>
+                  <div class="flex items-center gap-1.5">
+                    <ArrowUpIcon class="w-4 h-4 text-success-base" />
+                    <span class="text-body-sm-bold text-success-base">3</span>
+                    <span class="text-body-sm text-neutral-subtle">in last hour</span>
+                  </div>
+                </div>
+                <div class="flex flex-col divide-y divide-neutral-default_solid border-t border-neutral-default_solid">
+                  <div v-for="(user, index) in lockedOutUsers" :key="index" class="flex items-center justify-between py-3">
+                    <div class="flex flex-col">
+                      <span class="text-body-md-bold text-neutral-base">{{ user.name }}</span>
+                      <span class="text-body-xs text-neutral-subtle">{{ user.email }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-body-sm text-neutral-subtle">Locked: <span class="text-error-base">{{ user.time }}</span></span>
+                      <PvButton severity="secondary" variant="text" size="small">
+                        <template #icon>
+                          <EllipsisHorizontalIcon class="w-4 h-4" />
+                        </template>
+                      </PvButton>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
+            <!-- Row 6: User Groups Chart (full width) -->
+            <CollapsiblePanel header="User Groups" class="col-span-4">
+              <template #actions>
+                <PvButton label="See All" severity="secondary" variant="outlined" size="small" />
+              </template>
+              <div class="flex flex-col">
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="text-body-sm text-neutral-base"><span class="text-body-sm-bold">1,743</span> Users</span>
+                  <div class="flex items-center gap-1.5">
+                    <ArrowDownIcon class="w-4 h-4 text-error-base" />
+                    <span class="text-body-sm-bold text-error-base">8%</span>
+                    <span class="text-body-sm text-neutral-subtle">vs last month</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-6 mb-4">
+                  <div class="flex items-center gap-[7px]">
+                    <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-success-base">1,678</span>
+                    <span class="text-heading-3 text-neutral-base self-end">Active Users</span>
+                  </div>
+                  <div class="flex items-center gap-[7px]">
+                    <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-warning-base">65</span>
+                    <span class="text-heading-3 text-neutral-base self-end">Suspended Users</span>
+                  </div>
+                </div>
+
+                <!-- Chart Area -->
+                <div class="relative w-full h-[200px] mb-4">
+                  <svg class="w-full h-full" viewBox="0 0 800 200" preserveAspectRatio="none">
+                    <!-- Grid lines -->
+                    <line x1="0" y1="25" x2="800" y2="25" stroke="#e7e9ea" stroke-width="1" />
+                    <line x1="0" y1="65" x2="800" y2="65" stroke="#e7e9ea" stroke-width="1" />
+                    <line x1="0" y1="105" x2="800" y2="105" stroke="#e7e9ea" stroke-width="1" />
+                    <line x1="0" y1="145" x2="800" y2="145" stroke="#e7e9ea" stroke-width="1" />
+                    <line x1="0" y1="185" x2="800" y2="185" stroke="#e7e9ea" stroke-width="1" />
+
+                    <!-- Y-axis labels -->
+                    <text x="0" y="22" fill="#6b7280" font-size="11">700</text>
+                    <text x="0" y="62" fill="#6b7280" font-size="11">600</text>
+                    <text x="0" y="102" fill="#6b7280" font-size="11">500</text>
+                    <text x="0" y="142" fill="#6b7280" font-size="11">400</text>
+                    <text x="0" y="182" fill="#6b7280" font-size="11">300</text>
+
+                    <!-- Total Users line (blue) -->
+                    <polyline
+                      fill="none"
+                      stroke="#3B82F6"
+                      stroke-width="2.5"
+                      points="40,50 160,65 280,42 400,45 520,48 640,50 760,42"
+                    />
+
+                    <!-- Active Users line (green) -->
+                    <polyline
+                      fill="none"
+                      stroke="#22C55E"
+                      stroke-width="2.5"
+                      points="40,70 160,95 280,78 400,85 520,110 640,115 760,95"
+                    />
+
+                    <!-- Suspended Users line (orange) -->
+                    <polyline
+                      fill="none"
+                      stroke="#F59E0B"
+                      stroke-width="2.5"
+                      points="40,135 160,150 280,158 400,165 520,168 640,175 760,185"
+                    />
+                  </svg>
+
+                  <!-- X-axis labels -->
+                  <div class="flex justify-between px-10 mt-1">
+                    <span v-for="month in chartMonths" :key="month" class="text-body-xs text-neutral-subtle">{{ month }}</span>
+                  </div>
+                </div>
+
+                <!-- Legend -->
+                <div class="flex items-center justify-center gap-6">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#3B82F6]"></span>
+                    <span class="text-body-sm text-neutral-subtle">Total Users</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#22C55E]"></span>
+                    <span class="text-body-sm text-neutral-subtle">Active Users</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#F59E0B]"></span>
+                    <span class="text-body-sm text-neutral-subtle">Suspended Users</span>
+                  </div>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
+            <!-- Row 7: User Groups detail (2 cols) + Managed Devices breakdown (2 cols) -->
+            <CollapsiblePanel header="User Groups" class="col-span-2">
+              <template #actions>
+                <PvButton label="See All" severity="secondary" variant="outlined" size="small" />
+              </template>
+              <div class="flex flex-col">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="text-body-sm text-neutral-base"><span class="text-body-sm-bold">12</span> Total groups</span>
+                  <div class="flex items-center gap-1.5">
+                    <ArrowUpIcon class="w-4 h-4 text-success-base" />
+                    <span class="text-body-sm-bold text-success-base">2</span>
+                    <span class="text-body-sm text-neutral-subtle">new this month</span>
+                  </div>
+                </div>
+                <div class="flex flex-col divide-y divide-neutral-default_solid border-t border-neutral-default_solid">
+                  <div v-for="(group, index) in userGroups" :key="index" class="flex items-center justify-between py-3">
+                    <span class="text-body-md text-neutral-base">{{ group.name }}</span>
+                    <span class="text-body-sm-bold text-neutral-base">{{ group.members }} Members</span>
+                  </div>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
+            <CollapsiblePanel header="Managed Devices" class="col-span-2">
+              <template #actions>
+                <PvButton label="See All" severity="secondary" variant="outlined" size="small" />
+              </template>
+              <div class="flex flex-col">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="text-body-sm text-neutral-base"><span class="text-body-sm-bold">2,643</span> Total devices</span>
+                  <div class="flex items-center gap-1.5">
+                    <ArrowUpIcon class="w-4 h-4 text-success-base" />
+                    <span class="text-body-sm-bold text-success-base">23%</span>
+                    <span class="text-body-sm text-neutral-subtle">vs last month</span>
+                  </div>
+                </div>
+                <div class="flex flex-col divide-y divide-neutral-default_solid border-t border-neutral-default_solid">
+                  <div v-for="(device, index) in deviceBreakdown" :key="index" class="flex items-center gap-3 py-3">
+                    <span class="text-body-md text-neutral-base w-20 shrink-0">{{ device.name }}</span>
+                    <span class="text-body-sm text-neutral-subtle w-10 text-right shrink-0">{{ device.percentage }}%</span>
+                    <div class="flex-1 h-2 bg-neutral-surface rounded-full overflow-hidden">
+                      <div
+                        class="h-full bg-neutral-base rounded-full"
+                        :style="{ width: device.percentage + '%' }"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
+});
+
+const meta: Meta<typeof DashboardConceptPage> = {
+  title: "Projects/Burak's Playground/Pages/Dashboard Concept",
+  component: DashboardConceptPage,
+  parameters: {
+    layout: 'fullscreen',
+  },
+};
+
+export default meta;
+
+type Story = StoryObj<typeof DashboardConceptPage>;
+
+export const Default: Story = {};

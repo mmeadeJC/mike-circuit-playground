@@ -1,0 +1,58 @@
+---
+description: Use the AppNavigation component with full admin portal nav items when building project pages
+globs: src/stories/projects/**/pages/*.stories.ts
+alwaysApply: false
+---
+
+# Admin Portal Navigation for Project Pages
+
+When creating page stories under `src/stories/projects/`, always include the `AppNavigation` component from Circuit DS as the sidebar, wrapping the page content in a flex layout.
+
+## Required Setup
+
+Import and configure the navigation with the full admin portal menu items:
+
+```typescript
+import { markRaw } from 'vue';
+import { AppNavigation } from '@jumpcloud/circuit/components';
+
+// Heroicons
+import {
+  RocketLaunchIcon, HomeIcon, UserGroupIcon, ShieldCheckIcon,
+  ChartBarSquareIcon, Cog6ToothIcon, BellIcon, UserIcon, UsersIcon,
+  CommandLineIcon, ClipboardDocumentListIcon,
+  ArrowRightStartOnRectangleIcon, ArrowTopRightOnSquareIcon,
+} from '@heroicons/vue/24/outline';
+
+// JumpCloud custom icons
+import {
+  DeviceManagementIcon, AccessIcon, DeviceListsIcon, DeviceGroupsIcon,
+  SsoIcon, SaasManagementIcon, PasswordManagerIcon,
+} from '@jumpcloud/icons';
+```
+
+## Navigation Data
+
+Use the reference story at `src/stories/circuit-ds/AdminPortalNavigation.stories.ts` for the complete `menuItems` and `profileMenuItems` arrays. Copy or import the data from there.
+
+## Page Layout Pattern
+
+Every project page must use this layout structure:
+
+```html
+<div class="flex h-screen overflow-hidden">
+  <AppNavigation
+    :menuItems="menuItems"
+    :profileMenuItems="profileMenuItems"
+    :activeItem="activeNavItem"
+    :collapsible="true"
+  />
+  <div class="flex-1 flex flex-col min-w-0 overflow-auto">
+    <!-- Page content here -->
+  </div>
+</div>
+```
+
+- Set `activeItem` to the lowercase label of the current page's nav section (e.g. `'device management'` for Device Management pages).
+- Always use `layout: 'fullscreen'` in the story's `parameters`.
+- Register `AppNavigation` in the `components` option of `defineComponent`.

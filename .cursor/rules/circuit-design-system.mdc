@@ -1,0 +1,96 @@
+---
+description: Enforces Circuit Design System usage — typography, color tokens, and components. No exceptions.
+alwaysApply: true
+---
+
+# Circuit Design System — Mandatory Rules
+
+Before writing any UI code, you MUST look up the latest tokens and components from the installed Circuit DS package. Never rely on memorized or hardcoded lists — the package evolves.
+
+## 1. Typography — Use Circuit Tokens Only
+
+Never use raw Tailwind text sizes (`text-base`, `text-2xl`), arbitrary values (`text-[14px]`), custom `leading-*`, or inline `font-size` styles.
+
+**How to find available typography tokens:**
+- Read the Tailwind preset: `node_modules/@jumpcloud/circuit/dist/tailwind/index.cjs` — look for `fontSize` keys.
+- Search for `text-body-` and `text-heading-` patterns in Circuit's dist to discover all current type scale tokens.
+- Check existing Circuit component source files in `node_modules/@jumpcloud/circuit/dist/components/` for real usage examples.
+
+```html
+<!-- ❌ WRONG -->
+<h1 class="text-2xl font-semibold leading-8">Title</h1>
+
+<!-- ✅ CORRECT — use a Circuit heading token -->
+<h1 class="text-heading-2">Title</h1>
+<p class="text-body-md">Body</p>
+```
+
+## 2. Colors — Use Circuit Tokens Only, No Exceptions
+
+Never use hardcoded hex (`text-[#0f202f]`), rgba (`text-[rgba(...)]`), raw Tailwind palette colors (`text-gray-500`, `bg-white`), or inline `color`/`background-color` styles.
+
+**How to find available color tokens:**
+- Read the Tailwind preset: `node_modules/@jumpcloud/circuit/dist/tailwind/index.cjs` — look for `colors`, `backgroundColor`, `textColor`, `borderColor` keys to discover all semantic token names.
+- Search for `--jc-color-` CSS custom properties in Circuit's dist files to find the full semantic color system.
+- Token naming follows the pattern: `{utility}-{component}-{variant}` (e.g. `bg-neutral-surface`, `text-button-primary-base`, `border-field-default`).
+
+```html
+<!-- ❌ WRONG -->
+<div class="bg-white text-[#0f202f] border-[#e7e9ea]">
+<span class="text-gray-500">Subtle</span>
+
+<!-- ✅ CORRECT — use Circuit semantic tokens -->
+<div class="bg-neutral-surface text-neutral-base border-neutral-default_solid">
+<span class="text-neutral-subtle">Subtle</span>
+```
+
+## 3. Components — Always Use Circuit DS Components
+
+Never create custom components that replicate existing Circuit DS or PrimeVue components. Always check for an existing component first.
+
+**How to find available components:**
+- Read `node_modules/@jumpcloud/circuit/dist/components/index.cjs` (or `.mjs`) to discover all exported Circuit components and their names.
+- Check `node_modules/primevue/` directory listing for all available PrimeVue primitives — these are styled by Circuit's passthrough theme.
+- Look at existing stories in `src/stories/circuit-ds/` to see usage patterns and available props.
+
+**Import conventions:**
+- Circuit custom components: `import { ComponentName } from '@jumpcloud/circuit/components'`
+- PrimeVue primitives: `import ComponentName from 'primevue/componentname'`
+- Icons: `import { IconName } from '@jumpcloud/icons'` or `@heroicons/vue/24/outline`
+
+```html
+<!-- ❌ WRONG — building your own button/tag -->
+<button class="px-4 py-2 rounded bg-blue-500 text-white">Click</button>
+
+<!-- ✅ CORRECT — using Circuit/PrimeVue components -->
+<Button label="Click" />
+<Tag value="Active" severity="success" />
+```
+
+**If a needed component does not exist in Circuit DS, ASK the user** whether to create a new reusable component or use a one-off solution. Never silently build a duplicate.
+
+## 4. Figma Code Connect — Finding the Right Component
+
+When implementing from a Figma design, use the Figma MCP server's Code Connect features before writing any code:
+
+1. **`get_code_connect_map`** — Pass the Figma node ID to get mapped component source paths and names.
+2. **`get_code_connect_suggestions`** — Get suggestions for linking a Figma node to code components.
+3. **`get_design_context`** — Get full design context including component structure and styling.
+
+Always check Code Connect first to find the correct Circuit component and its import path. Use the mapped component exactly as specified.
+
+## 5. Spacing & Border Radius
+
+Never use arbitrary spacing (`p-[12px]`) or radius (`rounded-[8px]`) values.
+
+**How to find available tokens:**
+- Read the Tailwind preset for `spacing` and `borderRadius` keys to discover all Circuit aliases (e.g. `xs`, `sm`, `md`, `lg`, `xl`).
+
+## 6. Pre-Implementation Checklist
+
+Before writing any UI code, always:
+1. Look up current Circuit typography tokens from the Tailwind preset.
+2. Look up current Circuit color tokens from the Tailwind preset.
+3. Search Circuit component exports for any component matching what you need.
+4. If implementing from Figma, check Code Connect first via the MCP server.
+5. If no matching component exists, ask the user before creating a new one.

@@ -1,0 +1,103 @@
+---
+description: Use the TopBar component from src/components/TopBar.vue when implementing a top bar from Figma designs
+globs: src/**/*.vue, src/**/*.stories.ts
+alwaysApply: false
+---
+
+# TopBar Component
+
+When a Figma design includes a top bar (navigation bar at the top of the page), always use the existing `TopBar` component located at `src/components/TopBar.vue`. **Never** recreate a top bar from scratch.
+
+## Import
+
+```typescript
+import TopBar from '@/components/TopBar.vue';
+// or relative path
+import TopBar from '../../components/TopBar.vue';
+```
+
+## Default Behavior
+
+The TopBar renders out of the box with:
+- **AI Search icon** (`AiSearchIcon` from `@jumpcloud/icons`)
+- **Search placeholder**: `"Search User, Devices, Apps, etc..."`
+- **Shortcut tag**: `"⌘/Ctrl + K"`
+- **4 icon buttons** (Customer Support, Lifebuoy, Flag, Checklist)
+- **AI Assistant gradient button** (`AiAgentButton` from Circuit DS)
+
+```html
+<!-- Simplest usage — all defaults -->
+<TopBar />
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `searchPlaceholder` | `string` | `'Search User, Devices, Apps, etc...'` | Placeholder text in the search area |
+| `shortcutLabel` | `string` | `'⌘/Ctrl + K'` | Keyboard shortcut shown as a Tag |
+| `showSearchIcon` | `boolean` | `true` | Toggle the AI search icon |
+| `iconButtons` | `TopBarIconButton[]` | 4 default buttons | Custom icon buttons on the right |
+
+### TopBarIconButton interface
+
+```typescript
+interface TopBarIconButton {
+  icon: Component;   // Vue component (Heroicon or JumpCloud icon)
+  label: string;     // Accessible label / identifier
+  onClick?: () => void;
+}
+```
+
+## Events
+
+| Event | Payload | Description |
+|---|---|---|
+| `search-click` | — | Search area clicked |
+| `icon-button-click` | `label: string` | An icon button clicked |
+| `ai-assistant-click` | `event: Event` | AI Assistant button clicked |
+
+## Slots
+
+| Slot | Description |
+|---|---|
+| `search-icon` | Replace the default AI search icon |
+| `icon-buttons` | Replace all default icon buttons |
+
+## Customizing Icon Buttons
+
+```typescript
+import { markRaw } from 'vue';
+import { Cog6ToothIcon, BellIcon } from '@heroicons/vue/24/outline';
+
+const myButtons = [
+  { icon: markRaw(Cog6ToothIcon), label: 'Settings' },
+  { icon: markRaw(BellIcon), label: 'Notifications' },
+];
+```
+
+```html
+<TopBar :iconButtons="myButtons" />
+```
+
+## Page Layout Integration
+
+Place the TopBar as the first child inside the main content area, after `AppNavigation`:
+
+```html
+<div class="flex h-screen overflow-hidden">
+  <AppNavigation ... />
+  <div class="flex-1 flex flex-col min-w-0 overflow-auto">
+    <TopBar />
+    <!-- Page content below -->
+  </div>
+</div>
+```
+
+## Detection Rule
+
+If a Figma design contains any of the following, use this component:
+- A node named **"Top Bar"**, **"Top Bar / Bar"**, or **"TopBar"**
+- A horizontal bar at `y=0` of the main content area with a search field and action buttons
+- An **AI Assistant** gradient button on the right edge
+- A search area with an AI search icon and keyboard shortcut tag

@@ -54,6 +54,10 @@ This starts Storybook on **http://localhost:6006**. You can browse:
 
 Use the theme switcher in the Storybook toolbar to toggle between **Light** and **Dark** Circuit themes.
 
+## Fonts
+
+Circuit DS uses **Inter** (sans) and **Fira Code** (mono). These are loaded from Google Fonts via `.storybook/preview-head.html` so no local font files are needed.
+
 ## Project Structure
 
 ```

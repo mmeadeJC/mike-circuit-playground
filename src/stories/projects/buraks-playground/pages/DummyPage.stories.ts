@@ -171,7 +171,6 @@ const DummyPage = defineComponent({
     ArrowDownIcon,
     ArrowUpIcon,
     ArrowRightIcon,
-    HomeIcon,
     CollapsiblePanel,
   },
   setup() {
@@ -341,7 +340,7 @@ const DummyPage = defineComponent({
                       </PvButton>
                       <PvButton severity="secondary" variant="text" size="small">
                         <template #icon>
-                          <HomeIcon class="w-4 h-4" />
+                          <EllipsisHorizontalIcon class="w-4 h-4" />
                         </template>
                       </PvButton>
                     </div>

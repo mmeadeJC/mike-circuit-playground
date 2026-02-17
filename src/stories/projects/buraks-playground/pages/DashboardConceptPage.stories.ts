@@ -159,19 +159,19 @@ const profileMenuItems = [
   },
 ];
 
-const DummyPage = defineComponent({
-  name: 'DummyPage',
+const DashboardConceptPage = defineComponent({
+  name: 'DashboardConceptPage',
   components: {
     AppNavigation,
     PvButton: Button,
     PvTag: Tag,
     TopBar,
+    CollapsiblePanel,
     RectangleStackIcon,
     EllipsisHorizontalIcon,
     ArrowDownIcon,
     ArrowUpIcon,
     ArrowRightIcon,
-    CollapsiblePanel,
   },
   setup() {
     const certificates = [
@@ -192,11 +192,44 @@ const DummyPage = defineComponent({
 
     const softwarePlatforms = [
       { name: 'Apple', icon: '\uF8FF', count: '389 Apps' },
-      { name: 'Windows', icon: '\u2756', count: '267 Apps' },
+      { name: 'Windows', icon: '\u229E', count: '267 Apps' },
       { name: 'Google', icon: 'G', count: '169 Apps' },
     ];
 
-    return { menuItems, profileMenuItems, certificates, alerts, softwarePlatforms };
+    const expiredPasswordUsers = [
+      { name: 'Sarah Chen', email: 'sarah@company.com', time: '2 minutes ago' },
+      { name: 'Marcus Rodriguez', email: 'marcus@company.com', time: '8 minutes ago' },
+      { name: 'Emily Johnson', email: 'emily@company.com', time: '8 minutes ago' },
+      { name: 'Michael Smith', email: 'michael@company.com', time: '22 minutes ago' },
+    ];
+
+    const lockedOutUsers = [
+      { name: 'Sarah Chen', email: 'sarah@company.com', time: '2 minutes ago' },
+      { name: 'Marcus Rodriguez', email: 'marcus@company.com', time: '8 minutes ago' },
+      { name: 'Emily Johnson', email: 'emily@company.com', time: '8 minutes ago' },
+      { name: 'Michael Smith', email: 'michael@company.com', time: '22 minutes ago' },
+    ];
+
+    const userGroups = [
+      { name: 'Engineering', members: 189 },
+      { name: 'Sales & Marketing', members: 189 },
+      { name: 'IT & Operations', members: 156 },
+      { name: 'HR & People Ops', members: 234 },
+    ];
+
+    const deviceBreakdown = [
+      { name: 'MacOS', percentage: 45 },
+      { name: 'Windows', percentage: 22 },
+      { name: 'Linux', percentage: 12 },
+      { name: 'Ubuntu', percentage: 2 },
+    ];
+
+    const chartMonths = ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
+
+    return {
+      menuItems, profileMenuItems, certificates, alerts, softwarePlatforms,
+      expiredPasswordUsers, lockedOutUsers, userGroups, deviceBreakdown, chartMonths,
+    };
   },
   template: `
     <div class="flex h-screen overflow-hidden">
@@ -234,7 +267,7 @@ const DummyPage = defineComponent({
           <div class="grid grid-cols-4 gap-4">
 
             <!-- Row 1: Summary Stats -->
-            <!-- Total Users -->
+            <!-- 1. Total Users -->
             <CollapsiblePanel header="Total Users">
               <div class="flex flex-col gap-2">
                 <div class="flex items-center gap-[7px]">
@@ -251,7 +284,7 @@ const DummyPage = defineComponent({
               </div>
             </CollapsiblePanel>
 
-            <!-- User Groups -->
+            <!-- 2. User Groups -->
             <CollapsiblePanel header="User Groups">
               <div class="flex flex-col gap-2">
                 <div class="flex items-center gap-[7px]">
@@ -268,7 +301,7 @@ const DummyPage = defineComponent({
               </div>
             </CollapsiblePanel>
 
-            <!-- Managed Devices -->
+            <!-- 3. Managed Devices -->
             <CollapsiblePanel header="Managed Devices">
               <div class="flex flex-col gap-2">
                 <div class="flex items-center gap-[7px]">
@@ -285,7 +318,7 @@ const DummyPage = defineComponent({
               </div>
             </CollapsiblePanel>
 
-            <!-- Managed Software (small) -->
+            <!-- 4. Managed Software (small) -->
             <CollapsiblePanel header="Managed Software">
               <div class="flex flex-col gap-2">
                 <div class="flex items-center gap-[7px]">
@@ -382,30 +415,18 @@ const DummyPage = defineComponent({
                   </div>
                 </div>
                 <div class="flex flex-col divide-y divide-neutral-default_solid border-t border-neutral-default_solid">
-                  <div class="flex items-center justify-between py-3">
+                  <div v-for="(platform, index) in softwarePlatforms" :key="index" class="flex items-center justify-between py-3">
                     <div class="flex items-center gap-2">
-                      <span class="text-body-md text-neutral-base">Apple</span>
+                      <span class="text-body-md text-neutral-base">{{ platform.name }}</span>
                     </div>
-                    <PvTag value="389 Apps" severity="secondary" />
-                  </div>
-                  <div class="flex items-center justify-between py-3">
-                    <div class="flex items-center gap-2">
-                      <span class="text-body-md text-neutral-base">Windows</span>
-                    </div>
-                    <PvTag value="267 Apps" severity="secondary" />
-                  </div>
-                  <div class="flex items-center justify-between py-3">
-                    <div class="flex items-center gap-2">
-                      <span class="text-body-md text-neutral-base">Google</span>
-                    </div>
-                    <PvTag value="169 Apps" severity="secondary" />
+                    <PvTag :value="platform.count" severity="secondary" />
                   </div>
                 </div>
               </div>
             </CollapsiblePanel>
 
             <!-- Row 4: Four small stat panels -->
-            <!-- Passwords Expiring -->
+            <!-- 8. Passwords Expiring -->
             <CollapsiblePanel header="Passwords Expiring">
               <div class="flex flex-col gap-2">
                 <div class="flex items-center gap-[7px]">
@@ -416,7 +437,7 @@ const DummyPage = defineComponent({
               </div>
             </CollapsiblePanel>
 
-            <!-- Expired Passwords -->
+            <!-- 9. Expired Passwords -->
             <CollapsiblePanel header="Expired Passwords">
               <div class="flex flex-col gap-2">
                 <div class="flex items-center gap-[7px]">
@@ -433,7 +454,7 @@ const DummyPage = defineComponent({
               </div>
             </CollapsiblePanel>
 
-            <!-- User Lockouts -->
+            <!-- 10. User Lockouts -->
             <CollapsiblePanel header="User Lockouts">
               <div class="flex flex-col gap-2">
                 <div class="flex items-center gap-[7px]">
@@ -450,7 +471,7 @@ const DummyPage = defineComponent({
               </div>
             </CollapsiblePanel>
 
-            <!-- Device Policies -->
+            <!-- 11. Device Policies -->
             <CollapsiblePanel header="Device Policies">
               <div class="flex flex-col gap-2">
                 <div class="flex items-center gap-[7px]">
@@ -467,6 +488,213 @@ const DummyPage = defineComponent({
               </div>
             </CollapsiblePanel>
 
+            <!-- Row 5: Oldest Expired Passwords (2 cols) + Recent User Lockouts (2 cols) -->
+            <CollapsiblePanel header="Oldest Expired Passwords" class="col-span-2">
+              <template #actions>
+                <PvButton label="See All" severity="secondary" variant="outlined" size="small" />
+              </template>
+              <div class="flex flex-col">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="text-body-sm text-error-base"><span class="text-body-sm-bold">7</span> Users needs to reset</span>
+                  <div class="flex items-center gap-1.5">
+                    <ArrowUpIcon class="w-4 h-4 text-error-base" />
+                    <span class="text-body-sm-bold text-error-base">3</span>
+                    <span class="text-body-sm text-neutral-subtle">new in this week</span>
+                  </div>
+                </div>
+                <div class="flex flex-col divide-y divide-neutral-default_solid border-t border-neutral-default_solid">
+                  <div v-for="(user, index) in expiredPasswordUsers" :key="index" class="flex items-center justify-between py-3">
+                    <div class="flex flex-col">
+                      <span class="text-body-md-bold text-neutral-base">{{ user.name }}</span>
+                      <span class="text-body-xs text-neutral-subtle">{{ user.email }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-body-sm text-neutral-subtle">Expired: <span class="text-error-base">{{ user.time }}</span></span>
+                      <PvButton severity="secondary" variant="text" size="small">
+                        <template #icon>
+                          <EllipsisHorizontalIcon class="w-4 h-4" />
+                        </template>
+                      </PvButton>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
+            <CollapsiblePanel header="Recent User Lockouts" class="col-span-2">
+              <template #actions>
+                <PvButton label="See All" severity="secondary" variant="outlined" size="small" />
+              </template>
+              <div class="flex flex-col">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="text-body-sm text-success-base"><span class="text-body-sm-bold">12</span> Total lockouts</span>
+                  <div class="flex items-center gap-1.5">
+                    <ArrowUpIcon class="w-4 h-4 text-success-base" />
+                    <span class="text-body-sm-bold text-success-base">3</span>
+                    <span class="text-body-sm text-neutral-subtle">in last hour</span>
+                  </div>
+                </div>
+                <div class="flex flex-col divide-y divide-neutral-default_solid border-t border-neutral-default_solid">
+                  <div v-for="(user, index) in lockedOutUsers" :key="index" class="flex items-center justify-between py-3">
+                    <div class="flex flex-col">
+                      <span class="text-body-md-bold text-neutral-base">{{ user.name }}</span>
+                      <span class="text-body-xs text-neutral-subtle">{{ user.email }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-body-sm text-neutral-subtle">Locked: <span class="text-error-base">{{ user.time }}</span></span>
+                      <PvButton severity="secondary" variant="text" size="small">
+                        <template #icon>
+                          <EllipsisHorizontalIcon class="w-4 h-4" />
+                        </template>
+                      </PvButton>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
+            <!-- Row 6: User Groups Chart (full width) -->
+            <CollapsiblePanel header="User Groups" class="col-span-4">
+              <template #actions>
+                <PvButton label="See All" severity="secondary" variant="outlined" size="small" />
+              </template>
+              <div class="flex flex-col">
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="text-body-sm text-neutral-base"><span class="text-body-sm-bold">1,743</span> Users</span>
+                  <div class="flex items-center gap-1.5">
+                    <ArrowDownIcon class="w-4 h-4 text-error-base" />
+                    <span class="text-body-sm-bold text-error-base">8%</span>
+                    <span class="text-body-sm text-neutral-subtle">vs last month</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-6 mb-4">
+                  <div class="flex items-center gap-[7px]">
+                    <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-success-base">1,678</span>
+                    <span class="text-heading-3 text-neutral-base self-end">Active Users</span>
+                  </div>
+                  <div class="flex items-center gap-[7px]">
+                    <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-warning-base">65</span>
+                    <span class="text-heading-3 text-neutral-base self-end">Suspended Users</span>
+                  </div>
+                </div>
+
+                <!-- Chart Area -->
+                <div class="relative w-full h-[200px] mb-4">
+                  <svg class="w-full h-full" viewBox="0 0 800 200" preserveAspectRatio="none">
+                    <!-- Grid lines -->
+                    <line x1="0" y1="25" x2="800" y2="25" stroke="#e7e9ea" stroke-width="1" />
+                    <line x1="0" y1="65" x2="800" y2="65" stroke="#e7e9ea" stroke-width="1" />
+                    <line x1="0" y1="105" x2="800" y2="105" stroke="#e7e9ea" stroke-width="1" />
+                    <line x1="0" y1="145" x2="800" y2="145" stroke="#e7e9ea" stroke-width="1" />
+                    <line x1="0" y1="185" x2="800" y2="185" stroke="#e7e9ea" stroke-width="1" />
+
+                    <!-- Y-axis labels -->
+                    <text x="0" y="22" fill="#6b7280" font-size="11">700</text>
+                    <text x="0" y="62" fill="#6b7280" font-size="11">600</text>
+                    <text x="0" y="102" fill="#6b7280" font-size="11">500</text>
+                    <text x="0" y="142" fill="#6b7280" font-size="11">400</text>
+                    <text x="0" y="182" fill="#6b7280" font-size="11">300</text>
+
+                    <!-- Total Users line (blue) -->
+                    <polyline
+                      fill="none"
+                      stroke="#3B82F6"
+                      stroke-width="2.5"
+                      points="40,50 160,65 280,42 400,45 520,48 640,50 760,42"
+                    />
+
+                    <!-- Active Users line (green) -->
+                    <polyline
+                      fill="none"
+                      stroke="#22C55E"
+                      stroke-width="2.5"
+                      points="40,70 160,95 280,78 400,85 520,110 640,115 760,95"
+                    />
+
+                    <!-- Suspended Users line (orange) -->
+                    <polyline
+                      fill="none"
+                      stroke="#F59E0B"
+                      stroke-width="2.5"
+                      points="40,135 160,150 280,158 400,165 520,168 640,175 760,185"
+                    />
+                  </svg>
+
+                  <!-- X-axis labels -->
+                  <div class="flex justify-between px-10 mt-1">
+                    <span v-for="month in chartMonths" :key="month" class="text-body-xs text-neutral-subtle">{{ month }}</span>
+                  </div>
+                </div>
+
+                <!-- Legend -->
+                <div class="flex items-center justify-center gap-6">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#3B82F6]"></span>
+                    <span class="text-body-sm text-neutral-subtle">Total Users</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#22C55E]"></span>
+                    <span class="text-body-sm text-neutral-subtle">Active Users</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#F59E0B]"></span>
+                    <span class="text-body-sm text-neutral-subtle">Suspended Users</span>
+                  </div>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
+            <!-- Row 7: User Groups detail (2 cols) + Managed Devices breakdown (2 cols) -->
+            <CollapsiblePanel header="User Groups" class="col-span-2">
+              <template #actions>
+                <PvButton label="See All" severity="secondary" variant="outlined" size="small" />
+              </template>
+              <div class="flex flex-col">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="text-body-sm text-neutral-base"><span class="text-body-sm-bold">12</span> Total groups</span>
+                  <div class="flex items-center gap-1.5">
+                    <ArrowUpIcon class="w-4 h-4 text-success-base" />
+                    <span class="text-body-sm-bold text-success-base">2</span>
+                    <span class="text-body-sm text-neutral-subtle">new this month</span>
+                  </div>
+                </div>
+                <div class="flex flex-col divide-y divide-neutral-default_solid border-t border-neutral-default_solid">
+                  <div v-for="(group, index) in userGroups" :key="index" class="flex items-center justify-between py-3">
+                    <span class="text-body-md text-neutral-base">{{ group.name }}</span>
+                    <span class="text-body-sm-bold text-neutral-base">{{ group.members }} Members</span>
+                  </div>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
+            <CollapsiblePanel header="Managed Devices" class="col-span-2">
+              <template #actions>
+                <PvButton label="See All" severity="secondary" variant="outlined" size="small" />
+              </template>
+              <div class="flex flex-col">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="text-body-sm text-neutral-base"><span class="text-body-sm-bold">2,643</span> Total devices</span>
+                  <div class="flex items-center gap-1.5">
+                    <ArrowUpIcon class="w-4 h-4 text-success-base" />
+                    <span class="text-body-sm-bold text-success-base">23%</span>
+                    <span class="text-body-sm text-neutral-subtle">vs last month</span>
+                  </div>
+                </div>
+                <div class="flex flex-col divide-y divide-neutral-default_solid border-t border-neutral-default_solid">
+                  <div v-for="(device, index) in deviceBreakdown" :key="index" class="flex items-center gap-3 py-3">
+                    <span class="text-body-md text-neutral-base w-20 shrink-0">{{ device.name }}</span>
+                    <span class="text-body-sm text-neutral-subtle w-10 text-right shrink-0">{{ device.percentage }}%</span>
+                    <div class="flex-1 h-2 bg-neutral-surface rounded-full overflow-hidden">
+                      <div
+                        class="h-full bg-neutral-base rounded-full"
+                        :style="{ width: device.percentage + '%' }"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CollapsiblePanel>
+
           </div>
         </div>
       </div>
@@ -474,9 +702,9 @@ const DummyPage = defineComponent({
   `,
 });
 
-const meta: Meta<typeof DummyPage> = {
-  title: "Projects/Burak's Playground/Pages/Dummy Page",
-  component: DummyPage,
+const meta: Meta<typeof DashboardConceptPage> = {
+  title: "Projects/Burak's Playground/Pages/Dashboard Concept",
+  component: DashboardConceptPage,
   parameters: {
     layout: 'fullscreen',
   },
@@ -484,6 +712,6 @@ const meta: Meta<typeof DummyPage> = {
 
 export default meta;
 
-type Story = StoryObj<typeof DummyPage>;
+type Story = StoryObj<typeof DashboardConceptPage>;
 
 export const Default: Story = {};

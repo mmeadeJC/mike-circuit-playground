@@ -23,7 +23,6 @@ import {
   EllipsisHorizontalIcon,
   ArrowDownIcon,
   ArrowUpIcon,
-  ArrowRightIcon,
 } from '@heroicons/vue/24/outline';
 
 import TopBar from '../../../../components/TopBar.vue';
@@ -171,17 +170,14 @@ const DashboardConceptPage = defineComponent({
     EllipsisHorizontalIcon,
     ArrowDownIcon,
     ArrowUpIcon,
-    ArrowRightIcon,
   },
   setup() {
-    const certificates = [
-      { name: 'Azure AD Connect Certificate', status: 'expired', daysLeft: null, date: 'Sep 15, 2025', type: 'SSO', action: 'Replace' },
-      { name: 'VPN Server Certificate', status: 'warning', daysLeft: '8 days left,', date: 'Oct 3, 2025', type: 'VPN', action: 'Renew' },
-      { name: 'Device Enrollment Certificate', status: 'warning', daysLeft: '9 days left,', date: 'Oct 4, 2025', type: 'Device Enrollment', action: 'Renew' },
-      { name: 'Apple Push Notification Certificate', status: 'info', daysLeft: '26 days left,', date: 'Oct 21, 2025', type: 'APNs', action: 'View' },
-      { name: 'Apple Push Notification Certificate', status: 'info', daysLeft: '27 days left', date: 'Oct 22, 2025', type: 'VPN', action: 'View' },
-      { name: 'LDAP Server Certificate', status: 'info', daysLeft: '81 days left', date: 'Dec 15, 2025', type: 'LDAP', action: 'View' },
-      { name: 'Google Workspace SSO Certificate', status: 'success', daysLeft: '120 days left', date: 'Jan 23, 2026', type: 'SSO', action: 'View' },
+    const aiAppsChartMonths = ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
+
+    const aiAppsLegend = [
+      { name: 'MacOS', color: 'bg-icon-accent-aster-base' },
+      { name: 'Windows', color: 'bg-icon-accent-coral-base' },
+      { name: 'Linux', color: 'bg-icon-accent-violet-base' },
     ];
 
     const alerts = [
@@ -227,7 +223,7 @@ const DashboardConceptPage = defineComponent({
     const chartMonths = ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
 
     return {
-      menuItems, profileMenuItems, certificates, alerts, softwarePlatforms,
+      menuItems, profileMenuItems, aiAppsChartMonths, aiAppsLegend, alerts, softwarePlatforms,
       expiredPasswordUsers, lockedOutUsers, userGroups, deviceBreakdown, chartMonths,
     };
   },
@@ -335,48 +331,71 @@ const DashboardConceptPage = defineComponent({
               </div>
             </CollapsiblePanel>
 
-            <!-- Row 2: Recent Certificates & Tokens (full width) -->
-            <CollapsiblePanel header="Recent Certificates & Tokens" class="col-span-4">
+            <!-- Row 2: Devices Used AI Apps (full width) -->
+            <CollapsiblePanel header="Devices Used AI Apps" class="col-span-4">
               <template #actions>
-                <PvButton label="See All" severity="secondary" variant="outlined" size="small" />
-              </template>
-              <div class="flex flex-col">
-                <div class="flex items-center gap-4 mb-1">
-                  <span class="text-body-sm text-neutral-base"><span class="text-body-sm-bold">12</span> Total token</span>
-                  <span class="text-body-sm text-error-base"><span class="text-body-sm-bold">1</span> Expired / Invalid</span>
-                  <span class="text-body-sm text-warning-base"><span class="text-body-sm-bold">2</span> Within 10 days</span>
-                  <span class="text-body-sm text-neutral-base"><span class="text-body-sm-bold">3</span> Within 30 days</span>
-                  <span class="text-body-sm text-neutral-base"><span class="text-body-sm-bold">6</span> Past 30 days</span>
+                <div class="flex items-center gap-1 bg-neutral-surface_deep rounded p-0.5">
+                  <button class="px-2 h-6 text-body-sm-bold text-neutral-base bg-neutral-surface rounded shadow-sm">Monthly</button>
+                  <button class="px-2 h-6 text-body-sm text-neutral-subtle rounded">Quarterly</button>
                 </div>
-                <span class="text-body-sm text-neutral-subtle mb-3">3 new in this week</span>
-
-                <div class="flex flex-col divide-y divide-neutral-default_solid border-t border-neutral-default_solid">
-                  <div v-for="(cert, index) in certificates" :key="index" class="flex items-center py-3 gap-3">
-                    <span class="text-body-md-bold text-neutral-base shrink-0">{{ cert.name }}</span>
-                    <PvTag v-if="cert.status === 'expired'" value="Expired" severity="danger" class="shrink-0" />
-                    <span v-if="cert.status === 'expired'" class="text-body-sm text-error-base shrink-0">9 days ago,</span>
-                    <span v-if="cert.status === 'warning'" class="text-body-sm text-warning-base shrink-0">{{ cert.daysLeft }}</span>
-                    <span v-if="cert.status === 'info'" class="text-body-sm text-success-base shrink-0">{{ cert.daysLeft }}</span>
-                    <span v-if="cert.status === 'success'" class="text-body-sm text-success-base shrink-0">{{ cert.daysLeft }}</span>
-                    <span class="text-body-sm text-neutral-subtle shrink-0">{{ cert.date }}</span>
-                    <span class="text-body-sm text-neutral-subtle shrink-0">Type: {{ cert.type }}</span>
-                    <div class="flex items-center gap-2 ml-auto shrink-0">
-                      <PvButton
-                        :label="cert.action"
-                        :severity="cert.action === 'Replace' ? 'primary' : 'secondary'"
-                        variant="outlined"
-                        size="small"
-                      >
-                        <template #icon>
-                          <ArrowRightIcon class="w-4 h-4" />
-                        </template>
-                      </PvButton>
-                      <PvButton severity="secondary" variant="text" size="small">
-                        <template #icon>
-                          <EllipsisHorizontalIcon class="w-4 h-4" />
-                        </template>
-                      </PvButton>
+              </template>
+              <div class="flex flex-col gap-4">
+                <div class="flex items-center gap-2">
+                  <span class="text-heading-4 text-neutral-base">124</span>
+                  <span class="text-heading-4 text-neutral-base font-normal">Devices</span>
+                  <div class="w-px h-4 bg-neutral-default_solid mx-1"></div>
+                  <div class="flex items-center gap-1.5">
+                    <div class="flex items-center gap-0.5">
+                      <ArrowUpIcon class="w-4 h-4 text-success-base" />
+                      <span class="text-body-sm-bold text-success-base">23%</span>
                     </div>
+                    <span class="text-body-sm text-neutral-subtle">vs last month</span>
+                  </div>
+                </div>
+
+                <div class="relative w-full h-[260px]">
+                  <svg class="w-full h-full" viewBox="0 0 660 260" preserveAspectRatio="none">
+                    <!-- Grid lines -->
+                    <line x1="25" y1="7" x2="660" y2="7" stroke="#e7e9ea" stroke-width="0.5" />
+                    <line x1="25" y1="39" x2="660" y2="39" stroke="#e7e9ea" stroke-width="0.5" />
+                    <line x1="25" y1="71" x2="660" y2="71" stroke="#e7e9ea" stroke-width="0.5" />
+                    <line x1="25" y1="103" x2="660" y2="103" stroke="#e7e9ea" stroke-width="0.5" />
+                    <line x1="25" y1="135" x2="660" y2="135" stroke="#e7e9ea" stroke-width="0.5" />
+                    <line x1="25" y1="167" x2="660" y2="167" stroke="#e7e9ea" stroke-width="0.5" />
+                    <line x1="25" y1="199" x2="660" y2="199" stroke="#e7e9ea" stroke-width="0.5" />
+                    <line x1="25" y1="231" x2="660" y2="231" stroke="#e7e9ea" stroke-width="0.5" />
+
+                    <!-- Y-axis labels -->
+                    <text x="18" y="11" fill="rgba(15,32,47,0.74)" font-size="10" text-anchor="end">700</text>
+                    <text x="18" y="43" fill="rgba(15,32,47,0.74)" font-size="10" text-anchor="end">600</text>
+                    <text x="18" y="75" fill="rgba(15,32,47,0.74)" font-size="10" text-anchor="end">500</text>
+                    <text x="18" y="107" fill="rgba(15,32,47,0.74)" font-size="10" text-anchor="end">400</text>
+                    <text x="18" y="139" fill="rgba(15,32,47,0.74)" font-size="10" text-anchor="end">300</text>
+                    <text x="18" y="171" fill="rgba(15,32,47,0.74)" font-size="10" text-anchor="end">200</text>
+                    <text x="18" y="203" fill="rgba(15,32,47,0.74)" font-size="10" text-anchor="end">100</text>
+                    <text x="18" y="235" fill="rgba(15,32,47,0.74)" font-size="10" text-anchor="end">0</text>
+
+                    <!-- MacOS line (blue/purple - aster) -->
+                    <path d="M 40,135 C 80,55 110,55 135,50 C 160,45 185,105 220,90 C 255,75 280,140 310,130 C 340,120 360,55 390,70 C 420,85 450,55 480,70 C 510,85 540,55 570,40 C 600,25 620,55 650,45" fill="none" stroke="#8e9ef5" stroke-width="2" />
+
+                    <!-- Windows line (coral/orange) -->
+                    <path d="M 40,60 C 80,40 110,35 135,70 C 160,105 185,130 220,100 C 255,70 280,100 310,50 C 340,0 370,30 390,55 C 420,80 450,130 480,100 C 510,70 540,80 570,95 C 600,110 630,50 650,20" fill="none" stroke="#f08760" stroke-width="2" />
+
+                    <!-- Linux line (pink/violet) -->
+                    <path d="M 40,160 C 80,170 110,190 135,200 C 160,210 185,195 220,120 C 255,45 280,65 310,80 C 340,95 370,130 390,120 C 420,110 445,115 480,110 C 510,105 540,115 570,125 C 600,135 630,165 650,200" fill="none" stroke="#e77ece" stroke-width="2" />
+                  </svg>
+
+                  <!-- X-axis labels -->
+                  <div class="flex justify-between px-6 mt-1">
+                    <span v-for="month in aiAppsChartMonths" :key="month" class="text-[10px] text-neutral-ghost">{{ month }}</span>
+                  </div>
+                </div>
+
+                <!-- Legend -->
+                <div class="flex items-center justify-center gap-4">
+                  <div v-for="item in aiAppsLegend" :key="item.name" class="flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full" :class="item.color"></span>
+                    <span class="text-body-sm-bold text-neutral-base">{{ item.name }}</span>
                   </div>
                 </div>
               </div>

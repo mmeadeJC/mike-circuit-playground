@@ -7,6 +7,10 @@ alwaysApply: true
 
 Before writing any UI code, you MUST look up the latest tokens and components from the installed Circuit DS package. Never rely on memorized or hardcoded lists — the package evolves.
 
+**CRITICAL: Never import PrimeVue components directly when a Circuit DS custom component exists that wraps or replaces it.** Circuit DS has two types of components:
+1. **Custom components** — Circuit-built wrappers with enhanced behavior. Import from `@jumpcloud/circuit/components`.
+2. **Primitives (PT-styled)** — PrimeVue components styled by Circuit's passthrough theme. Only use these directly from `primevue/*` when NO Circuit custom wrapper exists.
+
 ## 1. Typography — Use Circuit Tokens Only
 
 Never use raw Tailwind text sizes (`text-base`, `text-2xl`), arbitrary values (`text-[14px]`), custom `leading-*`, or inline `font-size` styles.
@@ -44,30 +48,86 @@ Never use hardcoded hex (`text-[#0f202f]`), rgba (`text-[rgba(...)]`), raw Tailw
 <span class="text-neutral-subtle">Subtle</span>
 ```
 
-## 3. Components — Always Use Circuit DS Components
+## 3. Components — Always Use Circuit DS Components, NEVER Raw PrimeVue
 
-Never create custom components that replicate existing Circuit DS or PrimeVue components. Always check for an existing component first.
+**NEVER import a PrimeVue component directly if Circuit DS provides a custom wrapper for it.** Always prefer the Circuit custom component.
 
-**How to find available components:**
-- Read `node_modules/@jumpcloud/circuit/dist/components/index.cjs` (or `.mjs`) to discover all exported Circuit components and their names.
-- Check `node_modules/primevue/` directory listing for all available PrimeVue primitives — these are styled by Circuit's passthrough theme.
-- Look at existing stories in `src/stories/circuit-ds/` to see usage patterns and available props.
+### 3a. Circuit Custom Components (import from `@jumpcloud/circuit/components`)
 
-**Import conventions:**
-- Circuit custom components: `import { ComponentName } from '@jumpcloud/circuit/components'`
-- PrimeVue primitives: `import ComponentName from 'primevue/componentname'`
-- Icons: `import { IconName } from '@jumpcloud/icons'` or `@heroicons/vue/24/outline`
+These wrap or replace PrimeVue primitives with Circuit-specific behavior, styling, and API. **Always use these instead of their PrimeVue equivalents.**
 
-```html
-<!-- ❌ WRONG — building your own button/tag -->
-<button class="px-4 py-2 rounded bg-blue-500 text-white">Click</button>
+| Circuit Custom Component | Replaces PrimeVue | Notes |
+|---|---|---|
+| `CollapsiblePanel` | `Panel` | Use for all card/panel sections. Supports `toggleable` prop for collapsible behavior. |
+| `MessageNotification` | `Message` | Use `title` and `detail` props instead of default slot. |
+| `CheckboxWithLabel` | `Checkbox` | Use when checkbox needs a label (most cases). Has `#label` and `#description` slots. |
+| `DataTable` | `DataTable` + `Column` | Takes a `columns` prop array instead of `<Column>` children. |
+| `DataTableToolbar` | — | Toolbar for DataTable with search, filters, slots. |
+| `DataTableCellText` | — | Cell renderer for text columns. |
+| `DataTableCellLink` | — | Cell renderer for link columns. |
+| `DataTableCellToken` | — | Cell renderer for status token columns. |
+| `DataTableCellButton` | — | Cell renderer for button columns. |
+| `ToggleSwitch` | `ToggleSwitch` | Circuit-styled toggle. |
+| `Paginator` | `Paginator` | Circuit-styled paginator. |
+| `Chip` | `Chip` | Circuit-styled chip. |
+| `Password` | `Password` | Circuit-styled password input. |
+| `ProgressSpinner` | `ProgressSpinner` | Circuit-styled spinner. |
+| `ToastNotification` | `Toast` | Circuit-styled toast messages. |
+| `RadioButtonWithLabel` | `RadioButton` | Use when radio button needs a label. |
+| `InputOtp` | `InputOtp` | Circuit-styled OTP input. |
+| `SelectWithSlots` | `Select` | Use when select needs custom slot content. |
+| `Dropdown` | — | Circuit dropdown component. |
+| `ExportDropdown` | — | Export functionality dropdown. |
+| `SavedViewsDropdown` | — | Saved views management. |
+| `ColumnConfigDropdown` | — | Column configuration. |
+| `FormField` | — | Form field wrapper with label, validation, description. |
+| `FilterModal` | — | Filter modal dialog. |
+| `FilterField` | — | Individual filter field. |
+| `FilterButton` | — | Button to open filters. |
+| `FilterChip` | — | Active filter chip. |
+| `LinkText` | — | Styled link text. |
+| `CardButton` | — | Card-style button. |
+| `AppNavigation` | — | App-level left navigation. |
+| `PageHeader` | — | Page header with tabs, actions, breadcrumbs. |
+| `SaveViewPanel` | — | Panel for saving views. |
 
-<!-- ✅ CORRECT — using Circuit/PrimeVue components -->
-<Button label="Click" />
-<Tag value="Active" severity="success" />
+```ts
+// ✅ CORRECT — import from Circuit
+import { CollapsiblePanel, MessageNotification, CheckboxWithLabel, DataTable } from '@jumpcloud/circuit/components';
+
+// ❌ WRONG — never use these directly when Circuit wraps them
+import Panel from 'primevue/panel';
+import Message from 'primevue/message';
+import Checkbox from 'primevue/checkbox';
+import DataTable from 'primevue/datatable';
 ```
 
-**If a needed component does not exist in Circuit DS, ASK the user** whether to create a new reusable component or use a one-off solution. Never silently build a duplicate.
+### 3b. Circuit DS Primitive Components (import from `primevue/*`)
+
+These ARE Circuit DS components. Circuit owns and styles them via passthrough (PT) configs at `@jumpcloud/circuit/src/primevue-primitives/`. They are imported from `primevue/*` but they are part of Circuit DS. Use these when no Circuit custom wrapper exists:
+
+`Avatar`, `Badge`, `Button`, `Dialog`, `Divider`, `Drawer`, `IconField`, `InputGroup`, `InputText`, `Menu`, `MultiSelect`, `Popover`, `RadioButton` (without label), `RadioButtonGroup`, `Select` (without slots), `SelectButton`, `Skeleton`, `Tabs`/`TabList`/`Tab`/`TabPanels`/`TabPanel`, `Tag`, `Textarea`, `TieredMenu`, `Tooltip`
+
+```ts
+// ✅ CORRECT — Circuit DS primitives, imported from primevue but styled by Circuit
+import Button from 'primevue/button';
+import Tag from 'primevue/tag';
+import SelectButton from 'primevue/selectbutton';
+import Dialog from 'primevue/dialog';
+```
+
+**How to verify:** Check `node_modules/@jumpcloud/circuit/dist/src/primevue-primitives/` for the full list of Circuit DS primitive components. If a `.js` file exists there, the component is part of Circuit DS.
+
+### 3c. Icons
+
+```ts
+import { IconName } from '@jumpcloud/icons';
+import { IconName } from '@heroicons/vue/24/outline';
+```
+
+### 3d. Component Not Found?
+
+**If a needed component does not exist in Circuit DS (neither custom nor PT-styled), ASK the user** whether to create a new reusable component or use a one-off solution. Never silently build a duplicate.
 
 ## 4. Figma Code Connect — Finding the Right Component
 
@@ -91,6 +151,7 @@ Never use arbitrary spacing (`p-[12px]`) or radius (`rounded-[8px]`) values.
 Before writing any UI code, always:
 1. Look up current Circuit typography tokens from the Tailwind preset.
 2. Look up current Circuit color tokens from the Tailwind preset.
-3. Search Circuit component exports for any component matching what you need.
-4. If implementing from Figma, check Code Connect first via the MCP server.
-5. If no matching component exists, ask the user before creating a new one.
+3. Check `@jumpcloud/circuit/components` exports FIRST for a custom component match.
+4. If no custom component exists, check `primevue-primitives/` for a PT-styled primitive.
+5. If implementing from Figma, check Code Connect first via the MCP server.
+6. If no matching component exists in Circuit DS at all, ask the user before creating a new one.

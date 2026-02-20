@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
-import TopBar from '../../components/TopBar.vue';
+import TopBar from '../../../components/TopBar.vue';
 
 const meta: Meta<typeof TopBar> = {
-  title: 'Circuit DS/TopBar',
+  title: 'Circuit DS/Custom Components/TopBar',
   component: TopBar,
   parameters: {
     layout: 'fullscreen',

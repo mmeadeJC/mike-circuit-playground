@@ -1,0 +1,164 @@
+---
+description: Guide for migrating or building pages from design images. Enforces use of Circuit DS page layouts, components, and patterns. The design image is a reference — our page layouts are the source of truth.
+globs: src/**/*.stories.ts, src/**/*.vue
+alwaysApply: false
+---
+
+# Page Migration — Mandatory Rules
+
+When the user shares a design image (screenshot, Figma export, or mockup) of a page and asks you to build or migrate it, follow these rules strictly. **The image shows WHAT the page should contain — our page layout components define HOW it is structured.**
+
+## 1. The Image Is a Reference, NOT a Blueprint
+
+Design images show the intended content, data, and visual intent. But you must **never replicate the image layout pixel-for-pixel using raw HTML/CSS.** Instead:
+
+1. **Analyze the image** — identify the content zones: navigation, top bar, page header, main content, sidebar, panels, tables, forms, key-value pairs, toolbars, tabs.
+2. **Map each zone to a Circuit DS page layout or component** — our page layouts are the guide that must be applied.
+3. **The image layout can and will differ from our page layouts** — that is expected. Always prefer our layout components over mimicking the image structure with custom `div`s and flexbox.
+
+## 2. Page Shell — Standard Structure for Every Page
+
+Every page MUST use this standard shell structure:
+
+```html
+<div class="flex h-screen overflow-hidden">
+  <AppNavigation :menuItems="menuItems" ... />
+  <div class="flex-1 flex flex-col min-w-0 overflow-auto">
+    <TopBar />
+    <PageHeader ... />
+    <!-- Page content using a layout component -->
+  </div>
+</div>
+```
+
+| Component | Source | Purpose |
+|---|---|---|
+| `AppNavigation` | `@jumpcloud/circuit/components` | Left sidebar navigation |
+| `TopBar` | `src/components/TopBar.vue` | Top bar with search, icons, AI assistant |
+| `PageHeader` | `@jumpcloud/circuit/components` | Page title, subtitle, icon, tabs, actions |
+
+## 3. Page Layout Components — Choose the Right One
+
+After the page shell, the tab/page content MUST use one of our page layout components from `src/components/layout/page-layouts/`. **Never build custom layout structures with raw `div`s when a layout component fits.**
+
+### Available Layouts
+
+| Layout | Path | Use When |
+|---|---|---|
+| `DetailPageLayout` | `src/components/layout/page-layouts/DetailPageLayout.vue` | Detail/overview pages with panels and an optional sidebar (e.g., device detail highlights, entity overview). Supports `maxWidth` prop and `#sidebar` slot. |
+| `ListPageLayout` | `src/components/layout/page-layouts/ListPageLayout.vue` | Full-width list/table pages with an optional sidebar. No max-width constraint. |
+| `ConfigPageLayout` | `src/components/layout/page-layouts/ConfigPageLayout.vue` | Configuration/settings pages with form sections and an optional sidebar. Supports `maxWidth` prop and `#sidebar` slot. |
+| `DashboardPageLayout` | `src/components/layout/page-layouts/DashboardPageLayout.vue` | Dashboard pages with widgets/cards and an optional sidebar. Supports `maxWidth` prop and `#sidebar` slot. |
+
+### How to Choose
+
+Analyze the image content and match:
+
+- **Main content + right sidebar with key-value info** → `DetailPageLayout` with `#sidebar` slot
+- **Full-width table with toolbar** → `ListPageLayout` (no sidebar) or directly in a tab `div`
+- **Form sections, settings, toggles** → `ConfigPageLayout`
+- **Cards, charts, summary widgets** → `DashboardPageLayout`
+- **Tabs where each tab has different layout needs** → Use different layouts per tab content area
+
+### Layout Integration Notes
+
+- All layouts use `w-screen h-screen` by default. When embedding inside a page shell (after AppNavigation + TopBar + PageHeader), override with `class="w-full! h-full!"` so they fit within the existing container.
+- All layouts support an optional `#sidebar` slot. If the image shows a right sidebar, use it.
+- The default slot is the main content area.
+
+## 4. Content Components — Map Image Elements to Circuit DS
+
+When analyzing the image, map every visual element to the correct Circuit DS component. **Never build custom equivalents.**
+
+**Circuit DS Custom Components** (`import { X } from '@jumpcloud/circuit/components'`):
+
+| Visual Element in Image | Use This Component |
+|---|---|
+| Card / bordered section with header | `CollapsiblePanel` |
+| Collapsible section | `CollapsiblePanel` with `:toggleable="true"` |
+| Warning / info / error banner | `MessageNotification` |
+| Data table | `DataTable` with `columns` prop |
+| Table toolbar (search, filters) | `DataTableToolbar` |
+| Checkbox with label | `CheckboxWithLabel` |
+| Toggle switch | `ToggleSwitch` |
+| Form field with label/validation | `FormField` |
+| Dropdown menu | `Dropdown` |
+| Radio button with label | `RadioButtonWithLabel` |
+| Link text | `LinkText` |
+| Styled chip | `Chip` |
+| Password input | `Password` |
+| Loading spinner | `ProgressSpinner` |
+| Toast message | `ToastNotification` |
+| OTP input | `InputOtp` |
+| Select with custom slots | `SelectWithSlots` |
+
+**Circuit DS Primitive Components** (`import X from 'primevue/x'`) — these ARE Circuit DS components. Circuit owns and styles them via passthrough (PT) configs at `@jumpcloud/circuit/src/primevue-primitives/`. They are imported from `primevue/*` but they are part of Circuit DS:
+
+| Visual Element in Image | Use This Component | Import From |
+|---|---|---|
+| Button | `Button` | `primevue/button` |
+| Tag / badge | `Tag` | `primevue/tag` |
+| Segmented control / tab buttons | `SelectButton` | `primevue/selectbutton` |
+| Text input | `InputText` | `primevue/inputtext` |
+| Dialog / modal | `Dialog` | `primevue/dialog` |
+| Textarea | `Textarea` | `primevue/textarea` |
+| Dropdown select (no slots) | `Select` | `primevue/select` |
+| Skeleton placeholder | `Skeleton` | `primevue/skeleton` |
+| Divider line | `Divider` | `primevue/divider` |
+| Side drawer | `Drawer` | `primevue/drawer` |
+| Popover | `Popover` | `primevue/popover` |
+| Context menu | `TieredMenu` | `primevue/tieredmenu` |
+| Avatar | `Avatar` | `primevue/avatar` |
+
+**Project-Specific Components** (local to this repo):
+
+| Visual Element in Image | Use This Component | Import From |
+|---|---|---|
+| Key-value pairs in sidebar | `DetailsKeyValue` | `src/components/DetailsKeyValue.vue` |
+| Top bar | `TopBar` | `src/components/TopBar.vue` |
+
+## 5. CollapsiblePanel Header Actions
+
+When a `CollapsiblePanel` has action links or buttons in its header, always use the `#actions` slot with **small-size buttons**:
+
+- **Links** (e.g., "All Groups", "Go to Asset Detail", "Activity Log") must be rendered as `<Button label="..." variant="outlined" severity="secondary" size="small" />` — never as `<a>` tags or plain text links.
+- **All header buttons** must use `size="small"` to maintain consistent panel header sizing.
+
+```html
+<CollapsiblePanel header="Groups (3)">
+  <template #actions>
+    <Button label="All Groups" variant="outlined" severity="secondary" size="small" />
+  </template>
+  <!-- panel content -->
+</CollapsiblePanel>
+```
+
+## 6. Common Mistakes to Avoid
+
+These are real mistakes that have been made. **Never repeat them:**
+
+| Mistake | Correct Approach |
+|---|---|
+| Using `<div class="border rounded p-4">` as a card | Use `<CollapsiblePanel header="...">` |
+| Using PrimeVue `<Panel>` directly | Use `<CollapsiblePanel>` from Circuit |
+| Using PrimeVue `<Message>` directly | Use `<MessageNotification>` from Circuit |
+| Using PrimeVue `<Checkbox>` directly | Use `<CheckboxWithLabel>` from Circuit |
+| Using PrimeVue `<DataTable>` with `<Column>` | Use Circuit's `<DataTable :columns="..." :data="...">` |
+| Using PrimeVue `<Toast>` directly | Use `<ToastNotification>` from Circuit |
+| Building custom flexbox layouts for main+sidebar | Use a page layout component with `#sidebar` slot |
+| Building custom search bars with `<InputText>` + icons | Use `<DataTableToolbar>` for table search |
+| Using raw Tailwind `text-2xl`, `bg-white`, `text-gray-500` | Use Circuit tokens: `text-heading-2`, `bg-neutral-surface`, `text-neutral-subtle` |
+| Copying the image layout structure with custom `div`s | Map to page layout components — the image is a reference, not a blueprint |
+| Using `<a>` tags or text links in `CollapsiblePanel` headers | Use `<Button label="..." variant="outlined" severity="secondary" size="small" />` in `#actions` slot |
+
+## 7. Migration Checklist
+
+Before writing any code for a page migration:
+
+1. **Analyze the image** — list all content zones and visual elements.
+2. **Choose the page layout** — pick from `DetailPageLayout`, `ListPageLayout`, `ConfigPageLayout`, or `DashboardPageLayout`.
+3. **Map every element to a Circuit DS component** — check `@jumpcloud/circuit/components` exports first, then PrimeVue primitives. Never build custom duplicates.
+4. **Set up the page shell** — `AppNavigation` + `TopBar` + `PageHeader` with correct props (icon, title, subtitle, tabs, actions).
+5. **Implement tab by tab** — each tab may need a different layout. Choose the best layout component for each.
+6. **Verify all imports** — everything must come from Circuit DS (custom or PT-styled primitive). No raw PrimeVue when a Circuit wrapper exists.
+7. **Check Figma Code Connect** (if Figma URL provided) — use `get_code_connect_map` and `get_design_context` MCP tools to find the correct component mappings.

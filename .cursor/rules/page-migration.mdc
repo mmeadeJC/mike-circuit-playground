@@ -75,7 +75,7 @@ When analyzing the image, map every visual element to the correct Circuit DS com
 | Visual Element in Image | Use This Component |
 |---|---|
 | Card / bordered section with header | `CollapsiblePanel` |
-| Collapsible section | `CollapsiblePanel` with `:toggleable="true"` |
+| Collapsible / expandable section | `CollapsiblePanel` with full toggleable pattern (see Section 5) |
 | Warning / info / error banner | `MessageNotification` |
 | Data table | `DataTable` with `columns` prop |
 | Table toolbar (search, filters) | `DataTableToolbar` |
@@ -117,12 +117,45 @@ When analyzing the image, map every visual element to the correct Circuit DS com
 | Key-value pairs in sidebar | `DetailsKeyValue` | `src/components/DetailsKeyValue.vue` |
 | Top bar | `TopBar` | `src/components/TopBar.vue` |
 
-## 5. CollapsiblePanel Header Actions
+## 5. CollapsiblePanel — Slots and Usage
 
-When a `CollapsiblePanel` has action links or buttons in its header, always use the `#actions` slot with **small-size buttons**:
+`CollapsiblePanel` supports several slots for customizing its header and content. Always use these slots instead of building custom card/section structures.
+
+### Full Slot Reference
+
+```html
+<CollapsiblePanel
+  v-model:collapsed="collapsed"
+  toggleable
+  header="Section Title"
+>
+  <template #titleicon="iconProps">
+    <FolderIcon :class="iconProps.class" />
+  </template>
+  <template #actions>
+    <Button size="small" label="First Button" variant="outlined" />
+    <Button size="small" label="Second Button" variant="outlined" severity="secondary" />
+  </template>
+  <template #toggleicon="iconProps">
+    <ChevronRightIcon :class="iconProps.class" />
+  </template>
+  <!-- Panel body content -->
+</CollapsiblePanel>
+```
+
+| Slot | Slot Props | Purpose |
+|---|---|---|
+| `default` | — | Panel body content |
+| `titleicon` | `{ class }` | Icon rendered before the header text |
+| `actions` | — | Buttons/links rendered on the right side of the header |
+| `toggleicon` | `{ class, collapsed }` | Custom expand/collapse icon |
+
+### Header Action Rules
 
 - **Links** (e.g., "All Groups", "Go to Asset Detail", "Activity Log") must be rendered as `<Button label="..." variant="outlined" severity="secondary" size="small" />` — never as `<a>` tags or plain text links.
 - **All header buttons** must use `size="small"` to maintain consistent panel header sizing.
+
+### Simple Example (header + actions only)
 
 ```html
 <CollapsiblePanel header="Groups (3)">
@@ -132,6 +165,37 @@ When a `CollapsiblePanel` has action links or buttons in its header, always use 
   <!-- panel content -->
 </CollapsiblePanel>
 ```
+
+## 5a. Two-Column Form Layout Inside CollapsiblePanel
+
+When a `CollapsiblePanel` contains form fields, use a **2-column grid with 24px gap** between columns:
+
+```html
+<CollapsiblePanel header="User Information">
+  <div class="grid grid-cols-2 gap-x-6 gap-y-4">
+    <FormField label="First Name">
+      <template #default="{ inputId }">
+        <InputText :id="inputId" v-model="firstName" class="w-full" />
+      </template>
+    </FormField>
+    <FormField label="Last Name">
+      <template #default="{ inputId }">
+        <InputText :id="inputId" v-model="lastName" class="w-full" />
+      </template>
+    </FormField>
+    <!-- Full-width field spanning both columns -->
+    <FormField label="Description" class="col-span-2">
+      <template #default="{ inputId }">
+        <Textarea :id="inputId" v-model="description" class="w-full" />
+      </template>
+    </FormField>
+  </div>
+</CollapsiblePanel>
+```
+
+- Use `gap-x-6` (24px) between columns and `gap-y-4` (16px) between rows.
+- Use `col-span-2` for fields that should span the full width.
+- Always use `FormField` from Circuit DS to wrap inputs — never bare `<label>` + `<input>` combos.
 
 ## 6. Common Mistakes to Avoid
 
@@ -150,6 +214,16 @@ These are real mistakes that have been made. **Never repeat them:**
 | Using raw Tailwind `text-2xl`, `bg-white`, `text-gray-500` | Use Circuit tokens: `text-heading-2`, `bg-neutral-surface`, `text-neutral-subtle` |
 | Copying the image layout structure with custom `div`s | Map to page layout components — the image is a reference, not a blueprint |
 | Using `<a>` tags or text links in `CollapsiblePanel` headers | Use `<Button label="..." variant="outlined" severity="secondary" size="small" />` in `#actions` slot |
+| Using `CollapsiblePanel` with only `:toggleable="true"` | Use the full pattern: `v-model:collapsed`, `toggleable`, `#titleicon`, `#toggleicon` slots (see Section 5) |
+
+**CRITICAL — Collapsible panels:** Any time a design image shows an expandable/collapsible section (with a +/- icon, chevron, or expand/collapse toggle), you MUST use the full `CollapsiblePanel` toggleable pattern from Section 5. This means:
+
+1. `v-model:collapsed="someRef"` — bind to a reactive collapsed state
+2. `toggleable` — enable toggle behavior
+3. `#titleicon` slot — provide a contextual icon before the header text
+4. `#toggleicon` slot — use `ChevronRightIcon` with `iconProps.class` for the expand/collapse indicator
+
+Never use the shorthand `:toggleable="true"` alone without the full slot pattern.
 
 ## 7. Migration Checklist
 

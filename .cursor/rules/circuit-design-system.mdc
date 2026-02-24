@@ -3,13 +3,20 @@ description: Enforces Circuit Design System usage — typography, color tokens, 
 alwaysApply: true
 ---
 
+> **Circuit DS Version: 0.0.99**
+
 # Circuit Design System — Mandatory Rules
 
-Before writing any UI code, you MUST look up the latest tokens and components from the installed Circuit DS package. Never rely on memorized or hardcoded lists — the package evolves.
+> **⛔ NEVER USE RAW PRIMEVUE COMPONENTS DIRECTLY. ALWAYS USE CIRCUIT DS COMPONENTS.**
+>
+> Circuit DS provides ALL UI components in two forms. You MUST use Circuit's version — NEVER import an unstyled PrimeVue component on your own:
+>
+> 1. **Custom components** — Circuit-built wrappers. Import from `@jumpcloud/circuit/components`.
+> 2. **Primitives (PT-styled)** — PrimeVue components that Circuit OWNS and styles via passthrough (PT) config. These are imported from `primevue/*` but they ARE Circuit DS components because Circuit's passthrough theme is applied globally. Only the primitives listed in Section 3b are approved — if a PrimeVue component is NOT in that list, DO NOT USE IT.
+>
+> **If a Circuit custom wrapper exists (Section 3a), NEVER import the PrimeVue equivalent directly.**
 
-**CRITICAL: Never import PrimeVue components directly when a Circuit DS custom component exists that wraps or replaces it.** Circuit DS has two types of components:
-1. **Custom components** — Circuit-built wrappers with enhanced behavior. Import from `@jumpcloud/circuit/components`.
-2. **Primitives (PT-styled)** — PrimeVue components styled by Circuit's passthrough theme. Only use these directly from `primevue/*` when NO Circuit custom wrapper exists.
+Before writing any UI code, you MUST look up the latest tokens and components from the installed Circuit DS package. Never rely on memorized or hardcoded lists — the package evolves.
 
 ## 1. Typography — Use Circuit Tokens Only
 
@@ -48,52 +55,87 @@ Never use hardcoded hex (`text-[#0f202f]`), rgba (`text-[rgba(...)]`), raw Tailw
 <span class="text-neutral-subtle">Subtle</span>
 ```
 
-## 3. Components — Always Use Circuit DS Components, NEVER Raw PrimeVue
+## 3. Components — NEVER USE RAW PRIMEVUE. ALWAYS USE CIRCUIT DS.
 
-**NEVER import a PrimeVue component directly if Circuit DS provides a custom wrapper for it.** Always prefer the Circuit custom component.
+> **⛔ THIS IS THE MOST IMPORTANT RULE. NEVER IMPORT A PRIMEVUE COMPONENT DIRECTLY WHEN CIRCUIT DS PROVIDES A CUSTOM WRAPPER FOR IT. ALWAYS USE CIRCUIT'S VERSION.**
+
+Circuit DS provides every UI component you need. There are NO exceptions — if you need a component, it MUST come from Circuit DS (either as a custom component or as an approved PT-styled primitive).
 
 ### 3a. Circuit Custom Components (import from `@jumpcloud/circuit/components`)
 
-These wrap or replace PrimeVue primitives with Circuit-specific behavior, styling, and API. **Always use these instead of their PrimeVue equivalents.**
+These wrap or replace PrimeVue primitives with Circuit-specific behavior, styling, and API. **ALWAYS use these instead of their PrimeVue equivalents. Importing the raw PrimeVue version when a Circuit wrapper exists is FORBIDDEN.**
 
 | Circuit Custom Component | Replaces PrimeVue | Notes |
 |---|---|---|
+| **Panels & Cards** | | |
 | `CollapsiblePanel` | `Panel` | Use for all card/panel sections. Supports `toggleable` prop for collapsible behavior. |
-| `MessageNotification` | `Message` | Use `title` and `detail` props instead of default slot. |
+| `CardButton` | — | Clickable card with `#leading` and `#trailing` slots. |
+| **Messages & Notifications** | | |
+| `MessageNotification` | `Message` | Use `title` and `detail` props instead of default slot. Severities: `info`, `success`, `warn`, `error`. |
+| `ToastNotification` | `Toast` | Circuit-styled toast messages. Requires `ToastService`; one instance per app. |
+| **Forms & Inputs** | | |
 | `CheckboxWithLabel` | `Checkbox` | Use when checkbox needs a label (most cases). Has `#label` and `#description` slots. |
-| `DataTable` | `DataTable` + `Column` | Takes a `columns` prop array instead of `<Column>` children. |
-| `DataTableToolbar` | — | Toolbar for DataTable with search, filters, slots. |
+| `RadioButtonWithLabel` | `RadioButton` | Use when radio button needs a label. Has `#label` and `#description` slots. |
+| `ToggleSwitch` | `ToggleSwitch` | Toggle with optional label/description. |
+| `FormField` | — | Form field wrapper with label, tooltip, help text, validation. Always bind `inputId` to input for accessibility. |
+| `Password` | `Password` | Password input with toggle mask visibility. |
+| `InputOtp` | `InputOtp` | OTP input (4, 6, or 3-3 digit formats). |
+| `SelectWithSlots` | `Select` | Use when select needs `#icon` or `#footer` slot content. |
+| **Data Table** | | |
+| `DataTable` | `DataTable` + `Column` | Takes a `columns` prop array instead of `<Column>` children. Use `markRaw()` for column components. |
+| `DataTableToolbar` | — | Toolbar for DataTable with add button, search, filters, saved views, column config, export. |
 | `DataTableCellText` | — | Cell renderer for text columns. |
 | `DataTableCellLink` | — | Cell renderer for link columns. |
 | `DataTableCellToken` | — | Cell renderer for status token columns. |
 | `DataTableCellButton` | — | Cell renderer for button columns. |
-| `ToggleSwitch` | `ToggleSwitch` | Circuit-styled toggle. |
-| `Paginator` | `Paginator` | Circuit-styled paginator. |
-| `Chip` | `Chip` | Circuit-styled chip. |
-| `Password` | `Password` | Circuit-styled password input. |
-| `ProgressSpinner` | `ProgressSpinner` | Circuit-styled spinner. |
-| `ToastNotification` | `Toast` | Circuit-styled toast messages. |
-| `RadioButtonWithLabel` | `RadioButton` | Use when radio button needs a label. |
-| `InputOtp` | `InputOtp` | Circuit-styled OTP input. |
-| `SelectWithSlots` | `Select` | Use when select needs custom slot content. |
-| `Dropdown` | — | Circuit dropdown component. |
-| `ExportDropdown` | — | Export functionality dropdown. |
-| `SavedViewsDropdown` | — | Saved views management. |
-| `ColumnConfigDropdown` | — | Column configuration. |
-| `FormField` | — | Form field wrapper with label, validation, description. |
-| `FilterModal` | — | Filter modal dialog. |
-| `FilterField` | — | Individual filter field. |
+| `ActionsToolbar` | — | Bulk actions bar for selected table rows. Hides when `selectedItems` is empty. |
+| `Paginator` | `Paginator` | Circuit-styled paginator with rows-per-page. |
+| **Toolbar Dropdowns** | | |
+| `SavedViewsDropdown` | — | Saved views management in DataTableToolbar. |
+| `ColumnConfigDropdown` | — | Column configuration in DataTableToolbar. |
+| `ExportDropdown` | — | Export functionality in DataTableToolbar. |
+| **Menus & Dropdowns** | | |
+| `ActionMenu` | — | Props-based menu wrapping PrimeVue Menu. Supports grouping (`group`/`groupOrder`), icons with severity colors (`iconSeverity`), external links, disabled items, auto-truncation. Toggle via ref: `menu.value?.toggle(event)`. |
+| `Dropdown` | — | Flexible dropdown with custom trigger slot. |
+| **Filters** | | |
+| `FilterModal` | — | Filter modal dialog with basic/additional filters. |
+| `FilterField` | — | Individual filter field inside FilterModal. |
 | `FilterButton` | — | Button to open filters. |
-| `FilterChip` | — | Active filter chip. |
+| `FilterChip` | — | Active filter chip (key/operator/value, removable). |
+| **Navigation & Layout** | | |
+| `AppNavigation` | — | App-level left sidebar navigation with collapsible items. |
+| `PageHeader` | — | Page header with title, subtitle, icon, tabs, `#actions` slot, breadcrumbs. |
+| `SaveViewPanel` | — | Panel for saving table views. |
+| **AI Components** | | |
+| `AiAgentButton` | — | AI-themed gradient button for AI assistant. |
+| **Dialogs** | | |
+| `SeverityDialog` | — | Higher-level dialog for destructive/risky actions. Three severity levels: `sev1`, `sev2`, `sev3`. Includes message banner, markdown body, confirmation input, acknowledgement checkbox. Uses `RichText` internally. |
+| **Stepper** | | |
+| `Stepper` | `Stepper` | Multi-step workflow indicator. Horizontal/vertical layouts, custom icons, linear mode, built-in Cancel/Previous/Next/Save buttons. Uses `#step-{value}` slots for content. |
+| **Rich Text** | | |
+| `RichText` | — | Renders markdown-like strings (`**bold**`, `*italic*`, `` `code` ``, `[link](url)`) to safe HTML. Sanitised with DOMPurify. Props: `content`, `tag`, `wrapLines`. |
+| **Other** | | |
+| `Chip` | `Chip` | Key-value chip with icon, removable. |
+| `ProgressSpinner` | `ProgressSpinner` | Spinner with size variants (`small`, `default`, `large`). |
 | `LinkText` | — | Styled link text. |
-| `CardButton` | — | Card-style button. |
-| `AppNavigation` | — | App-level left navigation. |
-| `PageHeader` | — | Page header with tabs, actions, breadcrumbs. |
-| `SaveViewPanel` | — | Panel for saving views. |
+| `TourGuide` | — | Interactive product tour with step-based guidance. |
 
 ```ts
 // ✅ CORRECT — import from Circuit
-import { CollapsiblePanel, MessageNotification, CheckboxWithLabel, DataTable } from '@jumpcloud/circuit/components';
+import {
+  CollapsiblePanel, MessageNotification, CheckboxWithLabel,
+  DataTable, DataTableToolbar, DataTableCellText, DataTableCellLink,
+  FormField, ActionsToolbar, ToggleSwitch,
+  RadioButtonWithLabel, SelectWithSlots, PageHeader, AppNavigation,
+  SeverityDialog, Stepper, RichText,
+} from '@jumpcloud/circuit/components';
+
+// ✅ CORRECT — types
+import type { Action, SelectedItem } from '@jumpcloud/circuit/components';
+import type { StepDefinition } from '@jumpcloud/circuit/components';
+
+// ✅ CORRECT — composable
+import { useContainer } from '@jumpcloud/circuit/composables';
 
 // ❌ WRONG — never use these directly when Circuit wraps them
 import Panel from 'primevue/panel';
@@ -102,21 +144,32 @@ import Checkbox from 'primevue/checkbox';
 import DataTable from 'primevue/datatable';
 ```
 
-### 3b. Circuit DS Primitive Components (import from `primevue/*`)
+### 3b. Circuit DS Primitive Components (import from `primevue/*`) — THE ONLY APPROVED PRIMEVUE IMPORTS
 
-These ARE Circuit DS components. Circuit owns and styles them via passthrough (PT) configs at `@jumpcloud/circuit/src/primevue-primitives/`. They are imported from `primevue/*` but they are part of Circuit DS. Use these when no Circuit custom wrapper exists:
+> **These are the ONLY PrimeVue components you are allowed to import directly.** They ARE Circuit DS components — Circuit owns and styles them via passthrough (PT) configs. They look and behave like Circuit because Circuit's global PT theme is applied. If a PrimeVue component is NOT in this list, DO NOT USE IT.
 
-`Avatar`, `Badge`, `Button`, `Dialog`, `Divider`, `Drawer`, `IconField`, `InputGroup`, `InputText`, `Menu`, `MultiSelect`, `Popover`, `RadioButton` (without label), `RadioButtonGroup`, `Select` (without slots), `SelectButton`, `Skeleton`, `Tabs`/`TabList`/`Tab`/`TabPanels`/`TabPanel`, `Tag`, `Textarea`, `TieredMenu`, `Tooltip`
+**Approved list:**
+
+`Avatar`, `Badge`, `Button`, `Checkbox` (without label only — use `CheckboxWithLabel` when label needed), `Dialog`, `Divider`, `Drawer`, `IconField`, `InputIcon`, `InputGroup`, `InputGroupAddon`, `InputText`, `Menu`, `MultiSelect`, `Popover`, `RadioButton` (without label only — use `RadioButtonWithLabel` when label needed), `RadioButtonGroup`, `Select` (without icon/footer slots — use `SelectWithSlots` when slots needed), `SelectButton`, `Skeleton`, `Stepper`/`StepList`/`Step`/`StepPanels`/`StepPanel`/`StepItem`, `Tabs`/`TabList`/`Tab`/`TabPanels`/`TabPanel`, `Tag`, `Textarea`, `TieredMenu`, `Tooltip` (directive)
 
 ```ts
-// ✅ CORRECT — Circuit DS primitives, imported from primevue but styled by Circuit
+// ✅ CORRECT — these are Circuit DS primitives, styled by Circuit's passthrough config
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import SelectButton from 'primevue/selectbutton';
 import Dialog from 'primevue/dialog';
+
+// ❌ WRONG — these PrimeVue components have Circuit custom wrappers, NEVER import directly
+import Panel from 'primevue/panel';        // → use CollapsiblePanel from @jumpcloud/circuit/components
+import Message from 'primevue/message';    // → use MessageNotification from @jumpcloud/circuit/components
+import Checkbox from 'primevue/checkbox';  // → use CheckboxWithLabel from @jumpcloud/circuit/components
+import DataTable from 'primevue/datatable'; // → use DataTable from @jumpcloud/circuit/components
+
+// ❌ WRONG — this PrimeVue component is NOT in the approved primitives list
+import Accordion from 'primevue/accordion'; // NOT a Circuit DS component, do not use
 ```
 
-**How to verify:** Check `node_modules/@jumpcloud/circuit/dist/src/primevue-primitives/` for the full list of Circuit DS primitive components. If a `.js` file exists there, the component is part of Circuit DS.
+**How to verify:** Check `node_modules/@jumpcloud/circuit/dist/src/primevue-primitives/` for the full list of Circuit DS primitive components. If a `.js` file exists there, the component is part of Circuit DS. If it does NOT exist there AND there is no Circuit custom wrapper, DO NOT USE IT — ask the user first.
 
 ### 3c. Icons
 
@@ -125,7 +178,35 @@ import { IconName } from '@jumpcloud/icons';
 import { IconName } from '@heroicons/vue/24/outline';
 ```
 
-### 3d. Component Not Found?
+### 3d. Key Component Usage Patterns
+
+These patterns come from the official Circuit DS docs. Follow them exactly.
+
+| Component | Pattern / Gotcha |
+|---|---|
+| `Button` | Use `#icon` slot with `iconProps.class` for leading icons. `loading` prop disables and replaces content with spinner. |
+| `FormField` | Always bind `inputId` from the default slot to the input's `:id` for accessibility: `<template #default="{ inputId }">`. |
+| `DataTable` | Always use `markRaw()` when passing component references in column definitions. |
+| `DataTableToolbar` | Primary "Add" button MUST be on the toolbar (see Section 6). Default `showAddButton` is `true`. |
+| `ActionsToolbar` | Hides automatically when `selectedItems` is empty. Use for bulk actions on table selections. |
+| `Checkbox` (primitive) | Only use raw `Checkbox` from `primevue/checkbox` when NO label is needed. For labeled checkboxes, ALWAYS use `CheckboxWithLabel`. |
+| `RadioButton` (primitive) | Only use raw `RadioButton` from `primevue/radiobutton` when NO label is needed. For labeled radios, ALWAYS use `RadioButtonWithLabel`. |
+| `RadioButtonGroup` | Horizontal by default. Use `class="flex-col"` for vertical layout. |
+| `Select` (primitive) | Only use raw `Select` from `primevue/select` when NO icon or footer slots are needed. For slots, use `SelectWithSlots`. |
+| `Dialog` | Always use `#closeicon` with `<XMarkIcon />`, `:draggable="false"`, `modal`. See Section 7. |
+| `Drawer` | Use `#closebutton` slot with `btnProps.closeCallback`. Sizes: `sm` (288px), `md` (384px), `lg` (480px), `xl` (640px). |
+| `Tabs` | Custom `withPadding` prop adds 24px horizontal padding. Tab descriptions use `text-body-md text-tab-sub-text-base`. |
+| `Tooltip` | This is a **directive**, not a component: `v-tooltip.top="'Text'"`. |
+| `ToastNotification` | Requires `ToastService` plugin. Only one `<ToastNotification />` instance per app. |
+| `SelectButton` | Bar variant: wrap in `div` with `px-6 py-3 border-b border-neutral-default_solid`. |
+| `AppNavigation` | `topnav-action-buttons` slot only renders on mobile/tablet. |
+| `SeverityDialog` | Three severity levels: `sev1` (standard), `sev2` (critical with message banner), `sev3` (requires confirmation input and/or acknowledgement checkbox). Use `dialogContent` for markdown body text, `messageContent` for plain-text banner. Use `actionHandler` with `close()` callback for async/loading actions. |
+| `Stepper` | Use `v-model:value` with string step values. Steps defined via `steps` prop (array of `StepDefinition`). Content via `#step-{value}` slots. Use `linear` for sequential-only navigation. Use `nextDisabled` to block Next/Save. Custom buttons via `#buttons` slot. |
+| `RichText` | Default `tag` is `span`. Use `tag="div"` with `:wrapLines="true"` for multi-paragraph content. Only supports `**bold**`, `*italic*`, `` `code` ``, `[link](url)`. Content is sanitised with DOMPurify. |
+| `ActionMenu` | Toggle via template ref: `menu.value?.toggle(event)`. Use `group` + `groupOrder` for sectioned menus. Use `iconSeverity: 'danger'` for destructive items. Use `menuClass="w-[180px]"` for width control. |
+| `useContainer` | Composable from `@jumpcloud/circuit/composables`. Returns `containerElement` ref. Use to bind `appendTo` on overlays (Dialog, Popover, Menu) in MFE environments. |
+
+### 3e. Component Not Found?
 
 **If a needed component does not exist in Circuit DS (neither custom nor PT-styled), ASK the user** whether to create a new reusable component or use a one-off solution. Never silently build a duplicate.
 
@@ -146,7 +227,337 @@ Never use arbitrary spacing (`p-[12px]`) or radius (`rounded-[8px]`) values.
 **How to find available tokens:**
 - Read the Tailwind preset for `spacing` and `borderRadius` keys to discover all Circuit aliases (e.g. `xs`, `sm`, `md`, `lg`, `xl`).
 
-## 6. Pre-Implementation Checklist
+## 6. DataTableToolbar — Primary Add Button Rule
+
+On **list/table pages**, the primary "Add" action (e.g. "Add Asset", "Add Application", "Add User") **MUST** use the `DataTableToolbar`'s built-in add button. Never place a separate primary add button in the `PageHeader` actions when a `DataTableToolbar` is present on the page.
+
+### DataTableToolbar Add Button Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `showAddButton` | `boolean` | `true` | Show/hide the built-in primary add button |
+| `addButtonLabel` | `string` | `"Add"` | Label text — customize per context (e.g. `"Add Asset"`, `"Add User"`) |
+
+The toolbar emits an `@add` event when the button is clicked.
+
+```html
+<!-- ✅ CORRECT — primary add action on the toolbar -->
+<DataTableToolbar
+  searchPlaceholder="Search devices..."
+  :showAddButton="true"
+  addButtonLabel="Add Asset"
+  @add="openAddDialog"
+  :showFilterButton="true"
+  :showRefreshButton="true"
+  :showColumnsButton="true"
+/>
+
+<!-- ❌ WRONG — separate add button in PageHeader when toolbar exists -->
+<PageHeader title="Devices">
+  <template #actions>
+    <Button label="Add Device" />   <!-- Don't do this -->
+  </template>
+</PageHeader>
+```
+
+### What Goes in PageHeader Actions?
+
+`PageHeader` `#actions` slot is for **secondary/contextual actions** that apply to the whole page, not to the table. Examples:
+- Settings button (navigates to settings)
+- Export/Import at a page level
+- Actions dropdown on detail views
+
+## 7. Dialog — Circuit DS Primitive Usage
+
+`Dialog` is a **Circuit DS primitive component** — it is PrimeVue's `Dialog` styled by Circuit's passthrough (PT) configuration. Always import from `primevue/dialog`. Circuit's PT provides styled header (`text-heading-3`), content padding (`p-md`), footer layout (`flex gap-md`), close button, overlay backdrop, and transitions automatically.
+
+```ts
+// ✅ CORRECT — Circuit DS primitive
+import Dialog from 'primevue/dialog';
+```
+
+### Required Props
+
+Always set these props on every Dialog:
+
+| Prop | Value | Why |
+|---|---|---|
+| `v-model:visible` | `ref<boolean>` | Controls open/close state |
+| `modal` | — | Shows backdrop overlay |
+| `:draggable="false"` | `false` | Dialogs should not be draggable |
+| `header` | `string` | Dialog title text (or use `#header` slot) |
+
+### Reference Example — This Is the Correct Pattern
+
+```html
+<Dialog
+  v-model:visible="showDialog"
+  :draggable="false"
+  modal
+  header="Dialog Header"
+  :style="style"
+  :showHeader="showHeader"
+>
+  <template #closeicon><XMarkIcon /></template>
+
+  <!-- Default slot: content -->
+  <p>Dialog body content goes here.</p>
+
+  <!-- Footer slot: left content + right buttons -->
+  <template #footer>
+    <div class="flex items-center w-full">Footer left content</div>
+    <div class="flex gap-sm">
+      <Button label="Cancel" severity="secondary" variant="text" @click="showDialog = false" />
+      <Button label="Save" />
+    </div>
+  </template>
+</Dialog>
+```
+
+### Key Slots
+
+| Slot | Purpose | Notes |
+|---|---|---|
+| default | Dialog body content | Auto-styled with `p-md`, borders, `gap-md` |
+| `#header` | Custom header content | Use when you need icons or complex header layout |
+| `#closeicon` | Custom close icon | Use `<XMarkIcon />` from `@heroicons/vue/24/outline` |
+| `#footer` | Footer with actions | Circuit PT styles as `flex gap-md` — place two sibling divs (see below) |
+
+### Footer Structure
+
+Circuit's PT styles the `#footer` slot as `flex gap-md`. Use **two sibling divs** inside:
+
+1. **Left div** — `class="flex items-center w-full"` — for left-aligned content (optional text, links, info)
+2. **Right div** — `class="flex gap-sm"` — for action buttons (Cancel + Save)
+
+```html
+<template #footer>
+  <div class="flex items-center w-full">Optional left content</div>
+  <div class="flex gap-sm">
+    <Button label="Cancel" severity="secondary" variant="text" @click="showDialog = false" />
+    <Button label="Save" />
+  </div>
+</template>
+```
+
+If you only need right-aligned buttons (no left content), you can use a single div:
+
+```html
+<template #footer>
+  <div class="flex items-center w-full"></div>
+  <div class="flex gap-sm">
+    <Button label="Cancel" severity="secondary" variant="text" @click="showDialog = false" />
+    <Button label="Confirm" />
+  </div>
+</template>
+```
+
+### Optional Props
+
+| Prop | Type | Purpose |
+|---|---|---|
+| `:showHeader` | `boolean` | Show/hide the header section |
+| `:closable` | `boolean` | Show/hide the close button (default `true`) |
+| `:style` | `object` | Set dialog width — e.g. `:style="{ width: '560px' }"` |
+
+### Sizing
+
+Use `:style="{ width: 'Npx' }"` for dialog width. Common sizes:
+- Small dialogs (simple forms): `480px`
+- Medium dialogs (multi-field forms): `560px`
+- Large dialogs (complex content, tables): `600px`–`720px`
+
+### Fullscreen Dialogs
+
+For fullscreen dialogs, use the `maximizable` prop with the `fullscreenInnerWidth` attribute:
+
+```html
+<Dialog :maximizable="true" fullscreenInnerWidth="1024px">
+```
+
+### Common Mistakes
+
+| Mistake | Correct Approach |
+|---|---|
+| Building a custom modal with `div` + backdrop | Use `Dialog` from `primevue/dialog` |
+| Using `Drawer` when a centered modal is needed | Use `Dialog` — Drawer is for side panels |
+| Forgetting `modal` prop | Always set `modal` for backdrop overlay |
+| Forgetting `:draggable="false"` | Always disable dragging |
+| Wrapping footer buttons in a single `justify-end` div | Use two sibling divs: left content (`w-full`) + right buttons (`gap-sm`) |
+| Putting action buttons in the default slot | Use the `#footer` slot for action buttons |
+| Using `@hide` to close | Use `v-model:visible` with a `ref` |
+| Not using `#closeicon` slot | Use `<XMarkIcon />` for the close icon |
+
+## 8. SeverityDialog — Destructive Action Dialogs
+
+`SeverityDialog` is a **Circuit custom component** for risky or destructive actions. It wraps `Dialog` and adds severity-specific styling, message banners, markdown content, and confirmation safeguards. **Always use `SeverityDialog` instead of building custom destructive confirmation dialogs.**
+
+```ts
+import { SeverityDialog } from '@jumpcloud/circuit/components';
+```
+
+### Severity Levels
+
+| Level | Use Case | Safeguards |
+|---|---|---|
+| `sev1` | Standard confirmations | Action + Cancel buttons only |
+| `sev2` | Critical actions with impact warnings | Message banner + Action + Cancel |
+| `sev3` | Irreversible destructive actions | Message banner + confirmation input and/or acknowledgement checkbox |
+
+### Basic Usage (sev1)
+
+```html
+<SeverityDialog
+  v-model:visible="visible"
+  dialogTitle="Confirm Action"
+  variant="sev1"
+  messageTitle="Warning"
+  dialogContent="This will **permanently** remove the resource."
+  actionText="Delete"
+  cancelText="Cancel"
+  @action="handleAction"
+  @cancel="visible = false"
+/>
+```
+
+### With Confirmation Input (sev3)
+
+```html
+<SeverityDialog
+  v-model:visible="visible"
+  dialogTitle="Delete Resource"
+  variant="sev3"
+  messageTitle="Irreversible Action"
+  messageContent="This cannot be undone."
+  :showMessageIcon="true"
+  dialogContent="This will **permanently** delete all associated data."
+  :confirmationValue="'DELETE'"
+  confirmationText="To proceed, enter <value>."
+  acknowledgementText="I understand this action is _irreversible_."
+  actionText="Delete"
+  cancelText="Cancel"
+  @action="handleDelete"
+  @cancel="visible = false"
+/>
+```
+
+### With Loading State (sev2 + actionHandler)
+
+```html
+<SeverityDialog
+  v-model:visible="visible"
+  dialogTitle="Critical Action"
+  variant="sev2"
+  messageTitle="Impact Warning"
+  messageContent="Service impact may extend to other systems."
+  :showMessageIcon="true"
+  :isLoading="isLoading"
+  :actionHandler="handleAction"
+  dialogContent="Please review the **service impact** before continuing."
+  actionText="Proceed"
+  cancelText="Cancel"
+  @cancel="visible = false"
+/>
+```
+
+Use `actionHandler` when you need async behavior. It receives a `close()` callback; return `false` to keep the dialog open and call `close()` manually after async work completes.
+
+## 9. Stepper — Multi-Step Workflows
+
+`Stepper` is a **Circuit custom component** that wraps PrimeVue's Stepper primitive with built-in navigation buttons, state management, and Circuit styling.
+
+```ts
+import { Stepper } from '@jumpcloud/circuit/components';
+import type { StepDefinition } from '@jumpcloud/circuit/components';
+```
+
+### Basic Usage
+
+```vue
+<template>
+  <Stepper
+    :steps="steps"
+    v-model:value="activeStep"
+    @cancel="handleCancel"
+    @save="handleSave"
+  >
+    <template #step-1>
+      <div class="text-body-md text-neutral-base">Step 1 content</div>
+    </template>
+    <template #step-2>
+      <div class="text-body-md text-neutral-base">Step 2 content</div>
+    </template>
+    <template #step-3>
+      <div class="text-body-md text-neutral-base">Step 3 content</div>
+    </template>
+  </Stepper>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { Stepper } from '@jumpcloud/circuit/components';
+
+const activeStep = ref('1');
+const steps = [
+  { value: '1', label: 'Account Setup' },
+  { value: '2', label: 'Profile Details' },
+  { value: '3', label: 'Confirmation' },
+];
+</script>
+```
+
+### Key Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `steps` | `StepDefinition[]` | — | Array of step definitions (required) |
+| `value` | `string \| number` | — | Active step (v-model:value) |
+| `vertical` | `boolean` | `false` | Vertical layout |
+| `linear` | `boolean` | `false` | Sequential-only navigation |
+| `showCancelButton` | `boolean` | `true` | Show Cancel button |
+| `nextDisabled` | `boolean` | `false` | Disable Next/Save button |
+| `outlineButtons` | `boolean` | `false` | Outline variant for nav buttons |
+| `saveLabel` | `string` | `'Save'` | Last step button label |
+
+### With Custom Icons
+
+```ts
+import { CloudArrowUpIcon, CogIcon, ShieldCheckIcon } from '@heroicons/vue/24/outline';
+
+const steps = [
+  { value: '1', label: 'Upload', icon: CloudArrowUpIcon },
+  { value: '2', label: 'Configure', icon: CogIcon },
+  { value: '3', label: 'Deploy', icon: ShieldCheckIcon },
+];
+```
+
+### Built-in Button Behavior
+
+| Step Position | Buttons Shown |
+|---|---|
+| First step | Cancel + Next |
+| Middle steps | Cancel + Previous + Next |
+| Last step | Cancel + Previous + Save |
+
+## 10. Composables
+
+Circuit DS exports composables from `@jumpcloud/circuit/composables`.
+
+| Composable | Purpose |
+|---|---|
+| `useContainer` | Returns `containerElement` ref for MFE-aware overlay mounting. Bind to `appendTo` on Dialog, Popover, Menu, etc. in micro-frontend environments. |
+
+```ts
+import { useContainer } from '@jumpcloud/circuit/composables';
+
+const { containerElement } = useContainer();
+```
+
+```html
+<Dialog :appendTo="containerElement" ... />
+```
+
+## 11. Pre-Implementation Checklist
 
 Before writing any UI code, always:
 1. Look up current Circuit typography tokens from the Tailwind preset.
@@ -155,3 +566,5 @@ Before writing any UI code, always:
 4. If no custom component exists, check `primevue-primitives/` for a PT-styled primitive.
 5. If implementing from Figma, check Code Connect first via the MCP server.
 6. If no matching component exists in Circuit DS at all, ask the user before creating a new one.
+7. For destructive actions, use `SeverityDialog` — never build custom confirmation dialogs.
+8. For multi-step workflows, use `Stepper` — never build custom step indicators.

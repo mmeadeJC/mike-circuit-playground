@@ -9,6 +9,7 @@ import {
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
+import Divider from 'primevue/divider';
 
 import {
   RocketLaunchIcon,
@@ -26,7 +27,6 @@ import {
   ArrowTopRightOnSquareIcon,
   ArrowTopRightOnSquareIcon as LearnMoreIcon,
   SparklesIcon,
-  ArrowPathIcon,
   ChevronRightIcon,
 } from '@heroicons/vue/24/outline';
 
@@ -41,6 +41,7 @@ import {
   SsoIcon,
   SaasManagementIcon,
   PasswordManagerIcon,
+  AiAgentIcon,
 } from '@jumpcloud/icons';
 
 const menuItems = [
@@ -147,6 +148,7 @@ const AiSettingsOptionB = defineComponent({
     AppNavigation,
     PvButton: Button,
     PvTag: Tag,
+    PvDivider: Divider,
     TopBar,
     PageHeader,
     ConfigPageLayout,
@@ -154,11 +156,12 @@ const AiSettingsOptionB = defineComponent({
     ToggleSwitch,
     MessageNotification,
     SparklesIcon,
-    ArrowPathIcon,
     ChevronRightIcon,
+    AiAgentIcon,
   },
   setup() {
     const activeTab = ref('Administrators');
+    const sectionCollapsed = ref(false);
 
     const featureStates = ref({
       assistant: true,
@@ -183,7 +186,6 @@ const AiSettingsOptionB = defineComponent({
         name: 'AI Search',
         isPreview: false,
         description: 'No Customer Data is used to train internal or external AI models. Only the text of your search or question is processed by Google Gemini to create the query that generates the output provided by JumpCloud AI Search.',
-        recommendation: 'Enable System Insights for optimal results.',
       },
       {
         id: 'commands',
@@ -220,16 +222,6 @@ const AiSettingsOptionB = defineComponent({
       showUndoToast.value = true;
     };
 
-    const resetToRecommended = () => {
-      previousStates.value = { ...featureStates.value };
-      featureStates.value.assistant = true;
-      featureStates.value.search = true;
-      featureStates.value.commands = true;
-      featureStates.value.mcp = true;
-      undoAction.value = 'Reset to recommended defaults.';
-      showUndoToast.value = true;
-    };
-
     const undo = () => {
       if (previousStates.value) {
         featureStates.value = { ...previousStates.value } as typeof featureStates.value;
@@ -253,9 +245,9 @@ const AiSettingsOptionB = defineComponent({
     watch(featureStates, () => { hasUnsavedChanges.value = true; }, { deep: true });
 
     return {
-      menuItems, profileMenuItems, settingsTabs, activeTab,
+      menuItems, profileMenuItems, settingsTabs, activeTab, sectionCollapsed,
       featureStates, features, enabledCount, totalCount,
-      enableAll, disableAll, resetToRecommended, undo, dismissToast,
+      enableAll, disableAll, undo, dismissToast,
       showUndoToast, undoAction, toggleFeature,
       hasUnsavedChanges,
     };
@@ -281,82 +273,77 @@ const AiSettingsOptionB = defineComponent({
         <ConfigPageLayout class="w-full! h-full!" maxWidth="1024">
           <div class="flex flex-col gap-6">
 
-            <!-- Section header with bulk actions -->
-            <div class="flex flex-col gap-1">
-              <div class="flex items-center justify-between">
-                <h2 class="text-heading-2 text-neutral-base">JumpCloud AI</h2>
-                <div class="flex items-center gap-2">
-                  <PvButton
-                    label="Reset to recommended"
-                    severity="secondary"
-                    variant="text"
-                    size="small"
-                    @click="resetToRecommended"
-                  >
-                    <template #icon>
-                      <ArrowPathIcon class="w-4 h-4" />
-                    </template>
-                  </PvButton>
-                  <PvButton
-                    label="Disable all"
-                    severity="secondary"
-                    variant="outlined"
-                    size="small"
-                    :disabled="enabledCount === 0"
-                    @click="disableAll"
-                  />
-                  <PvButton
-                    label="Enable all"
-                    severity="primary"
-                    size="small"
-                    :disabled="enabledCount === totalCount"
-                    @click="enableAll"
-                  />
+            <CollapsiblePanel
+              v-model:collapsed="sectionCollapsed"
+              toggleable
+              header="JumpCloud AI"
+            >
+              <template #titleicon="iconProps">
+                <AiAgentIcon :class="iconProps.class" />
+              </template>
+              <template #toggleicon="iconProps">
+                <ChevronRightIcon :class="iconProps.class" />
+              </template>
+              <template #actions>
+                <span class="text-body-sm text-neutral-subtle flex items-center">{{ enabledCount }} of {{ totalCount }} enabled</span>
+                <PvButton
+                  label="Disable all"
+                  severity="secondary"
+                  variant="outlined"
+                  size="small"
+                  :disabled="enabledCount === 0"
+                  @click.stop="disableAll"
+                />
+                <PvButton
+                  label="Enable all"
+                  severity="primary"
+                  size="small"
+                  :disabled="enabledCount === totalCount"
+                  @click.stop="enableAll"
+                />
+              </template>
+
+              <div class="flex flex-col gap-3">
+                <p class="text-body-md text-neutral-subtle">
+                  Centralized control for all AI-related capabilities within the JumpCloud platform.
+                  This section governs how AI is used to enhance platform intelligence, improve workflows, and support administrative operations.
+                </p>
+
+                <!-- Undo notification -->
+                <MessageNotification v-if="showUndoToast" severity="info" :title="undoAction">
+                  <template #actions>
+                    <PvButton label="Undo" severity="secondary" variant="outlined" size="small" @click="undo" />
+                    <PvButton label="Dismiss" severity="secondary" variant="text" size="small" @click="dismissToast" />
+                  </template>
+                </MessageNotification>
+
+                <PvDivider />
+
+                <!-- Feature items separated by dividers -->
+                <div class="flex flex-col">
+                  <template v-for="(feature, index) in features" :key="feature.id">
+                    <PvDivider v-if="index > 0" />
+                    <div class="flex items-start justify-between gap-4 py-3">
+                      <div class="flex flex-col gap-1 flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                          <span class="text-heading-4 text-neutral-base">{{ feature.name }}</span>
+                          <PvTag v-if="feature.isPreview" value="PREVIEW" severity="info" />
+                        </div>
+                        <p class="text-body-md text-neutral-subtle">{{ feature.description }}</p>
+                      </div>
+                      <div class="flex items-center gap-3 shrink-0">
+                        <PvButton label="Learn More" variant="text" severity="secondary" size="small" />
+                        <div class="border-l border-neutral-default_solid h-5"></div>
+                        <ToggleSwitch
+                          :modelValue="featureStates[feature.id]"
+                          @update:modelValue="toggleFeature(feature.id)"
+                        />
+                      </div>
+                    </div>
+                  </template>
                 </div>
               </div>
-              <p class="text-body-md text-neutral-subtle">
-                Centralized control for all AI-related capabilities within the JumpCloud platform.
-                This section governs how AI is used to enhance platform intelligence, improve workflows, and support administrative operations.
-              </p>
-            </div>
-
-            <!-- Undo notification -->
-            <MessageNotification v-if="showUndoToast" severity="info" :title="undoAction">
-              <template #actions>
-                <PvButton label="Undo" severity="secondary" variant="outlined" size="small" @click="undo" />
-                <PvButton label="Dismiss" severity="secondary" variant="text" size="small" @click="dismissToast" />
-              </template>
-            </MessageNotification>
-
-            <!-- Feature cards -->
-            <div class="flex flex-col gap-4">
-              <CollapsiblePanel
-                v-for="feature in features"
-                :key="feature.id"
-                :header="feature.name"
-                :toggleable="true"
-              >
-                <template #toggleicon="iconProps">
-                  <ChevronRightIcon :class="iconProps.class" />
-                </template>
-                <template #actions>
-                  <PvTag v-if="feature.isPreview" value="PREVIEW" severity="info" />
-                  <ToggleSwitch
-                    :modelValue="featureStates[feature.id]"
-                    @update:modelValue="toggleFeature(feature.id)"
-                    @click.stop
-                  />
-                  <PvButton label="Learn More" variant="outlined" severity="secondary" size="small" />
-                </template>
-                <div class="flex flex-col gap-3">
-                  <p class="text-body-md text-neutral-subtle">{{ feature.description }}</p>
-                  <div v-if="feature.recommendation" class="flex flex-col gap-1">
-                    <p class="text-body-md-semi-bold text-neutral-base">Recommended:</p>
-                    <p class="text-body-md text-neutral-subtle">{{ feature.recommendation }}</p>
-                  </div>
-                </div>
-              </CollapsiblePanel>
-            </div>
+            </CollapsiblePanel>
 
           </div>
         </ConfigPageLayout>

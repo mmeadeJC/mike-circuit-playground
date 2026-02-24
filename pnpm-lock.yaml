@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@jumpcloud/circuit':
-    specifier: ^0.0.95
-    version: 0.0.95(primevue@4.5.4)(tailwindcss@4.1.18)(vue@3.5.28)
+    specifier: link:/Users/burak.basci/Development/jumpcloud-common-ui/packages/circuit
+    version: link:../jumpcloud-common-ui/packages/circuit
   '@jumpcloud/icons':
     specifier: ^0.0.4
     version: 0.0.4(vue@3.5.28)
@@ -362,37 +362,8 @@ packages:
       '@jridgewell/sourcemap-codec': 1.5.5
     dev: true
 
-  /@jumpcloud/circuit@0.0.95(primevue@4.5.4)(tailwindcss@4.1.18)(vue@3.5.28):
-    resolution: {integrity: sha512-4fM3YncGZsNAK9pwn4IGm2zA2b304rtyOZe+WOQreV2sfRExxJVhYuMzAeYG3C2v0OTy8oKlPgGkqir822ITvQ==}
-    peerDependencies:
-      primevue: ^4.3.9
-      tailwindcss: ^4.1.3
-      vue: ^3.5.0
-    peerDependenciesMeta:
-      primevue:
-        optional: true
-      vue:
-        optional: true
-    dependencies:
-      '@jumpcloud/icons': 0.0.9(vue@3.5.28)
-      primevue: 4.5.4(vue@3.5.28)
-      tailwindcss: 4.1.18
-      vue: 3.5.28(typescript@5.8.3)
-    dev: false
-
   /@jumpcloud/icons@0.0.4(vue@3.5.28):
     resolution: {integrity: sha512-JzbufDpFRkj4/Wk6Vl5P41WMy0K6HNdcnvTTHOT6aRKw9BRWvVwASUNXFwnSr4UHpmwQQC34F5H7hfKy1ZHnQA==}
-    peerDependencies:
-      vue: ^3.5.0
-    peerDependenciesMeta:
-      vue:
-        optional: true
-    dependencies:
-      vue: 3.5.28(typescript@5.8.3)
-    dev: false
-
-  /@jumpcloud/icons@0.0.9(vue@3.5.28):
-    resolution: {integrity: sha512-bXipGd0004lgpezXl6yIbZGL1vXtTJW9lYI+47OUvyfmSKo+tWw6tRf76XwpD/NufMO5+Js0nY9FoMQafUcZMw==}
     peerDependencies:
       vue: ^3.5.0
     peerDependenciesMeta:
@@ -966,7 +937,7 @@ packages:
       ts-dedent: 2.2.0
       type-fest: 2.19.0
       vue: 3.5.28(typescript@5.8.3)
-      vue-component-type-helpers: 3.2.4
+      vue-component-type-helpers: 3.2.5
     dev: true
 
   /@tailwindcss/node@4.1.18:
@@ -2209,6 +2180,7 @@ packages:
 
   /tailwindcss@4.1.18:
     resolution: {integrity: sha512-4+Z+0yiYyEtUVCScyfHCxOYP06L5Ne+JiHhY2IjR2KWMIWhJOYZKLSGZaP5HkZ8+bY0cxfzwDE5uOmzFXyIwxw==}
+    dev: true
 
   /tapable@2.3.0:
     resolution: {integrity: sha512-g9ljZiwki/LfxmQADO3dEY1CbpmXT5Hm2fJ+QaGKwSXUylMybePR7/67YW7jOrrvjEgL1Fmz5kzyAjWVWLlucg==}
@@ -2355,8 +2327,8 @@ packages:
     resolution: {integrity: sha512-YbGqHZ5/eW4SnkPNR44mKVc6ZKQoRs/Rux1sxC6rdwXb4qpbOSYfDr9DsTHolOTGmIKgM9j141mZbBeg05R1pw==}
     dev: true
 
-  /vue-component-type-helpers@3.2.4:
-    resolution: {integrity: sha512-05lR16HeZDcDpB23ku5b5f1fBOoHqFnMiKRr2CiEvbG5Ux4Yi0McmQBOET0dR0nxDXosxyVqv67q6CzS3AK8rw==}
+  /vue-component-type-helpers@3.2.5:
+    resolution: {integrity: sha512-tkvNr+bU8+xD/onAThIe7CHFvOJ/BO6XCOrxMzeytJq40nTfpGDJuVjyCM8ccGZKfAbGk2YfuZyDMXM56qheZQ==}
     dev: true
 
   /vue-docgen-api@4.79.2(vue@3.5.28):

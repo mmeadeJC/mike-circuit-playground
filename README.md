@@ -1,5 +1,7 @@
 # Circuit Playground
 
+**Circuit Design System — Version 0.0.99**
+
 A Storybook-based sandbox for experimenting with the **JumpCloud Circuit Design System**, prototyping pages with real code, and leveraging the **Figma MCP server** in Cursor to translate designs into production-quality Vue components.
 
 ## What This Repo Is For

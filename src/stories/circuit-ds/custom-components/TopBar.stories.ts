@@ -20,6 +20,14 @@ const meta: Meta<typeof TopBar> = {
       control: 'boolean',
       description: 'Show the AI search icon in the search area',
     },
+    showBackButton: {
+      control: 'boolean',
+      description: 'Show a back button with divider for nested pages',
+    },
+    backButtonLabel: {
+      control: 'text',
+      description: 'Label for the back button',
+    },
   },
 };
 
@@ -28,3 +36,10 @@ export default meta;
 type Story = StoryObj<typeof TopBar>;
 
 export const Default: Story = {};
+
+export const WithBackButton: Story = {
+  args: {
+    showBackButton: true,
+    backButtonLabel: 'Back',
+  },
+};

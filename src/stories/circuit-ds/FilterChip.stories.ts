@@ -26,23 +26,23 @@ export const Default: Story = {
 
 export const Removable: Story = {
   args: {
-    chipKey: 'Role',
+    chipKey: 'Status',
     operator: 'is',
-    value: 'Admin',
+    value: 'Active',
     removable: true,
   },
 };
 
 export const Disabled: Story = {
   args: {
-    chipKey: 'Department',
-    operator: 'contains',
-    value: 'Engineering',
+    chipKey: 'Status',
+    operator: 'is',
+    value: 'Active',
     disabled: true,
   },
 };
 
-export const Small: Story = {
+export const CompactSize: Story = {
   args: {
     chipKey: 'Status',
     operator: 'is',

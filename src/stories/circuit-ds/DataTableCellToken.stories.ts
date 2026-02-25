@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/vue3';
 import { DataTableCellToken } from '@jumpcloud/circuit/components';
 
 const meta: Meta<typeof DataTableCellToken> = {
-  title: 'Circuit DS/Data Table/DataTableCellToken',
+  title: 'Circuit DS/Components/DataTableCellToken',
   component: DataTableCellToken,
   tags: ['autodocs'],
   argTypes: {
@@ -15,57 +15,42 @@ export default meta;
 
 type Story = StoryObj<typeof DataTableCellToken>;
 
-export const Status: Story = {
+export const StatusType: Story = {
   args: {
     type: 'Status',
     statusLabel: 'Active',
   },
 };
 
-export const Tags: Story = {
+export const TagsType: Story = {
   args: {
     type: 'Tags',
-    tags: [
-      { label: 'Engineering' },
-      { label: 'Frontend' },
-      { label: 'Remote' },
-      { label: 'Full-time' },
-    ],
+    tags: ['Tag 01', 'Tag 02', 'Tag 03', 'Tag 04', 'Tag 05'],
     maxVisibleTags: 3,
   },
 };
 
-export const Chips: Story = {
+export const ChipsType: Story = {
   args: {
     type: 'Chips',
-    chips: [
-      { label: 'macOS' },
-      { label: 'Windows' },
-      { label: 'Linux' },
-    ],
+    chips: ['Chip 01', 'Chip 02', 'Chip 03'],
     maxVisibleChips: 3,
   },
 };
 
-export const TagsOverflow: Story = {
-  args: {
-    type: 'Tags',
-    tags: [
-      { label: 'Engineering' },
-      { label: 'Frontend' },
-      { label: 'Backend' },
-      { label: 'DevOps' },
-      { label: 'Design' },
-      { label: 'QA' },
-    ],
-    maxVisibleTags: 2,
-  },
-};
-
-export const Small: Story = {
+export const SmallStatus: Story = {
   args: {
     type: 'Status',
     statusLabel: 'Active',
+    size: 'small',
+  },
+};
+
+export const SmallTags: Story = {
+  args: {
+    type: 'Tags',
+    tags: ['Tag 01', 'Tag 02', 'Tag 03'],
+    maxVisibleTags: 3,
     size: 'small',
   },
 };

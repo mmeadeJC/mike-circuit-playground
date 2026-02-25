@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
-import { DataTableCellText } from '@jumpcloud/circuit/components';
-import { ComputerDesktopIcon } from '@heroicons/vue/24/outline';
 import { markRaw } from 'vue';
+import { DataTableCellText } from '@jumpcloud/circuit/components';
+import { DevicePhoneMobileIcon } from '@heroicons/vue/24/outline';
 
 const meta: Meta<typeof DataTableCellText> = {
-  title: 'Circuit DS/Data Table/DataTableCellText',
+  title: 'Circuit DS/Components/DataTableCellText',
   component: DataTableCellText,
   tags: ['autodocs'],
   argTypes: {
@@ -16,41 +16,38 @@ export default meta;
 
 type Story = StoryObj<typeof DataTableCellText>;
 
-export const Default: Story = {
+export const LabelOnly: Story = {
   args: {
-    label: 'MacBook Pro 16"',
+    label: 'Label Cell',
   },
 };
 
-export const WithDescription: Story = {
+export const LabelWithIcon: Story = {
   args: {
-    label: 'MacBook Pro 16"',
-    description: 'Serial: C02ZN1ABCD',
+    label: 'Label Cell',
+    icon: markRaw(DevicePhoneMobileIcon),
   },
 };
 
-export const WithIcon: Story = {
+export const LabelWithDescription: Story = {
   args: {
-    label: 'MacBook Pro 16"',
-    description: 'Serial: C02ZN1ABCD',
-    icon: markRaw(ComputerDesktopIcon),
+    label: 'Label Cell',
+    description: 'Description text below the label',
   },
 };
 
-export const WithImage: Story = {
+export const LabelWithIconAndDescription: Story = {
   args: {
-    label: 'MacBook Pro 16"',
-    description: 'Serial: C02ZN1ABCD',
-    image: 'https://i.pravatar.cc/56',
-    imageAlt: 'Device image',
+    label: 'Label Cell',
+    description: 'Description text below the label',
+    icon: markRaw(DevicePhoneMobileIcon),
   },
 };
 
-export const Small: Story = {
+export const SmallSize: Story = {
   args: {
-    label: 'MacBook Pro 16"',
-    description: 'Serial: C02ZN1ABCD',
-    icon: markRaw(ComputerDesktopIcon),
+    label: 'Label Cell',
+    icon: markRaw(DevicePhoneMobileIcon),
     size: 'small',
   },
 };

@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
+import { ref, markRaw } from 'vue';
 import { PageHeader } from '@jumpcloud/circuit/components';
-import { Cog6ToothIcon } from '@heroicons/vue/24/outline';
-import { markRaw } from 'vue';
+import Button from 'primevue/button';
+import { ServerIcon } from '@heroicons/vue/24/outline';
 
 const meta: Meta<typeof PageHeader> = {
   title: 'Circuit DS/Components/PageHeader',
@@ -20,62 +21,67 @@ export default meta;
 type Story = StoryObj<typeof PageHeader>;
 
 const sampleTabs = [
-  { label: 'Overview', value: 'overview' },
-  { label: 'Settings', value: 'settings' },
-  { label: 'Members', value: 'members' },
-  { label: 'Activity', value: 'activity', disabled: true },
-];
-
-const sampleDropdownItems = [
-  { label: 'Edit', value: 'edit' },
-  { label: 'Duplicate', value: 'duplicate' },
-  { label: 'Delete', value: 'delete' },
+  { label: 'Tab 1', value: 'tab1' },
+  { label: 'Tab 2', value: 'tab2' },
+  { label: 'Tab 3', value: 'tab3' },
 ];
 
 export const Default: Story = {
   args: {
-    title: 'Users',
+    title: 'Page Title',
   },
 };
 
 export const WithSubtitle: Story = {
   args: {
-    title: 'Users',
-    subtitleText: 'Manage all users in your organization',
+    title: 'Page Title',
+    subtitleText: 'Page description',
   },
 };
 
 export const WithIcon: Story = {
   args: {
-    title: 'Settings',
-    subtitleText: 'Configure your workspace',
-    icon: markRaw(Cog6ToothIcon),
+    title: 'Page Title',
+    icon: markRaw(ServerIcon),
+  },
+};
+
+export const WithActions: Story = {
+  render: (args) => ({
+    components: { PageHeader, Button },
+    setup() {
+      return { args };
+    },
+    template: `
+      <PageHeader v-bind="args">
+        <template #actions>
+          <Button label="Secondary" severity="secondary" variant="outlined" />
+          <Button label="Primary" />
+        </template>
+      </PageHeader>
+    `,
+  }),
+  args: {
+    title: 'Page Title',
   },
 };
 
 export const WithTabs: Story = {
+  render: (args) => ({
+    components: { PageHeader },
+    setup() {
+      const activeTab = ref('tab1');
+      return { args, activeTab, sampleTabs };
+    },
+    template: `
+      <PageHeader
+        v-bind="args"
+        :tabs="sampleTabs"
+        v-model:activeTab="activeTab"
+      />
+    `,
+  }),
   args: {
-    title: 'Device Policies',
-    tabs: sampleTabs,
-    activeTab: 'overview',
-  },
-};
-
-export const WithDropdown: Story = {
-  args: {
-    title: 'User Details',
-    subtitleText: 'alice@example.com',
-    dropdownItems: sampleDropdownItems,
-  },
-};
-
-export const FullFeatured: Story = {
-  args: {
-    title: 'Device Policies',
-    subtitleText: '12 policies configured',
-    icon: markRaw(Cog6ToothIcon),
-    tabs: sampleTabs,
-    activeTab: 'overview',
-    dropdownItems: sampleDropdownItems,
+    title: 'Page Title',
   },
 };

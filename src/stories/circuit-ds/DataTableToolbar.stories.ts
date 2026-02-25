@@ -20,37 +20,6 @@ export default meta;
 
 type Story = StoryObj<typeof DataTableToolbar>;
 
-const sampleColumns = [
-  { id: 'name', label: 'Name', visible: true, fixed: true },
-  { id: 'email', label: 'Email', visible: true },
-  { id: 'role', label: 'Role', visible: true },
-  { id: 'status', label: 'Status', visible: true },
-  { id: 'department', label: 'Department', visible: false },
-  { id: 'location', label: 'Location', visible: false },
-];
-
-const sampleExportOptions = [
-  { id: 'csv', label: 'Export as CSV' },
-  { id: 'json', label: 'Export as JSON' },
-  { id: 'pdf', label: 'Export as PDF' },
-];
-
-const sampleSavedViews = [
-  { id: '1', label: 'Active Users', isFavorite: true },
-  { id: '2', label: 'Admins Only', isFavorite: false },
-  { id: '3', label: 'Recent Signups', isFavorite: false },
-];
-
-const sampleDefaultViews = [
-  { id: 'default-all', label: 'All Users', editable: false, deletable: false },
-  { id: 'default-active', label: 'Active', editable: false, deletable: false },
-];
-
-const sampleActiveFilters = [
-  { key: 'Status', operator: 'is', value: 'Active' },
-  { key: 'Role', operator: 'is', value: 'Admin' },
-];
-
 export const Default: Story = {
   args: {
     searchPlaceholder: 'Search users...',
@@ -63,63 +32,28 @@ export const Default: Story = {
   },
 };
 
-export const WithColumns: Story = {
+export const WithAddButton: Story = {
   args: {
-    searchPlaceholder: 'Search users...',
-    showColumnsButton: true,
-    columns: sampleColumns,
-    maxFixedColumns: 2,
-  },
-};
-
-export const WithExport: Story = {
-  args: {
-    searchPlaceholder: 'Search...',
-    showDownloadButton: true,
-    exportOptions: sampleExportOptions,
-  },
-};
-
-export const WithSavedViews: Story = {
-  args: {
-    searchPlaceholder: 'Search...',
-    savedViews: sampleSavedViews,
-    defaultViews: sampleDefaultViews,
-    selectedViewId: 'default-all',
-    showAddNewView: true,
-  },
-};
-
-export const WithActiveFilters: Story = {
-  args: {
-    searchPlaceholder: 'Search users...',
-    showFilterButton: true,
-    activeFilters: sampleActiveFilters,
-    maxVisibleFilters: 5,
-  },
-};
-
-export const FullFeatured: Story = {
-  args: {
-    searchPlaceholder: 'Search users...',
+    searchPlaceholder: 'Search assets...',
     showAddButton: true,
-    addButtonLabel: 'Add User',
+    addButtonLabel: 'Add Asset',
     showFilterButton: true,
     showRefreshButton: true,
-    showColumnsButton: true,
-    showDownloadButton: true,
-    columns: sampleColumns,
-    maxFixedColumns: 2,
-    exportOptions: sampleExportOptions,
-    savedViews: sampleSavedViews,
-    defaultViews: sampleDefaultViews,
-    selectedViewId: 'default-all',
-    showAddNewView: true,
-    activeFilters: sampleActiveFilters,
   },
 };
 
-export const Small: Story = {
+export const SearchOnly: Story = {
+  args: {
+    searchPlaceholder: 'Search...',
+    showAddButton: false,
+    showFilterButton: false,
+    showRefreshButton: true,
+    showColumnsButton: false,
+    showDownloadButton: false,
+  },
+};
+
+export const SmallSize: Story = {
   args: {
     size: 'small',
     searchPlaceholder: 'Search...',
@@ -130,11 +64,13 @@ export const Small: Story = {
   },
 };
 
-export const Loading: Story = {
+export const Minimal: Story = {
   args: {
-    loading: true,
     searchPlaceholder: 'Search...',
-    showAddButton: true,
-    showFilterButton: true,
+    showAddButton: false,
+    showFilterButton: false,
+    showColumnsButton: false,
+    showDownloadButton: false,
+    showRefreshButton: true,
   },
 };

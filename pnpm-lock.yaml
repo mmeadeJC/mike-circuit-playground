@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@jumpcloud/circuit':
-    specifier: link:/Users/burak.basci/Development/jumpcloud-common-ui/packages/circuit
-    version: link:../jumpcloud-common-ui/packages/circuit
+    specifier: ^0.0.100
+    version: 0.0.100(primevue@4.5.4)(tailwindcss@4.1.18)(vue@3.5.28)
   '@jumpcloud/icons':
     specifier: ^0.0.4
     version: 0.0.4(vue@3.5.28)
@@ -362,8 +362,38 @@ packages:
       '@jridgewell/sourcemap-codec': 1.5.5
     dev: true
 
+  /@jumpcloud/circuit@0.0.100(primevue@4.5.4)(tailwindcss@4.1.18)(vue@3.5.28):
+    resolution: {integrity: sha512-tTzN78Q5QyhyI/pAy+DTQ3lepqs+dO882F+CCb1jD/Bqljhc0BckC1yUq/CJloq3DSUUYWMS8iHdfxv1LVcKKQ==}
+    peerDependencies:
+      primevue: ^4.3.9
+      tailwindcss: ^4.1.3
+      vue: ^3.5.0
+    peerDependenciesMeta:
+      primevue:
+        optional: true
+      vue:
+        optional: true
+    dependencies:
+      '@jumpcloud/icons': 0.0.9(vue@3.5.28)
+      dompurify: 3.3.1
+      primevue: 4.5.4(vue@3.5.28)
+      tailwindcss: 4.1.18
+      vue: 3.5.28(typescript@5.8.3)
+    dev: false
+
   /@jumpcloud/icons@0.0.4(vue@3.5.28):
     resolution: {integrity: sha512-JzbufDpFRkj4/Wk6Vl5P41WMy0K6HNdcnvTTHOT6aRKw9BRWvVwASUNXFwnSr4UHpmwQQC34F5H7hfKy1ZHnQA==}
+    peerDependencies:
+      vue: ^3.5.0
+    peerDependenciesMeta:
+      vue:
+        optional: true
+    dependencies:
+      vue: 3.5.28(typescript@5.8.3)
+    dev: false
+
+  /@jumpcloud/icons@0.0.9(vue@3.5.28):
+    resolution: {integrity: sha512-bXipGd0004lgpezXl6yIbZGL1vXtTJW9lYI+47OUvyfmSKo+tWw6tRf76XwpD/NufMO5+Js0nY9FoMQafUcZMw==}
     peerDependencies:
       vue: ^3.5.0
     peerDependenciesMeta:
@@ -1109,6 +1139,12 @@ packages:
       csstype: 3.2.3
     dev: true
 
+  /@types/trusted-types@2.0.7:
+    resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
+    requiresBuild: true
+    dev: false
+    optional: true
+
   /@types/uuid@9.0.8:
     resolution: {integrity: sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==}
     dev: true
@@ -1418,6 +1454,12 @@ packages:
   /doctypes@1.1.0:
     resolution: {integrity: sha512-LLBi6pEqS6Do3EKQ3J0NqHWV5hhb78Pi8vvESYwyOy2c31ZEZVdtitdzsQsKb7878PEERhzUk0ftqGhG6Mz+pQ==}
     dev: true
+
+  /dompurify@3.3.1:
+    resolution: {integrity: sha512-qkdCKzLNtrgPFP1Vo+98FRzJnBRGe4ffyCea9IwHB1fyxPOeNTHpLKYGd4Uk9xvNoH0ZoOjwZxNptyMwqrId1Q==}
+    optionalDependencies:
+      '@types/trusted-types': 2.0.7
+    dev: false
 
   /dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -2180,7 +2222,6 @@ packages:
 
   /tailwindcss@4.1.18:
     resolution: {integrity: sha512-4+Z+0yiYyEtUVCScyfHCxOYP06L5Ne+JiHhY2IjR2KWMIWhJOYZKLSGZaP5HkZ8+bY0cxfzwDE5uOmzFXyIwxw==}
-    dev: true
 
   /tapable@2.3.0:
     resolution: {integrity: sha512-g9ljZiwki/LfxmQADO3dEY1CbpmXT5Hm2fJ+QaGKwSXUylMybePR7/67YW7jOrrvjEgL1Fmz5kzyAjWVWLlucg==}

@@ -28,11 +28,3 @@ export const ExternalLink: Story = {
     target: '_blank',
   },
 };
-
-export const CustomClass: Story = {
-  args: {
-    label: 'Custom styled link',
-    href: '#',
-    customClass: 'text-body-md',
-  },
-};

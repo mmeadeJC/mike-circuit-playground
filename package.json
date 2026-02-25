@@ -10,7 +10,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@jumpcloud/circuit": "link:/Users/burak.basci/Development/jumpcloud-common-ui/packages/circuit",
+    "@jumpcloud/circuit": "^0.0.100",
     "@jumpcloud/icons": "^0.0.4",
     "primevue": "^4.4.0",
     "vue": "^3.5.13"

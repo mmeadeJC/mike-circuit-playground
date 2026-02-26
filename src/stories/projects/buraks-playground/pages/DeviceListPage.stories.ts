@@ -80,7 +80,7 @@ const menuItems = [
       { separator: true },
       { label: 'Policy Management' },
       { label: 'Policy Groups' },
-      { label: 'Software Deployment' },
+      { label: 'Software Management' },
       { label: 'MDM' },
     ],
   },

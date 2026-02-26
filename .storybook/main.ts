@@ -13,7 +13,7 @@ const config: StorybookConfig = {
     },
   },
   viteFinal: (config) => {
-    config.base = '/circuit-playground/';
+    config.base = './';
     return config;
   },
 };

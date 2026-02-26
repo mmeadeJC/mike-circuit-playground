@@ -8,8 +8,6 @@ import {
   DataTableToolbar,
   DataTableCellLink,
   DataTableCellText,
-  DataTableCellToken,
-  DataTableCellButton,
   FormField,
   ToggleSwitch,
   CheckboxWithLabel,
@@ -48,13 +46,10 @@ import {
   CpuChipIcon,
   CurrencyDollarIcon,
   ClockIcon,
-  LinkIcon,
   DocumentTextIcon,
-  ArrowPathIcon,
   AdjustmentsHorizontalIcon,
   TrashIcon,
   PencilIcon,
-  MapPinIcon,
   ExclamationTriangleIcon,
   XMarkIcon,
   EllipsisHorizontalIcon,
@@ -62,7 +57,6 @@ import {
   MinusCircleIcon,
   ListBulletIcon,
   PlusIcon,
-  ArrowUpTrayIcon,
 } from '@heroicons/vue/24/outline';
 
 import TopBar from '../../../../components/TopBar.vue';
@@ -455,8 +449,8 @@ const StatusCell = markRaw(defineComponent({
         'Repair': 'warn', 'Maintenance': 'warn', 'Lost': 'danger',
       };
       return h('div', { class: 'flex items-center gap-1 p-2 min-h-12' }, [
-        h(Tag, { severity: severityMap[status] || 'info', class: 'shrink-0' }, {
-          default: () => status?.toUpperCase(),
+        h(Tag, { severity: severityMap[status] || 'info', class: 'shrink-0 !normal-case' }, {
+          default: () => status,
         }),
       ]);
     };
@@ -477,9 +471,9 @@ const AcknowledgedCell = markRaw(defineComponent({
         Denied: XCircleIcon, 'Not Requested': MinusCircleIcon,
       };
       return h('div', { class: 'flex items-center gap-1 p-2 min-h-12' }, [
-        h(Tag, { severity: severityMap[ack] || 'info', class: 'shrink-0' }, {
+        h(Tag, { severity: severityMap[ack] || 'info', class: 'shrink-0 !normal-case' }, {
           icon: () => h(iconMap[ack] || MinusCircleIcon, { class: 'size-4' }),
-          default: () => ack?.toUpperCase(),
+          default: () => ack,
         }),
       ]);
     };
@@ -793,6 +787,10 @@ const AdminAssetManagementPage = defineComponent({
     TrashIcon,
     PlusIcon,
     EllipsisHorizontalIcon,
+    CheckCircleIcon,
+    ExclamationTriangleIcon,
+    XCircleIcon,
+    MinusCircleIcon,
   },
   setup() {
     // ─── View State ───
@@ -838,7 +836,7 @@ const AdminAssetManagementPage = defineComponent({
 
     // ─── Collapsed Panel State ───
     const assetDetailsCollapsed = ref(false);
-    const ackPanelCollapsed = ref(false);
+    const ackPanelCollapsed = ref(true);
     const purchaseDetailsCollapsed = ref(false);
     const hardwareSpecCollapsed = ref(false);
 
@@ -1101,32 +1099,21 @@ const AdminAssetManagementPage = defineComponent({
         <TopBar v-if="currentView === 'list'" />
         <TopBar v-else showBackButton backButtonLabel="Asset Management" @back="backToList" />
 
-        <!-- Style for inline tag -->
-        <component :is="'style'">
-          .page-header-inline-tag .min-w-0.flex-1.flex-col {
-            flex-direction: row !important;
-            align-items: center !important;
-          }
-          .page-header-inline-tag .min-w-0.flex-1.flex-col .min-h-5 {
-            min-height: 0 !important;
-          }
-        </component>
-
         <!-- PageHeader -->
         <PageHeader
           :title="pageTitle"
           :icon="pageIcon"
           :tabs="pageTabs"
           :activeTab="activeTab"
-          :subtitleText="currentView === 'detail' && selectedAsset ? selectedAsset.assetTag : undefined"
-          :class="{ 'page-header-inline-tag': currentView === 'detail' }"
           @update:activeTab="handleTabChange"
         >
           <template v-if="currentView === 'detail' && selectedAsset" #subtitle>
-            <PvTag
-              :value="selectedAsset.status.toUpperCase()"
-              :severity="{ 'In Use': 'success', 'Ready': 'info', 'Retired': 'secondary', 'Repair': 'warn', 'Maintenance': 'warn', 'Lost': 'danger' }[selectedAsset.status]"
-            />
+            <div class="flex items-center">
+              <PvTag :value="selectedAsset.assetTag" severity="secondary" class="!normal-case" />
+              <PvDivider layout="vertical" class="my-0!" />
+              <span class="text-body-sm text-neutral-subtle">Serial Number&nbsp;</span>
+              <span class="text-body-sm text-neutral-base">{{ selectedAsset.serialNumber }}</span>
+            </div>
           </template>
           <template #actions>
             <template v-if="currentView === 'list'">
@@ -1286,16 +1273,22 @@ const AdminAssetManagementPage = defineComponent({
                 <div class="flex flex-col gap-4">
                   <div class="grid grid-cols-2 gap-x-6 gap-y-4">
                     <DetailsKeyValue label="Name" :value="selectedAsset.deviceName" />
-                    <DetailsKeyValue label="Status" :value="selectedAsset.status" />
+                    <DetailsKeyValue label="Status">
+                      <PvTag :value="selectedAsset.status" :severity="{ 'In Use': 'success', 'Ready': 'info', 'Retired': 'secondary', 'Repair': 'warn', 'Maintenance': 'warn', 'Lost': 'danger' }[selectedAsset.status] || 'info'" class="!normal-case" />
+                    </DetailsKeyValue>
                     <DetailsKeyValue label="Asset Tag" :value="selectedAsset.assetTag" />
                     <DetailsKeyValue label="Serial Number" :value="selectedAsset.serialNumber" />
-                    <DetailsKeyValue label="Owner" :value="selectedAsset.assignedTo" />
+                    <DetailsKeyValue label="Owner">
+                      <a href="#" class="text-body-md py-0.5 text-info-base hover:underline">{{ selectedAsset.assignedTo }}</a>
+                    </DetailsKeyValue>
                     <DetailsKeyValue label="Location" :value="selectedAsset.location" />
                     <DetailsKeyValue label="Type" :value="selectedAsset.type" />
                     <DetailsKeyValue label="Ownership Type" :value="selectedAsset.ownershipType" />
                     <DetailsKeyValue label="Manufacturer" :value="selectedAsset.manufacturer" />
                     <DetailsKeyValue label="Model" :value="selectedAsset.model" />
-                    <DetailsKeyValue v-if="selectedAsset.reportedLostStolen" label="Reported Lost/Stolen By" :value="selectedAsset.reportedLostStolenBy" />
+                    <DetailsKeyValue v-if="selectedAsset.reportedLostStolen" label="Reported Lost/Stolen By">
+                      <a href="#" class="text-body-md py-0.5 text-info-base hover:underline">{{ selectedAsset.reportedLostStolenBy }}</a>
+                    </DetailsKeyValue>
                     <DetailsKeyValue v-if="selectedAsset.reportedLostStolen" label="Reported Lost/Stolen At" :value="selectedAsset.reportedLostStolenAt" />
                   </div>
                 </div>
@@ -1311,65 +1304,94 @@ const AdminAssetManagementPage = defineComponent({
                   <ClipboardDocumentCheckIcon :class="iconProps.class" />
                 </template>
                 <template #actions>
-                  <PvTag v-if="selectedAsset.acknowledged === 'Acknowledged'" value="Acknowledged" severity="success" />
-                  <PvTag v-else-if="selectedAsset.acknowledged === 'Denied'" value="Denied" severity="danger" />
-                  <PvTag v-else-if="selectedAsset.acknowledged === 'Pending'" value="Pending" severity="warn" />
+                  <div class="flex items-center">
+                    <PvTag v-if="selectedAsset.acknowledged === 'Acknowledged'" value="Acknowledged" severity="success" class="!normal-case">
+                      <template #icon><CheckCircleIcon class="size-4" /></template>
+                    </PvTag>
+                    <PvTag v-else-if="selectedAsset.acknowledged === 'Denied'" value="Denied" severity="danger" class="!normal-case">
+                      <template #icon><XCircleIcon class="size-4" /></template>
+                    </PvTag>
+                    <PvTag v-else-if="selectedAsset.acknowledged === 'Pending'" value="Pending" severity="warn" class="!normal-case">
+                      <template #icon><ExclamationTriangleIcon class="size-4" /></template>
+                    </PvTag>
+                    <PvTag v-else value="Not Requested" severity="secondary" class="!normal-case">
+                      <template #icon><MinusCircleIcon class="size-4" /></template>
+                    </PvTag>
+                    <template v-if="selectedAsset.acknowledged !== 'Pending'">
+                      <PvDivider layout="vertical" class="my-0!" />
+                      <PvButton
+                        v-if="selectedAsset.acknowledged === 'Not Requested'"
+                        label="Request"
+                        variant="outlined"
+                        severity="secondary"
+                        size="small"
+                        @click="requestAckFromDetail"
+                      />
+                      <PvButton
+                        v-else-if="selectedAsset.acknowledged === 'Acknowledged'"
+                        label="Reset"
+                        variant="outlined"
+                        severity="secondary"
+                        size="small"
+                        @click="resetAckFromDetail"
+                      />
+                      <PvButton
+                        v-else-if="selectedAsset.acknowledged === 'Denied'"
+                        label="Request Again"
+                        variant="outlined"
+                        severity="secondary"
+                        size="small"
+                        @click="requestAckFromDetail"
+                      />
+                    </template>
+                  </div>
                 </template>
                 <template #toggleicon="iconProps">
                   <ChevronRightIcon :class="iconProps.class" />
                 </template>
                 <div class="flex flex-col gap-4">
 
-                  <!-- Not Requested -->
-                  <template v-if="selectedAsset.acknowledged === 'Not Requested'">
-                    <div class="grid grid-cols-2 gap-x-6 gap-y-3">
-                      <DetailsKeyValue label="Acknowledgment Status" value="Not Requested" />
-                    </div>
-                    <div class="flex items-center gap-3">
-                      <PvButton label="Request Acknowledgment" @click="requestAckFromDetail">
-                        <template #icon><ClipboardDocumentCheckIcon class="size-5" /></template>
-                      </PvButton>
-                    </div>
-                  </template>
+                  <!-- Not Requested (no additional fields) -->
 
                   <!-- Pending -->
                   <template v-if="selectedAsset.acknowledged === 'Pending'">
-                    <div class="grid grid-cols-2 gap-x-6 gap-y-3">
-                      <DetailsKeyValue label="Acknowledgment Status" value="Pending" />
-                      <DetailsKeyValue label="Assigned To" :value="selectedAsset.assignedTo" />
+                    <div class="flex flex-col gap-4">
+                      <DetailsKeyValue label="Assigned To">
+                        <a href="#" class="text-body-md py-0.5 text-info-base hover:underline">{{ selectedAsset.assignedTo }}</a>
+                      </DetailsKeyValue>
                       <DetailsKeyValue label="Requested At" :value="selectedAsset.acknowledgmentRequestedAt" />
-                      <DetailsKeyValue label="Requested By" :value="selectedAsset.acknowledgmentRequestedBy" />
+                      <DetailsKeyValue label="Requested By">
+                        <a href="#" class="text-body-md py-0.5 text-info-base hover:underline">{{ selectedAsset.acknowledgmentRequestedBy }}</a>
+                      </DetailsKeyValue>
                     </div>
                   </template>
 
                   <!-- Acknowledged -->
                   <template v-if="selectedAsset.acknowledged === 'Acknowledged'">
-                    <div class="grid grid-cols-2 gap-x-6 gap-y-3">
-                      <DetailsKeyValue label="Acknowledgment Status" value="Acknowledged" />
-                      <DetailsKeyValue label="Acknowledged By" :value="selectedAsset.acknowledgedBy" />
+                    <div class="flex flex-col gap-4">
+                      <DetailsKeyValue label="Acknowledged By">
+                        <a href="#" class="text-body-md py-0.5 text-info-base hover:underline">{{ selectedAsset.acknowledgedBy }}</a>
+                      </DetailsKeyValue>
                       <DetailsKeyValue label="Acknowledged At" :value="selectedAsset.acknowledgedAt" />
-                      <DetailsKeyValue label="Requested By" :value="selectedAsset.acknowledgmentRequestedBy" />
+                      <DetailsKeyValue label="Requested By">
+                        <a href="#" class="text-body-md py-0.5 text-info-base hover:underline">{{ selectedAsset.acknowledgmentRequestedBy }}</a>
+                      </DetailsKeyValue>
                       <DetailsKeyValue label="Requested At" :value="selectedAsset.acknowledgmentRequestedAt" />
-                    </div>
-                    <div class="flex items-center gap-3">
-                      <PvButton label="Reset Acknowledgment" severity="secondary" variant="outlined" @click="resetAckFromDetail" />
                     </div>
                   </template>
 
                   <!-- Denied -->
                   <template v-if="selectedAsset.acknowledged === 'Denied'">
-                    <div class="grid grid-cols-2 gap-x-6 gap-y-3">
-                      <DetailsKeyValue label="Acknowledgment Status" value="Denied" />
-                      <DetailsKeyValue label="Denied By" :value="selectedAsset.deniedBy" />
+                    <div class="flex flex-col gap-4">
+                      <DetailsKeyValue label="Denied By">
+                        <a href="#" class="text-body-md py-0.5 text-info-base hover:underline">{{ selectedAsset.deniedBy }}</a>
+                      </DetailsKeyValue>
                       <DetailsKeyValue label="Denied At" :value="selectedAsset.deniedAt" />
                       <DetailsKeyValue label="Denial Reason" :value="selectedAsset.denialReason" />
                       <DetailsKeyValue label="Requested At" :value="selectedAsset.acknowledgmentRequestedAt" />
-                      <DetailsKeyValue label="Requested By" :value="selectedAsset.acknowledgmentRequestedBy" />
-                    </div>
-                    <div class="flex items-center gap-3">
-                      <PvButton label="Request Acknowledgment Again" @click="requestAckFromDetail">
-                        <template #icon><ClipboardDocumentCheckIcon class="size-5" /></template>
-                      </PvButton>
+                      <DetailsKeyValue label="Requested By">
+                        <a href="#" class="text-body-md py-0.5 text-info-base hover:underline">{{ selectedAsset.acknowledgmentRequestedBy }}</a>
+                      </DetailsKeyValue>
                     </div>
                   </template>
 
@@ -1568,7 +1590,7 @@ const AdminAssetManagementPage = defineComponent({
                           <div class="flex items-center gap-2">
                             <EllipsisHorizontalIcon class="size-4 text-neutral-subtle cursor-grab" />
                             <span class="text-body-md text-neutral-base">{{ field.name }}</span>
-                            <PvTag :value="field.type" severity="secondary" class="text-body-sm" />
+                            <PvTag :value="field.type" severity="secondary" class="text-body-sm !normal-case" />
                           </div>
                           <PvButton v-if="field.removable" severity="secondary" variant="text" size="small" rounded>
                             <template #icon><TrashIcon class="size-4" /></template>

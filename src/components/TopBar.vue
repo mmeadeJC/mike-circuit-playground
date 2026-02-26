@@ -2,9 +2,10 @@
 import { computed, type Component } from 'vue';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
+import Divider from 'primevue/divider';
 import { AiSearchIcon, CustomerSupportIcon, CheckListIcon } from '@jumpcloud/icons';
 import { AiAgentButton } from '@jumpcloud/circuit/components';
-import { LifebuoyIcon, FlagIcon } from '@heroicons/vue/24/outline';
+import { LifebuoyIcon, FlagIcon, ArrowLeftIcon } from '@heroicons/vue/24/outline';
 
 export interface TopBarIconButton {
   icon: Component;
@@ -17,18 +18,23 @@ export interface TopBarProps {
   shortcutLabel?: string;
   iconButtons?: TopBarIconButton[];
   showSearchIcon?: boolean;
+  showBackButton?: boolean;
+  backButtonLabel?: string;
 }
 
 const props = withDefaults(defineProps<TopBarProps>(), {
   searchPlaceholder: 'Search User, Devices, Apps, etc...',
   shortcutLabel: '⌘/Ctrl + K',
   showSearchIcon: true,
+  showBackButton: false,
+  backButtonLabel: 'Back',
 });
 
 const emit = defineEmits<{
   (e: 'search-click'): void;
   (e: 'icon-button-click', label: string): void;
   (e: 'ai-assistant-click', event: Event): void;
+  (e: 'back'): void;
 }>();
 
 const defaultIconButtons: TopBarIconButton[] = [
@@ -52,7 +58,22 @@ function handleIconButtonClick(button: TopBarIconButton) {
   <div
     class="h-12 border-b border-navigation-top_bar-default flex items-center pl-6 pr-0 shrink-0 bg-navigation-top_bar-default"
   >
-    <!-- Left: Search area -->
+    <!-- Left: Back button + Search area -->
+    <div v-if="showBackButton" class="flex items-center h-auto shrink-0">
+      <Button
+        size="small"
+        severity="secondary"
+        variant="outlined"
+        :label="backButtonLabel"
+        @click="emit('back')"
+      >
+        <template #icon="iconProps">
+          <ArrowLeftIcon :class="iconProps.class" />
+        </template>
+      </Button>
+      <Divider layout="vertical" class="my-0.5!" />
+    </div>
+
     <div
       class="flex-1 flex items-center gap-2 h-full min-w-0 overflow-hidden rounded-sm cursor-pointer"
       @click="emit('search-click')"

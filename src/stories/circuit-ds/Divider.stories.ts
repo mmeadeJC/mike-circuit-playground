@@ -5,20 +5,6 @@ const meta: Meta<typeof Divider> = {
   title: 'Circuit DS/Components/Divider',
   component: Divider,
   tags: ['autodocs'],
-  argTypes: {
-    layout: {
-      control: 'select',
-      options: ['horizontal', 'vertical'],
-    },
-    type: {
-      control: 'select',
-      options: ['solid', 'dashed', 'dotted'],
-    },
-    align: {
-      control: 'select',
-      options: ['left', 'center', 'right', 'top', 'bottom'],
-    },
-  },
 };
 
 export default meta;
@@ -33,13 +19,47 @@ export const Horizontal: Story = {
     },
     template: `
       <div>
-        <p>Content above</p>
+        <p class="text-body-md text-neutral-base">Content above</p>
         <Divider v-bind="args" />
-        <p>Content below</p>
+        <p class="text-body-md text-neutral-base">Content below</p>
       </div>
     `,
   }),
   args: { layout: 'horizontal' },
+};
+
+export const Vertical: Story = {
+  render: (args) => ({
+    components: { Divider },
+    setup() {
+      return { args };
+    },
+    template: `
+      <div class="flex items-center gap-md" style="height: 80px;">
+        <span class="text-body-md text-neutral-base">Left</span>
+        <Divider v-bind="args" />
+        <span class="text-body-md text-neutral-base">Right</span>
+      </div>
+    `,
+  }),
+  args: { layout: 'vertical' },
+};
+
+export const SmallSize: Story = {
+  render: (args) => ({
+    components: { Divider },
+    setup() {
+      return { args };
+    },
+    template: `
+      <div>
+        <p class="text-body-md text-neutral-base">Content above</p>
+        <Divider v-bind="args" />
+        <p class="text-body-md text-neutral-base">Content below</p>
+      </div>
+    `,
+  }),
+  args: { layout: 'horizontal', size: 'small' },
 };
 
 export const Dashed: Story = {
@@ -50,11 +70,28 @@ export const Dashed: Story = {
     },
     template: `
       <div>
-        <p>Content above</p>
+        <p class="text-body-md text-neutral-base">Content above</p>
         <Divider v-bind="args" />
-        <p>Content below</p>
+        <p class="text-body-md text-neutral-base">Content below</p>
       </div>
     `,
   }),
   args: { layout: 'horizontal', type: 'dashed' },
+};
+
+export const Dotted: Story = {
+  render: (args) => ({
+    components: { Divider },
+    setup() {
+      return { args };
+    },
+    template: `
+      <div>
+        <p class="text-body-md text-neutral-base">Content above</p>
+        <Divider v-bind="args" />
+        <p class="text-body-md text-neutral-base">Content below</p>
+      </div>
+    `,
+  }),
+  args: { layout: 'horizontal', type: 'dotted' },
 };

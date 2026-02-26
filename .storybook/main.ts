@@ -12,6 +12,10 @@ const config: StorybookConfig = {
       docgen: 'vue-component-meta',
     },
   },
+  viteFinal: (config) => {
+    config.base = './';
+    return config;
+  },
 };
 
 export default config;

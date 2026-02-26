@@ -30,6 +30,17 @@ The TopBar renders out of the box with:
 <TopBar />
 ```
 
+## Usage by Page Type
+
+| Page Type | TopBar Variant | Example |
+|---|---|---|
+| **Main/root pages** (list views, dashboards) | Default — no back button | `<TopBar />` |
+| **Nested/detail pages** (entity detail, sub-pages) | With back button — navigates to the previous page | `<TopBar showBackButton backButtonLabel="Devices" @back="router.back()" />` |
+
+**Rules:**
+- The back button MUST always navigate the user to the previous page. Use `router.back()` or equivalent navigation to go back. Never use the back button for other actions.
+- The `backButtonLabel` should be set to the previous page's title (e.g. `"Devices"`, `"Users"`, `"Applications"`) for clear navigation context. Only fall back to the generic `"Back"` if the previous page title is unknown.
+
 ## Props
 
 | Prop | Type | Default | Description |
@@ -38,6 +49,8 @@ The TopBar renders out of the box with:
 | `shortcutLabel` | `string` | `'⌘/Ctrl + K'` | Keyboard shortcut shown as a Tag |
 | `showSearchIcon` | `boolean` | `true` | Toggle the AI search icon |
 | `iconButtons` | `TopBarIconButton[]` | 4 default buttons | Custom icon buttons on the right |
+| `showBackButton` | `boolean` | `false` | Show a back button with divider for nested/detail pages |
+| `backButtonLabel` | `string` | `'Back'` | Label text for the back button |
 
 ### TopBarIconButton interface
 
@@ -56,6 +69,7 @@ interface TopBarIconButton {
 | `search-click` | — | Search area clicked |
 | `icon-button-click` | `label: string` | An icon button clicked |
 | `ai-assistant-click` | `event: Event` | AI Assistant button clicked |
+| `back` | — | Back button clicked (only when `showBackButton` is true) |
 
 ## Slots
 
@@ -84,11 +98,27 @@ const myButtons = [
 
 Place the TopBar as the first child inside the main content area, after `AppNavigation`:
 
+**Main/root page (default TopBar):**
+
 ```html
 <div class="flex h-screen overflow-hidden">
   <AppNavigation ... />
   <div class="flex-1 flex flex-col min-w-0 overflow-auto">
     <TopBar />
+    <PageHeader title="Devices" />
+    <!-- Page content below -->
+  </div>
+</div>
+```
+
+**Nested/detail page (TopBar with back button):**
+
+```html
+<div class="flex h-screen overflow-hidden">
+  <AppNavigation ... />
+  <div class="flex-1 flex flex-col min-w-0 overflow-auto">
+    <TopBar showBackButton backButtonLabel="Devices" @back="router.back()" />
+    <PageHeader title="Device Detail" />
     <!-- Page content below -->
   </div>
 </div>
@@ -101,3 +131,5 @@ If a Figma design contains any of the following, use this component:
 - A horizontal bar at `y=0` of the main content area with a search field and action buttons
 - An **AI Assistant** gradient button on the right edge
 - A search area with an AI search icon and keyboard shortcut tag
+
+**Back button detection:** If the Figma Top Bar node has `hasBackButton=true` or shows a "Back" button with a left arrow icon and a vertical divider on the left side, use `showBackButton` prop. This indicates a nested/detail page — the back button must navigate to the previous page.

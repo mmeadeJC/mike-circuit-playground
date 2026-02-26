@@ -168,7 +168,7 @@ const AcknowledgedCell = markRaw(defineComponent({
       return h('div', { class: 'flex items-center gap-1 p-2 min-h-12' }, [
         h(Tag, { severity: severityMap[ack] || 'info', class: 'shrink-0' }, {
           icon: () => h(iconMap[ack] || CheckCircleIcon, { class: 'size-4' }),
-          default: () => ack?.toUpperCase(),
+          default: () => ack,
         }),
       ]);
     };
@@ -184,7 +184,7 @@ const StatusCell = markRaw(defineComponent({
       const severityMap: Record<string, string> = { 'In Use': 'success', 'Ready': 'info', 'Retired': 'secondary', 'Repair': 'warn', 'Stolen': 'danger' };
       return h('div', { class: 'flex items-center gap-1 p-2 min-h-12' }, [
         h(Tag, { severity: severityMap[status] || 'info', class: 'shrink-0' }, {
-          default: () => status?.toUpperCase(),
+          default: () => status,
         }),
       ]);
     };
@@ -494,7 +494,7 @@ const UserPortalAssetsPage = defineComponent({
           :class="{ 'page-header-inline-tag': currentView === 'detail' }"
         >
           <template v-if="currentView === 'detail' && selectedAsset" #subtitle>
-            <PvTag :value="selectedAsset.status.toUpperCase()" :severity="{ 'In Use': 'success', 'Ready': 'info', 'Retired': 'secondary', 'Repair': 'warn', 'Stolen': 'danger' }[selectedAsset.status]" />
+            <PvTag :value="selectedAsset.status" :severity="{ 'In Use': 'success', 'Ready': 'info', 'Retired': 'secondary', 'Repair': 'warn', 'Stolen': 'danger' }[selectedAsset.status]" />
           </template>
           <template #actions>
             <template v-if="currentView === 'detail' && selectedAsset">
@@ -530,9 +530,9 @@ const UserPortalAssetsPage = defineComponent({
 
         <!-- Status tags row (detail view only) -->
         <div v-if="currentView === 'detail' && selectedAsset" class="shrink-0 flex items-center gap-2 px-6 py-2 border-b border-neutral-default_solid bg-neutral-base">
-          <PvTag :value="selectedAsset.ownershipType.toUpperCase()" severity="info" />
+          <PvTag :value="selectedAsset.ownershipType" severity="info" />
           <PvTag
-            :value="(selectedAsset.acknowledged === 'Yes' ? 'Acknowledged' : selectedAsset.acknowledged === 'Denied' ? 'Denied' : 'Pending Acknowledgment').toUpperCase()"
+            :value="selectedAsset.acknowledged === 'Yes' ? 'Acknowledged' : selectedAsset.acknowledged === 'Denied' ? 'Denied' : 'Pending Acknowledgment'"
             :severity="selectedAsset.acknowledged === 'Yes' ? 'success' : selectedAsset.acknowledged === 'Denied' ? 'danger' : 'warn'"
           />
         </div>

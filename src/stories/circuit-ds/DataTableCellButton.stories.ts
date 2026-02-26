@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
-import { DataTableCellButton } from '@jumpcloud/circuit/components';
-import { PencilIcon, TrashIcon, EyeIcon } from '@heroicons/vue/24/outline';
 import { markRaw } from 'vue';
+import { DataTableCellButton } from '@jumpcloud/circuit/components';
+import { PencilSquareIcon, Square2StackIcon, TrashIcon } from '@heroicons/vue/24/outline';
 
 const meta: Meta<typeof DataTableCellButton> = {
-  title: 'Circuit DS/Data Table/DataTableCellButton',
+  title: 'Circuit DS/Components/DataTableCellButton',
   component: DataTableCellButton,
   tags: ['autodocs'],
   argTypes: {
@@ -20,56 +20,47 @@ export default meta;
 
 type Story = StoryObj<typeof DataTableCellButton>;
 
-export const Button: Story = {
+export const ButtonType: Story = {
   args: {
     type: 'Button',
-    actionButtons: [
-      { label: 'Edit' },
-    ],
+    actionButtons: [{ label: 'Action' }],
   },
 };
 
-export const ButtonGroup: Story = {
+export const ButtonGroupType: Story = {
   args: {
     type: 'Button Group',
     iconButtons: [
-      { icon: markRaw(EyeIcon) },
-      { icon: markRaw(PencilIcon) },
+      { icon: markRaw(PencilSquareIcon) },
+      { icon: markRaw(Square2StackIcon) },
       { icon: markRaw(TrashIcon) },
     ],
     maxVisibleIconButtons: 3,
   },
 };
 
-export const MoreButton: Story = {
+export const MoreButtonType: Story = {
   args: {
     type: 'More Button',
-    actionButtons: [
-      { label: 'Edit' },
-      { label: 'Duplicate' },
-      { label: 'Delete' },
-    ],
   },
 };
 
 export const ButtonAndMore: Story = {
   args: {
     type: 'Button & More',
-    actionButtons: [
-      { label: 'View' },
-      { label: 'Edit' },
-      { label: 'Delete' },
-    ],
+    actionButtons: [{ label: 'Action' }, { label: 'Secondary' }],
   },
 };
 
-export const Small: Story = {
+export const SmallSize: Story = {
   args: {
     type: 'Button Group',
     iconButtons: [
-      { icon: markRaw(EyeIcon) },
-      { icon: markRaw(PencilIcon) },
+      { icon: markRaw(PencilSquareIcon) },
+      { icon: markRaw(Square2StackIcon) },
+      { icon: markRaw(TrashIcon) },
     ],
+    maxVisibleIconButtons: 3,
     size: 'small',
   },
 };

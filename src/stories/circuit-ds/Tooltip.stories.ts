@@ -10,15 +10,50 @@ export default meta;
 
 type Story = StoryObj;
 
-export const Default: Story = {
+export const Top: Story = {
+  render: () => ({
+    components: { Button },
+    template: `
+      <Button label="Hover for tooltip" v-tooltip.top="'Tooltip text'" />
+    `,
+  }),
+};
+
+export const Right: Story = {
+  render: () => ({
+    components: { Button },
+    template: `
+      <Button label="Hover for tooltip" v-tooltip.right="'Tooltip on right'" />
+    `,
+  }),
+};
+
+export const Bottom: Story = {
+  render: () => ({
+    components: { Button },
+    template: `
+      <Button label="Hover for tooltip" v-tooltip.bottom="'Tooltip on bottom'" />
+    `,
+  }),
+};
+
+export const Left: Story = {
+  render: () => ({
+    components: { Button },
+    template: `
+      <Button label="Hover for tooltip" v-tooltip.left="'Tooltip on left'" />
+    `,
+  }),
+};
+
+export const OnButton: Story = {
   render: () => ({
     components: { Button },
     template: `
       <div class="flex gap-4">
-        <Button label="Top" v-tooltip.top="'Tooltip on top'" />
-        <Button label="Right" v-tooltip.right="'Tooltip on right'" />
-        <Button label="Bottom" v-tooltip.bottom="'Tooltip on bottom'" />
-        <Button label="Left" v-tooltip.left="'Tooltip on left'" />
+        <Button label="Success" severity="success" v-tooltip.top="'Success action'" />
+        <Button label="Info" severity="info" v-tooltip.top="'Info message'" />
+        <Button label="Danger" severity="danger" v-tooltip.top="'Destructive action'" />
       </div>
     `,
   }),

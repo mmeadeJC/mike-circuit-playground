@@ -12,11 +12,13 @@
         v-if="icon"
         :class="iconClasses"
       />
-      <span
-        :class="valueClasses"
-      >
-        {{ displayValue }}
-      </span>
+      <slot>
+        <span
+          :class="valueClasses"
+        >
+          {{ displayValue }}
+        </span>
+      </slot>
     </div>
   </div>
 </template>
@@ -31,13 +33,14 @@ defineOptions({
 
 interface Props {
   label: string;
-  value: string | null | undefined;
+  value?: string | null;
   icon?: Component;
   iconColor?: string;
   testId?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  value: undefined,
   icon: undefined,
   iconColor: undefined,
   testId: undefined,

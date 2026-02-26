@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
+import { markRaw } from 'vue';
 import { DataTableCellLink } from '@jumpcloud/circuit/components';
 import { UserIcon } from '@heroicons/vue/24/outline';
-import { markRaw } from 'vue';
 
 const meta: Meta<typeof DataTableCellLink> = {
-  title: 'Circuit DS/Data Table/DataTableCellLink',
+  title: 'Circuit DS/Components/DataTableCellLink',
   component: DataTableCellLink,
   tags: ['autodocs'],
   argTypes: {
@@ -17,53 +17,32 @@ export default meta;
 
 type Story = StoryObj<typeof DataTableCellLink>;
 
-export const Default: Story = {
+export const LabelOnly: Story = {
   args: {
-    label: 'Alice Johnson',
+    label: 'Table Link',
     href: '#',
   },
 };
 
-export const WithDescription: Story = {
+export const LabelWithIcon: Story = {
   args: {
-    label: 'Alice Johnson',
-    description: 'alice@example.com',
+    label: 'Table Link',
     href: '#',
-  },
-};
-
-export const WithIcon: Story = {
-  args: {
-    label: 'Alice Johnson',
-    description: 'alice@example.com',
     icon: markRaw(UserIcon),
+  },
+};
+
+export const LabelWithDescription: Story = {
+  args: {
+    label: 'Table Link',
+    description: 'Description text for the link',
     href: '#',
   },
 };
 
-export const WithImage: Story = {
+export const SmallSize: Story = {
   args: {
-    label: 'Alice Johnson',
-    description: 'alice@example.com',
-    image: 'https://i.pravatar.cc/56',
-    imageAlt: 'Alice Johnson avatar',
-    href: '#',
-  },
-};
-
-export const ExternalLink: Story = {
-  args: {
-    label: 'View Documentation',
-    href: 'https://example.com',
-    target: '_blank',
-  },
-};
-
-export const Small: Story = {
-  args: {
-    label: 'Alice Johnson',
-    description: 'alice@example.com',
-    icon: markRaw(UserIcon),
+    label: 'Table Link',
     href: '#',
     size: 'small',
   },

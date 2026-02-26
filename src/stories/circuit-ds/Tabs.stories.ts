@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
+import { ref } from 'vue';
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
@@ -30,21 +31,22 @@ export const Default: Story = {
         </TabList>
         <TabPanels>
           <TabPanel value="0">
-            <p class="text-body-md p-md">Overview content goes here.</p>
+            <p class="text-body-md text-neutral-base p-md">Overview content goes here.</p>
           </TabPanel>
           <TabPanel value="1">
-            <p class="text-body-md p-md">Settings content goes here.</p>
+            <p class="text-body-md text-neutral-base p-md">Settings content goes here.</p>
           </TabPanel>
           <TabPanel value="2">
-            <p class="text-body-md p-md">Members content goes here.</p>
+            <p class="text-body-md text-neutral-base p-md">Members content goes here.</p>
           </TabPanel>
         </TabPanels>
       </Tabs>
     `,
   }),
+  args: {},
 };
 
-export const WithDisabledTab: Story = {
+export const WithPadding: Story = {
   render: (args) => ({
     components: { Tabs, TabList, Tab, TabPanels, TabPanel },
     setup() {
@@ -52,25 +54,26 @@ export const WithDisabledTab: Story = {
     },
     template: `
       <Tabs v-bind="args" value="0">
-        <TabList>
-          <Tab value="0">Active</Tab>
-          <Tab value="1">Pending</Tab>
-          <Tab value="2" disabled>Archived</Tab>
+        <TabList withPadding>
+          <Tab value="0">Overview</Tab>
+          <Tab value="1">Settings</Tab>
+          <Tab value="2">Members</Tab>
         </TabList>
         <TabPanels>
           <TabPanel value="0">
-            <p class="text-body-md p-md">Active items content.</p>
+            <p class="text-body-md text-neutral-base p-md">TabList with withPadding prop (24px horizontal padding).</p>
           </TabPanel>
           <TabPanel value="1">
-            <p class="text-body-md p-md">Pending items content.</p>
+            <p class="text-body-md text-neutral-base p-md">Settings content.</p>
           </TabPanel>
           <TabPanel value="2">
-            <p class="text-body-md p-md">Archived items content.</p>
+            <p class="text-body-md text-neutral-base p-md">Members content.</p>
           </TabPanel>
         </TabPanels>
       </Tabs>
     `,
   }),
+  args: {},
 };
 
 export const Scrollable: Story = {
@@ -94,10 +97,66 @@ export const Scrollable: Story = {
         </TabList>
         <TabPanels>
           <TabPanel value="0">
-            <p class="text-body-md p-md">Overview panel content.</p>
+            <p class="text-body-md text-neutral-base p-md">Overview panel content.</p>
+          </TabPanel>
+          <TabPanel value="1">
+            <p class="text-body-md text-neutral-base p-md">Users panel.</p>
+          </TabPanel>
+          <TabPanel value="2">
+            <p class="text-body-md text-neutral-base p-md">Devices panel.</p>
+          </TabPanel>
+          <TabPanel value="3">
+            <p class="text-body-md text-neutral-base p-md">Policies panel.</p>
+          </TabPanel>
+          <TabPanel value="4">
+            <p class="text-body-md text-neutral-base p-md">Applications panel.</p>
+          </TabPanel>
+          <TabPanel value="5">
+            <p class="text-body-md text-neutral-base p-md">Groups panel.</p>
+          </TabPanel>
+          <TabPanel value="6">
+            <p class="text-body-md text-neutral-base p-md">Reports panel.</p>
+          </TabPanel>
+          <TabPanel value="7">
+            <p class="text-body-md text-neutral-base p-md">Audit Log panel.</p>
+          </TabPanel>
+          <TabPanel value="8">
+            <p class="text-body-md text-neutral-base p-md">Integrations panel.</p>
           </TabPanel>
         </TabPanels>
       </Tabs>
     `,
   }),
+  args: {},
+};
+
+export const Controlled: Story = {
+  render: (args) => ({
+    components: { Tabs, TabList, Tab, TabPanels, TabPanel },
+    setup() {
+      const value = ref('0');
+      return { args, value };
+    },
+    template: `
+      <Tabs v-bind="args" v-model:value="value">
+        <TabList>
+          <Tab value="0">Tab 1</Tab>
+          <Tab value="1">Tab 2</Tab>
+          <Tab value="2">Tab 3</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel value="0">
+            <p class="text-body-md text-neutral-base p-md">Active tab: {{ value }}</p>
+          </TabPanel>
+          <TabPanel value="1">
+            <p class="text-body-md text-neutral-base p-md">Active tab: {{ value }}</p>
+          </TabPanel>
+          <TabPanel value="2">
+            <p class="text-body-md text-neutral-base p-md">Active tab: {{ value }}</p>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    `,
+  }),
+  args: {},
 };

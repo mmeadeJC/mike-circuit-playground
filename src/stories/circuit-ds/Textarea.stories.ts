@@ -1,17 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
-import Textarea from 'primevue/textarea';
 import { ref } from 'vue';
+import Textarea from 'primevue/textarea';
 
 const meta: Meta<typeof Textarea> = {
   title: 'Circuit DS/Components/Textarea',
   component: Textarea,
   tags: ['autodocs'],
-  argTypes: {
-    placeholder: { control: 'text' },
-    disabled: { control: 'boolean' },
-    rows: { control: 'number' },
-    autoResize: { control: 'boolean' },
-  },
 };
 
 export default meta;
@@ -25,19 +19,43 @@ export const Default: Story = {
       const value = ref('');
       return { args, value };
     },
-    template: '<Textarea v-bind="args" v-model="value" />',
+    template: '<Textarea v-bind="args" v-model="value" class="w-full max-w-[300px]" />',
   }),
-  args: { placeholder: 'Enter text...', rows: 5 },
+  args: { placeholder: 'Enter text...', rows: 4 },
 };
 
-export const AutoResize: Story = {
+export const SmallSize: Story = {
   render: (args) => ({
     components: { Textarea },
     setup() {
       const value = ref('');
       return { args, value };
     },
-    template: '<Textarea v-bind="args" v-model="value" />',
+    template: '<Textarea v-bind="args" v-model="value" size="small" class="w-full max-w-[300px]" />',
   }),
-  args: { placeholder: 'Auto-resizing textarea', autoResize: true, rows: 3 },
+  args: { placeholder: 'Small textarea', rows: 3 },
+};
+
+export const Disabled: Story = {
+  render: (args) => ({
+    components: { Textarea },
+    setup() {
+      const value = ref('Disabled textarea content');
+      return { args, value };
+    },
+    template: '<Textarea v-bind="args" v-model="value" class="w-full max-w-[300px]" />',
+  }),
+  args: { disabled: true, rows: 4 },
+};
+
+export const Invalid: Story = {
+  render: (args) => ({
+    components: { Textarea },
+    setup() {
+      const value = ref('Invalid input');
+      return { args, value };
+    },
+    template: '<Textarea v-bind="args" v-model="value" class="w-full max-w-[300px]" />',
+  }),
+  args: { invalid: true, rows: 4 },
 };

@@ -507,13 +507,13 @@ const UserPortalAssetsPage = defineComponent({
       currentView.value === 'tasks' ? computedMenuItems.value.find(i => i.label.startsWith('Tasks'))?.label.toLowerCase() ?? 'tasks' : 'my assets'
     );
 
-    const pageTabs = computed<string[] | undefined>(() => {
-      if (currentView.value === 'tasks') return [`Resources (${taskCount.value})`];
+    const pageTabs = computed(() => {
+      if (currentView.value === 'tasks') return [{ label: `Resources (${taskCount.value})`, value: 'resources' }];
       return undefined;
     });
 
-    const activePageTab = computed<string | undefined>(() => {
-      if (currentView.value === 'tasks') return `resources (${taskCount.value})`;
+    const activePageTab = computed(() => {
+      if (currentView.value === 'tasks') return 'resources';
       return undefined;
     });
 

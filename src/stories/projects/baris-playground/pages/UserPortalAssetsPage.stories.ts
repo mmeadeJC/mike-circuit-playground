@@ -584,7 +584,7 @@ const UserPortalAssetsPage = defineComponent({
         :menuItems="computedMenuItems"
         :profileMenuItems="profileMenuItems"
         :activeItem="activeNavItem"
-        :collapsible="false"
+        :collapsible="true"
         :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-hidden">

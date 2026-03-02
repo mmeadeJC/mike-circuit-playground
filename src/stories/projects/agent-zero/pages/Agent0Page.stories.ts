@@ -8,6 +8,7 @@ import {
   DataTableCellText,
   DataTableCellLink,
   DataTableCellButton,
+  DataTableCellToken,
   CollapsiblePanel,
   FormField,
   ToggleSwitch,
@@ -34,6 +35,7 @@ import {
   UsersIcon,
   CommandLineIcon,
   ClipboardDocumentListIcon,
+  ClipboardDocumentCheckIcon,
   ArrowRightStartOnRectangleIcon,
   ArrowTopRightOnSquareIcon,
   PencilSquareIcon,
@@ -49,6 +51,10 @@ import {
   ClockIcon,
   ExclamationTriangleIcon,
   BoltIcon,
+  KeyIcon,
+  CurrencyDollarIcon,
+  DocumentTextIcon,
+  WrenchScrewdriverIcon,
 } from '@heroicons/vue/24/outline';
 
 import TopBar from '../../../../components/TopBar.vue';
@@ -64,13 +70,25 @@ import {
   SsoIcon,
   SaasManagementIcon,
   PasswordManagerIcon,
+  WorkflowIcon,
 } from '@jumpcloud/icons';
 
 // ─── Navigation Data ───
 
 const menuItems = [
-  { label: 'Get Started', leftIcon: markRaw(RocketLaunchIcon) },
-  { label: 'Home', leftIcon: markRaw(HomeIcon) },
+  {
+    label: 'Get Started',
+    leftIcon: markRaw(RocketLaunchIcon),
+  },
+  {
+    label: 'Home',
+    leftIcon: markRaw(HomeIcon),
+  },
+  {
+    label: 'Alerts',
+    leftIcon: markRaw(BellIcon),
+    count: 25,
+  },
   {
     label: 'User Management',
     leftIcon: markRaw(UserGroupIcon),
@@ -78,10 +96,10 @@ const menuItems = [
       { label: 'Users', leftIcon: markRaw(UserIcon) },
       { label: 'User Groups', leftIcon: markRaw(UsersIcon) },
       { separator: true },
-      { label: 'Active Directory' },
+      { label: 'Active Directories' },
       { label: 'Cloud Directories' },
       { label: 'HR Directories' },
-      { label: 'Identity Provider' },
+      { label: 'Identity Providers' },
     ],
   },
   {
@@ -94,32 +112,39 @@ const menuItems = [
       { label: 'Asset Management', leftIcon: markRaw(ClipboardDocumentListIcon), isNew: true },
       { separator: true },
       { label: 'Policy Management' },
+      { label: 'Patch Management' },
       { label: 'Policy Groups' },
-      { label: 'Software Deployment' },
+      { label: 'Software Management' },
       { label: 'MDM' },
     ],
   },
   {
     label: 'Access',
     leftIcon: markRaw(AccessIcon),
-    count: 1,
     items: [
       { label: 'SSO Applications', leftIcon: markRaw(SsoIcon) },
-      { label: 'Access Reports', isNew: true },
-      { label: 'SaaS Management', leftIcon: markRaw(SaasManagementIcon) },
-      { label: 'Password Management', leftIcon: markRaw(PasswordManagerIcon) },
+      { label: 'Access Requests', leftIcon: markRaw(ClipboardDocumentCheckIcon) },
+      { label: 'AI & SaaS Management', leftIcon: markRaw(SaasManagementIcon) },
+      { label: 'Vault', leftIcon: markRaw(PasswordManagerIcon), isNew: true },
+      { separator: true },
       { label: 'LDAP' },
       { label: 'RADIUS' },
     ],
+  },
+  {
+    label: 'Workflows',
+    leftIcon: markRaw(WorkflowIcon),
   },
   {
     label: 'Security',
     leftIcon: markRaw(ShieldCheckIcon),
     items: [
       { label: 'Conditional Access Policies' },
-      { label: 'Conditional List' },
+      { label: 'Conditional Lists' },
+      { label: 'Certificate Authority', isNew: true },
       { label: 'MFA Configurations' },
       { label: 'Device Trust' },
+      { label: 'Password Policies' },
     ],
   },
   {
@@ -133,15 +158,6 @@ const menuItems = [
   {
     label: 'Settings',
     leftIcon: markRaw(Cog6ToothIcon),
-    items: [
-      { label: 'Reports' },
-    ],
-  },
-  {
-    label: 'Alert',
-    leftIcon: markRaw(BellIcon),
-    count: 23,
-    isNew: true,
   },
 ];
 
@@ -307,6 +323,7 @@ const mainTabs = [
   { label: 'Dashboard', value: 'dashboard' },
   { label: 'Servers', value: 'servers' },
   { label: 'Profiles', value: 'profiles' },
+  { label: 'Activity Log', value: 'activity' },
 ];
 
 // ─── Server Table Columns ───
@@ -471,6 +488,391 @@ const llmProviders = [
   { id: 'bedrock', name: 'Bedrock Claude', subtitle: 'AWS Bedrock — Claude Sonnet 4', model: 'us.anthropic.claude-sonnet-4-20250514-v1:0' },
 ];
 
+// ─── Mock Data: Activity Log ───
+
+interface ActivityLogEntry {
+  id: number;
+  timestamp: string;
+  user: string;
+  action: string;
+  actionCategory: string;
+  server: string;
+  detail: string;
+  tokensUsed: number;
+  cost: string;
+  status: string;
+  statusSeverity: string;
+}
+
+const activityLogData: ActivityLogEntry[] = [
+  {
+    id: 1,
+    timestamp: '2026-03-02 14:32:05',
+    user: 'john.doe@company.com',
+    action: 'MCP Tool Call',
+    actionCategory: 'mcp_usage',
+    server: 'Github',
+    detail: 'list_pull_requests — repo:jumpcloud/admin-portal',
+    tokensUsed: 1240,
+    cost: '$0.0037',
+    status: 'Success',
+    statusSeverity: 'success',
+  },
+  {
+    id: 2,
+    timestamp: '2026-03-02 14:28:41',
+    user: 'sarah.chen@company.com',
+    action: 'Token Created',
+    actionCategory: 'token',
+    server: 'Figma',
+    detail: 'OAuth token issued — scopes: read, write',
+    tokensUsed: 0,
+    cost: '$0.00',
+    status: 'Success',
+    statusSeverity: 'success',
+  },
+  {
+    id: 3,
+    timestamp: '2026-03-02 14:25:18',
+    user: 'john.doe@company.com',
+    action: 'MCP Tool Call',
+    actionCategory: 'mcp_usage',
+    server: 'Atlassian',
+    detail: 'search_issues — jql:project=ADMIN AND status="In Progress"',
+    tokensUsed: 3420,
+    cost: '$0.0103',
+    status: 'Success',
+    statusSeverity: 'success',
+  },
+  {
+    id: 4,
+    timestamp: '2026-03-02 14:22:09',
+    user: 'admin@company.com',
+    action: 'Token Revoked',
+    actionCategory: 'token',
+    server: 'Slack',
+    detail: 'API token revoked for user mike.ross@company.com',
+    tokensUsed: 0,
+    cost: '$0.00',
+    status: 'Success',
+    statusSeverity: 'success',
+  },
+  {
+    id: 5,
+    timestamp: '2026-03-02 14:18:33',
+    user: 'sarah.chen@company.com',
+    action: 'MCP Tool Call',
+    actionCategory: 'mcp_usage',
+    server: 'Figma',
+    detail: 'get_file — file_key:xH2k9mZ, node_ids:12:44',
+    tokensUsed: 8750,
+    cost: '$0.0263',
+    status: 'Success',
+    statusSeverity: 'success',
+  },
+  {
+    id: 6,
+    timestamp: '2026-03-02 14:15:02',
+    user: 'mike.ross@company.com',
+    action: 'MCP Tool Call',
+    actionCategory: 'mcp_usage',
+    server: 'Salesforce',
+    detail: 'query_records — SOQL:SELECT Id,Name FROM Account LIMIT 10',
+    tokensUsed: 2100,
+    cost: '$0.0063',
+    status: 'Failed',
+    statusSeverity: 'danger',
+  },
+  {
+    id: 7,
+    timestamp: '2026-03-02 14:10:45',
+    user: 'john.doe@company.com',
+    action: 'Budget Spent',
+    actionCategory: 'spending',
+    server: '—',
+    detail: 'Daily budget threshold reached — 80% of $50.00 limit',
+    tokensUsed: 0,
+    cost: '$40.00',
+    status: 'Warning',
+    statusSeverity: 'warn',
+  },
+  {
+    id: 8,
+    timestamp: '2026-03-02 14:05:21',
+    user: 'admin@company.com',
+    action: 'Token Created',
+    actionCategory: 'token',
+    server: 'Github',
+    detail: 'API token issued — permissions: repo, read:org',
+    tokensUsed: 0,
+    cost: '$0.00',
+    status: 'Success',
+    statusSeverity: 'success',
+  },
+  {
+    id: 9,
+    timestamp: '2026-03-02 13:58:14',
+    user: 'sarah.chen@company.com',
+    action: 'MCP Tool Call',
+    actionCategory: 'mcp_usage',
+    server: 'JumpCloud Labs Admin',
+    detail: 'list_users — filter:active, limit:50',
+    tokensUsed: 4200,
+    cost: '$0.0126',
+    status: 'Success',
+    statusSeverity: 'success',
+  },
+  {
+    id: 10,
+    timestamp: '2026-03-02 13:52:07',
+    user: 'mike.ross@company.com',
+    action: 'Token Refreshed',
+    actionCategory: 'token',
+    server: 'Atlassian',
+    detail: 'OAuth token auto-refreshed — expires in 3600s',
+    tokensUsed: 0,
+    cost: '$0.00',
+    status: 'Success',
+    statusSeverity: 'success',
+  },
+  {
+    id: 11,
+    timestamp: '2026-03-02 13:45:33',
+    user: 'john.doe@company.com',
+    action: 'MCP Tool Call',
+    actionCategory: 'mcp_usage',
+    server: 'Github',
+    detail: 'create_pull_request — repo:jumpcloud/circuit, base:main',
+    tokensUsed: 1890,
+    cost: '$0.0057',
+    status: 'Success',
+    statusSeverity: 'success',
+  },
+  {
+    id: 12,
+    timestamp: '2026-03-02 13:40:18',
+    user: 'admin@company.com',
+    action: 'Budget Updated',
+    actionCategory: 'spending',
+    server: '—',
+    detail: 'Monthly budget increased from $500 to $750',
+    tokensUsed: 0,
+    cost: '$0.00',
+    status: 'Success',
+    statusSeverity: 'success',
+  },
+  {
+    id: 13,
+    timestamp: '2026-03-02 13:35:42',
+    user: 'sarah.chen@company.com',
+    action: 'MCP Tool Call',
+    actionCategory: 'mcp_usage',
+    server: 'Figma',
+    detail: 'get_comments — file_key:xH2k9mZ',
+    tokensUsed: 560,
+    cost: '$0.0017',
+    status: 'Success',
+    statusSeverity: 'success',
+  },
+  {
+    id: 14,
+    timestamp: '2026-03-02 13:28:55',
+    user: 'mike.ross@company.com',
+    action: 'MCP Tool Call',
+    actionCategory: 'mcp_usage',
+    server: 'Salesforce',
+    detail: 'update_record — object:Contact, id:003xx000004Tmnz',
+    tokensUsed: 1450,
+    cost: '$0.0044',
+    status: 'Failed',
+    statusSeverity: 'danger',
+  },
+  {
+    id: 15,
+    timestamp: '2026-03-02 13:22:10',
+    user: 'john.doe@company.com',
+    action: 'Token Created',
+    actionCategory: 'token',
+    server: 'JumpCloud Labs Admin',
+    detail: 'OAuth token issued — scopes: admin:read, admin:write',
+    tokensUsed: 0,
+    cost: '$0.00',
+    status: 'Success',
+    statusSeverity: 'success',
+  },
+  {
+    id: 16,
+    timestamp: '2026-03-02 13:15:30',
+    user: 'sarah.chen@company.com',
+    action: 'MCP Tool Call',
+    actionCategory: 'mcp_usage',
+    server: 'Atlassian',
+    detail: 'create_issue — project:DESIGN, type:Task',
+    tokensUsed: 2870,
+    cost: '$0.0086',
+    status: 'Success',
+    statusSeverity: 'success',
+  },
+  {
+    id: 17,
+    timestamp: '2026-03-02 13:08:22',
+    user: 'admin@company.com',
+    action: 'Budget Spent',
+    actionCategory: 'spending',
+    server: '—',
+    detail: 'Weekly spending report — total: $127.45 across 4 servers',
+    tokensUsed: 0,
+    cost: '$127.45',
+    status: 'Info',
+    statusSeverity: 'info',
+  },
+  {
+    id: 18,
+    timestamp: '2026-03-02 12:55:44',
+    user: 'mike.ross@company.com',
+    action: 'Token Expired',
+    actionCategory: 'token',
+    server: 'Slack',
+    detail: 'API token expired — last used 14 days ago',
+    tokensUsed: 0,
+    cost: '$0.00',
+    status: 'Warning',
+    statusSeverity: 'warn',
+  },
+  {
+    id: 19,
+    timestamp: '2026-03-02 12:42:11',
+    user: 'john.doe@company.com',
+    action: 'MCP Tool Call',
+    actionCategory: 'mcp_usage',
+    server: 'Github',
+    detail: 'get_file_contents — repo:jumpcloud/admin-portal, path:src/index.ts',
+    tokensUsed: 6320,
+    cost: '$0.0190',
+    status: 'Success',
+    statusSeverity: 'success',
+  },
+  {
+    id: 20,
+    timestamp: '2026-03-02 12:30:08',
+    user: 'sarah.chen@company.com',
+    action: 'MCP Tool Call',
+    actionCategory: 'mcp_usage',
+    server: 'JumpCloud Labs Admin',
+    detail: 'create_user_group — name:design-team-beta',
+    tokensUsed: 980,
+    cost: '$0.0029',
+    status: 'Success',
+    statusSeverity: 'success',
+  },
+];
+
+const activityLogColumns = [
+  {
+    field: 'timestamp',
+    header: 'Time',
+    sortable: true,
+    width: '170px',
+    component: markRaw(DataTableCellText),
+    componentProps: (sp: { data: Record<string, unknown> }) => ({
+      label: sp.data.timestamp,
+    }),
+  },
+  {
+    field: 'user',
+    header: 'User',
+    sortable: true,
+    width: '200px',
+    component: markRaw(DataTableCellLink),
+    componentProps: (sp: { data: Record<string, unknown> }) => ({
+      label: sp.data.user,
+      href: '#',
+    }),
+  },
+  {
+    field: 'action',
+    header: 'Action',
+    sortable: true,
+    width: '160px',
+    component: markRaw(Tag),
+    componentProps: (sp: { data: Record<string, unknown> }) => {
+      const category = sp.data.actionCategory as string;
+      const severityMap: Record<string, string> = {
+        mcp_usage: 'accent-aster',
+        token: 'accent-yellow',
+        spending: 'accent-moss',
+      };
+      const iconMap: Record<string, ReturnType<typeof markRaw>> = {
+        mcp_usage: markRaw(WrenchScrewdriverIcon),
+        token: markRaw(KeyIcon),
+        spending: markRaw(CurrencyDollarIcon),
+      };
+      return {
+        value: sp.data.action,
+        severity: severityMap[category] || 'neutral',
+        icon: iconMap[category],
+      };
+    },
+  },
+  {
+    field: 'server',
+    header: 'Server',
+    sortable: true,
+    width: '160px',
+    component: markRaw(DataTableCellText),
+    componentProps: (sp: { data: Record<string, unknown> }) => ({
+      label: sp.data.server,
+    }),
+  },
+  {
+    field: 'detail',
+    header: 'Details',
+    component: markRaw(DataTableCellText),
+    componentProps: (sp: { data: Record<string, unknown> }) => ({
+      label: sp.data.detail,
+    }),
+  },
+  {
+    field: 'tokensUsed',
+    header: 'Tokens',
+    sortable: true,
+    width: '110px',
+    component: markRaw(DataTableCellText),
+    componentProps: (sp: { data: Record<string, unknown> }) => {
+      const tokens = sp.data.tokensUsed as number;
+      return {
+        label: tokens > 0 ? tokens.toLocaleString() : '—',
+      };
+    },
+  },
+  {
+    field: 'cost',
+    header: 'Cost',
+    sortable: true,
+    width: '100px',
+    component: markRaw(DataTableCellText),
+    componentProps: (sp: { data: Record<string, unknown> }) => ({
+      label: sp.data.cost,
+    }),
+  },
+  {
+    field: 'status',
+    header: 'Status',
+    sortable: true,
+    width: '120px',
+    component: markRaw(DataTableCellToken),
+    componentProps: (sp: { data: Record<string, unknown> }) => ({
+      type: 'Status',
+      statusLabel: sp.data.status,
+    }),
+  },
+];
+
+const activityLogFilters = [
+  { key: 'Action', operator: 'is', value: 'MCP Tool Call', id: 'filter-action' },
+  { key: 'Status', operator: 'is', value: 'Success', id: 'filter-status' },
+];
+
 // ─── Component ───
 
 const Agent0Page = defineComponent({
@@ -502,6 +904,10 @@ const Agent0Page = defineComponent({
     ArrowTrendingUpIcon,
     CheckCircleIcon,
     TrashIcon: TrashIcon,
+    KeyIcon,
+    CurrencyDollarIcon,
+    DocumentTextIcon,
+    WrenchScrewdriverIcon,
   },
   setup() {
     // ─── View State ───
@@ -544,6 +950,56 @@ const Agent0Page = defineComponent({
     // ─── Delete Dialog ───
     const showDeleteDialog = ref(false);
     const deleteTargetName = ref('');
+
+    // ─── Activity Log State ───
+    const activityFilters = ref([...activityLogFilters]);
+    const activitySearchQuery = ref('');
+
+    const filteredActivityData = computed(() => {
+      let data = [...activityLogData];
+
+      if (activitySearchQuery.value) {
+        const q = activitySearchQuery.value.toLowerCase();
+        data = data.filter(
+          (entry) =>
+            entry.user.toLowerCase().includes(q) ||
+            entry.action.toLowerCase().includes(q) ||
+            entry.detail.toLowerCase().includes(q) ||
+            entry.server.toLowerCase().includes(q),
+        );
+      }
+
+      for (const filter of activityFilters.value) {
+        const key = filter.key.toLowerCase();
+        if (key === 'action') {
+          data = data.filter((e) => e.action === filter.value);
+        } else if (key === 'status') {
+          data = data.filter((e) => e.status === filter.value);
+        } else if (key === 'server') {
+          data = data.filter((e) => e.server === filter.value);
+        } else if (key === 'user') {
+          data = data.filter((e) => e.user.includes(filter.value));
+        } else if (key === 'category') {
+          data = data.filter((e) => e.actionCategory === filter.value);
+        }
+      }
+
+      return data;
+    });
+
+    function clearActivityFilters() {
+      activityFilters.value = [];
+    }
+
+    function removeActivityFilter(filter: { id?: string | number; key: string }) {
+      activityFilters.value = activityFilters.value.filter(
+        (f) => (filter.id ? f.id !== filter.id : f.key !== filter.key),
+      );
+    }
+
+    function handleActivitySearch(query: string) {
+      activitySearchQuery.value = query;
+    }
 
     // ─── Settings State ───
     const selectedProvider = ref('bedrock');
@@ -690,6 +1146,12 @@ const Agent0Page = defineComponent({
       recentActivity,
       topServerUsage,
       llmProviders,
+      activityLogColumns,
+      filteredActivityData,
+      activityFilters,
+      clearActivityFilters,
+      removeActivityFilter,
+      handleActivitySearch,
       handleTabChange,
       openSettings,
       openServerDetail,
@@ -712,6 +1174,7 @@ const Agent0Page = defineComponent({
         :profileMenuItems="profileMenuItems"
         activeItem="settings"
         :collapsible="true"
+        :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
@@ -870,6 +1333,48 @@ const Agent0Page = defineComponent({
                   :scrollable="true"
                   scrollHeight="flex"
                 />
+              </div>
+            </ListPageLayout>
+          </div>
+
+          <!-- Activity Log Tab -->
+          <div v-if="activeTab === 'activity'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
+            <ListPageLayout class="w-full! h-full!">
+              <div class="flex flex-col gap-0">
+                <DataTableToolbar
+                  searchPlaceholder="Search activity..."
+                  :showAddButton="false"
+                  :showFilterButton="true"
+                  :showRefreshButton="true"
+                  :showDownloadButton="true"
+                  :showColumnsButton="false"
+                  :activeFilters="activityFilters"
+                  :maxVisibleFilters="5"
+                  @search="handleActivitySearch"
+                  @clear-filters="clearActivityFilters"
+                  @remove-filter="removeActivityFilter"
+                >
+                  <template #saved-views>
+                    <span class="text-body-md text-neutral-subtle">{{ filteredActivityData.length }} Events</span>
+                  </template>
+                </DataTableToolbar>
+                <CircuitDataTable
+                  :columns="activityLogColumns"
+                  :data="filteredActivityData"
+                  :card="true"
+                  size="default"
+                  :scrollable="true"
+                  scrollHeight="flex"
+                  :paginator="true"
+                  :rows="10"
+                >
+                  <template #empty>
+                    <div class="flex flex-col items-center justify-center py-16 text-neutral-subtle">
+                      <span class="text-body-md">No activity matches your filters</span>
+                      <span class="text-body-sm mt-1">Try adjusting your search or filter criteria</span>
+                    </div>
+                  </template>
+                </CircuitDataTable>
               </div>
             </ListPageLayout>
           </div>

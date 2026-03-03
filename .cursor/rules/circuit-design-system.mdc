@@ -186,7 +186,7 @@ These patterns come from the official Circuit DS docs. Follow them exactly.
 |---|---|
 | `Button` | Use `#icon` slot with `iconProps.class` for leading icons. `loading` prop disables and replaces content with spinner. |
 | `FormField` | Always bind `inputId` from the default slot to the input's `:id` for accessibility: `<template #default="{ inputId }">`. |
-| `DataTable` | Always use `markRaw()` for column components. Use `#toolbar` slot for `DataTableToolbar`, `#empty` and `#initialEmpty` for empty states. See Section 6 for the full mandatory list page pattern. |
+| `DataTable` | Always use `markRaw()` for column components. Use `#toolbar` slot for `DataTableToolbar`, `#empty` and `#initialEmpty` for empty states. See Section 6 for the full mandatory list page pattern. When a `DataTableCellLink` column `onClick` and `@row-click` both call the same idempotent handler, this is **intended behavior — NOT a bug**. Both the row and the cell link should be clickable; do not add `e.stopPropagation()`. |
 | `DataTableToolbar` | **Always** inside `DataTable`'s `#toolbar` slot — never as a sibling. Primary "Add" button via `add-button-label` prop. See Section 6. |
 | `ActionsToolbar` | **Always** absolutely positioned floating over the table bottom (`absolute bottom-16 left-1/2 -translate-x-1/2 z-10`), wrapped in `<Transition>`. See Section 6. |
 | `Checkbox` (primitive) | Only use raw `Checkbox` from `primevue/checkbox` when NO label is needed. For labeled checkboxes, ALWAYS use `CheckboxWithLabel`. |

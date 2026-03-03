@@ -51,10 +51,6 @@ import {
   ClockIcon,
   ExclamationTriangleIcon,
   BoltIcon,
-  KeyIcon,
-  CurrencyDollarIcon,
-  DocumentTextIcon,
-  WrenchScrewdriverIcon,
 } from '@heroicons/vue/24/outline';
 
 import TopBar from '../../../../components/TopBar.vue';
@@ -801,15 +797,9 @@ const activityLogColumns = [
         token: 'accent-yellow',
         spending: 'accent-moss',
       };
-      const iconMap: Record<string, ReturnType<typeof markRaw>> = {
-        mcp_usage: markRaw(WrenchScrewdriverIcon),
-        token: markRaw(KeyIcon),
-        spending: markRaw(CurrencyDollarIcon),
-      };
       return {
         value: sp.data.action,
         severity: severityMap[category] || 'neutral',
-        icon: iconMap[category],
       };
     },
   },
@@ -903,10 +893,6 @@ const Agent0Page = defineComponent({
     ArrowTrendingUpIcon,
     CheckCircleIcon,
     TrashIcon: TrashIcon,
-    KeyIcon,
-    CurrencyDollarIcon,
-    DocumentTextIcon,
-    WrenchScrewdriverIcon,
   },
   setup() {
     // ─── View State ───

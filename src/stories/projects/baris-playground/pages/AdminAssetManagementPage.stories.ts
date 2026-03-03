@@ -76,6 +76,7 @@ import {
   SsoIcon,
   SaasManagementIcon,
   PasswordManagerIcon,
+  WorkflowIcon,
   AppleIcon,
   WindowsIcon,
   UbuntuIcon,
@@ -84,8 +85,19 @@ import {
 // ─── Navigation Data ───
 
 const menuItems = [
-  { label: 'Get Started', leftIcon: markRaw(RocketLaunchIcon) },
-  { label: 'Home', leftIcon: markRaw(HomeIcon) },
+  {
+    label: 'Get Started',
+    leftIcon: markRaw(RocketLaunchIcon),
+  },
+  {
+    label: 'Home',
+    leftIcon: markRaw(HomeIcon),
+  },
+  {
+    label: 'Alerts',
+    leftIcon: markRaw(BellIcon),
+    count: 25,
+  },
   {
     label: 'User Management',
     leftIcon: markRaw(UserGroupIcon),
@@ -93,10 +105,10 @@ const menuItems = [
       { label: 'Users', leftIcon: markRaw(UserIcon) },
       { label: 'User Groups', leftIcon: markRaw(UsersIcon) },
       { separator: true },
-      { label: 'Active Directory' },
+      { label: 'Active Directories' },
       { label: 'Cloud Directories' },
       { label: 'HR Directories' },
-      { label: 'Identity Provider' },
+      { label: 'Identity Providers' },
     ],
   },
   {
@@ -109,32 +121,39 @@ const menuItems = [
       { label: 'Asset Management', leftIcon: markRaw(ClipboardDocumentListIcon), isNew: true },
       { separator: true },
       { label: 'Policy Management' },
+      { label: 'Patch Management' },
       { label: 'Policy Groups' },
-      { label: 'Software Deployment' },
+      { label: 'Software Management' },
       { label: 'MDM' },
     ],
   },
   {
     label: 'Access',
     leftIcon: markRaw(AccessIcon),
-    count: 1,
     items: [
       { label: 'SSO Applications', leftIcon: markRaw(SsoIcon) },
-      { label: 'Access Reports', isNew: true },
-      { label: 'SaaS Management', leftIcon: markRaw(SaasManagementIcon) },
-      { label: 'Password Management', leftIcon: markRaw(PasswordManagerIcon) },
+      { label: 'Access Requests', leftIcon: markRaw(ClipboardDocumentCheckIcon) },
+      { label: 'AI & SaaS Management', leftIcon: markRaw(SaasManagementIcon) },
+      { label: 'Vault', leftIcon: markRaw(PasswordManagerIcon), isNew: true },
+      { separator: true },
       { label: 'LDAP' },
       { label: 'RADIUS' },
     ],
+  },
+  {
+    label: 'Workflows',
+    leftIcon: markRaw(WorkflowIcon),
   },
   {
     label: 'Security',
     leftIcon: markRaw(ShieldCheckIcon),
     items: [
       { label: 'Conditional Access Policies' },
-      { label: 'Conditional List' },
+      { label: 'Conditional Lists' },
+      { label: 'Certificate Authority', isNew: true },
       { label: 'MFA Configurations' },
       { label: 'Device Trust' },
+      { label: 'Password Policies' },
     ],
   },
   {
@@ -148,9 +167,7 @@ const menuItems = [
   {
     label: 'Settings',
     leftIcon: markRaw(Cog6ToothIcon),
-    items: [{ label: 'Reports' }],
   },
-  { label: 'Alert', leftIcon: markRaw(BellIcon), count: 23, isNew: true },
 ];
 
 const profileMenuItems = [
@@ -1096,6 +1113,7 @@ const AdminAssetManagementPage = defineComponent({
         :profileMenuItems="profileMenuItems"
         activeItem="device management"
         :collapsible="true"
+        :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
@@ -1138,19 +1156,7 @@ const AdminAssetManagementPage = defineComponent({
         <template v-if="currentView === 'list'">
 
           <!-- Devices Tab -->
-          <div v-if="activeListTab === 'devices'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
-            <div class="shrink-0 px-6">
-              <DataTableToolbar
-                searchPlaceholder="Search devices..."
-                :showAddButton="true"
-                addButtonLabel="Add Asset"
-                @add="openAddAsset"
-                :showFilterButton="true"
-                :showRefreshButton="true"
-                :showColumnsButton="true"
-              />
-            </div>
-            <div class="flex-1 flex flex-col min-h-0 px-6">
+          <div v-if="activeListTab === 'devices'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 relative bg-neutral-surface">
               <CircuitDataTable
                 :columns="deviceColumnsWithActions"
                 :data="assets"
@@ -1176,24 +1182,23 @@ const AdminAssetManagementPage = defineComponent({
                   tableContainer: { style: 'flex: 1 1 0; min-height: 0; height: 100%;' },
                 }"
                 :ptOptions="{ mergeSections: true, mergeProps: true }"
-              />
-            </div>
+              >
+                <template #toolbar>
+                  <DataTableToolbar
+                    searchPlaceholder="Search devices..."
+                    :showAddButton="true"
+                    addButtonLabel="Add Asset"
+                    @add="openAddAsset"
+                    :showFilterButton="true"
+                    :showRefreshButton="true"
+                    :showColumnsButton="true"
+                  />
+                </template>
+              </CircuitDataTable>
           </div>
 
           <!-- Accessories Tab -->
-          <div v-if="activeListTab === 'accessories'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
-            <div class="shrink-0 px-6">
-              <DataTableToolbar
-                searchPlaceholder="Search accessories..."
-                :showAddButton="true"
-                addButtonLabel="Add Accessory"
-                @add="openAddAsset"
-                :showFilterButton="true"
-                :showRefreshButton="true"
-                :showColumnsButton="true"
-              />
-            </div>
-            <div class="flex-1 flex flex-col min-h-0 px-6">
+          <div v-if="activeListTab === 'accessories'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 relative bg-neutral-surface">
               <CircuitDataTable
                 :columns="accessoryColumns"
                 :data="accessoryAssetsData"
@@ -1208,23 +1213,23 @@ const AdminAssetManagementPage = defineComponent({
                   tableContainer: { style: 'flex: 1 1 0; min-height: 0; height: 100%;' },
                 }"
                 :ptOptions="{ mergeSections: true, mergeProps: true }"
-              />
-            </div>
+              >
+                <template #toolbar>
+                  <DataTableToolbar
+                    searchPlaceholder="Search accessories..."
+                    :showAddButton="true"
+                    addButtonLabel="Add Accessory"
+                    @add="openAddAsset"
+                    :showFilterButton="true"
+                    :showRefreshButton="true"
+                    :showColumnsButton="true"
+                  />
+                </template>
+              </CircuitDataTable>
           </div>
 
           <!-- Locations Tab -->
-          <div v-if="activeListTab === 'locations'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
-            <div class="shrink-0 px-6">
-              <DataTableToolbar
-                searchPlaceholder="Search locations..."
-                :showAddButton="true"
-                addButtonLabel="Add Location"
-                @add="openAddAsset"
-                :showFilterButton="true"
-                :showRefreshButton="true"
-              />
-            </div>
-            <div class="flex-1 flex flex-col min-h-0 px-6">
+          <div v-if="activeListTab === 'locations'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 relative bg-neutral-surface">
               <CircuitDataTable
                 :columns="locationColumns"
                 :data="locationData"
@@ -1237,8 +1242,18 @@ const AdminAssetManagementPage = defineComponent({
                   tableContainer: { style: 'flex: 1 1 0; min-height: 0; height: 100%;' },
                 }"
                 :ptOptions="{ mergeSections: true, mergeProps: true }"
-              />
-            </div>
+              >
+                <template #toolbar>
+                  <DataTableToolbar
+                    searchPlaceholder="Search locations..."
+                    :showAddButton="true"
+                    addButtonLabel="Add Location"
+                    @add="openAddAsset"
+                    :showFilterButton="true"
+                    :showRefreshButton="true"
+                  />
+                </template>
+              </CircuitDataTable>
           </div>
         </template>
 

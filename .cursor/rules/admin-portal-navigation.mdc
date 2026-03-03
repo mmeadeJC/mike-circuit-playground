@@ -20,14 +20,14 @@ import { AppNavigation } from '@jumpcloud/circuit/components';
 import {
   RocketLaunchIcon, HomeIcon, UserGroupIcon, ShieldCheckIcon,
   ChartBarSquareIcon, Cog6ToothIcon, BellIcon, UserIcon, UsersIcon,
-  CommandLineIcon, ClipboardDocumentListIcon,
+  CommandLineIcon, ClipboardDocumentListIcon, ClipboardDocumentCheckIcon,
   ArrowRightStartOnRectangleIcon, ArrowTopRightOnSquareIcon,
 } from '@heroicons/vue/24/outline';
 
 // JumpCloud custom icons
 import {
   DeviceManagementIcon, AccessIcon, DeviceListsIcon, DeviceGroupsIcon,
-  SsoIcon, SaasManagementIcon, PasswordManagerIcon,
+  SsoIcon, SaasManagementIcon, PasswordManagerIcon, WorkflowIcon,
 } from '@jumpcloud/icons';
 ```
 
@@ -46,6 +46,7 @@ Every project page must use this layout structure:
     :profileMenuItems="profileMenuItems"
     :activeItem="activeNavItem"
     :collapsible="true"
+    :topNavToggle="true"
   />
   <div class="flex-1 flex flex-col min-w-0 overflow-auto">
     <!-- Page content here -->

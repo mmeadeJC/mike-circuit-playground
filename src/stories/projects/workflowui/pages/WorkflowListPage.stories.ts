@@ -24,9 +24,11 @@ import {
   ArrowTopRightOnSquareIcon,
   BoltIcon,
   CalendarDaysIcon,
+} from '@heroicons/vue/24/outline';
+import {
   CheckCircleIcon,
   XCircleIcon,
-} from '@heroicons/vue/24/outline';
+} from '@heroicons/vue/24/solid';
 
 import TopBar from '../../../../components/TopBar.vue';
 

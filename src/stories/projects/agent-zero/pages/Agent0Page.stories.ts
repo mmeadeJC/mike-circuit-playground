@@ -368,7 +368,6 @@ const serverColumns = [
     componentProps: (sp: { data: Record<string, unknown> }) => ({
       value: sp.data.status,
       severity: sp.data.statusConnected ? 'success' : 'danger',
-      icon: sp.data.statusConnected ? markRaw(CheckCircleIcon) : markRaw(XCircleIcon),
     }),
   },
   {
@@ -1284,98 +1283,100 @@ const Agent0Page = defineComponent({
           <!-- Servers Tab -->
           <div v-if="activeTab === 'servers'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
             <ListPageLayout class="w-full! h-full!">
-              <div class="flex flex-col gap-0">
-                <DataTableToolbar
-                  searchPlaceholder="Search servers..."
-                  :showAddButton="true"
-                  addButtonLabel="Add Server"
-                  :showFilterButton="false"
-                  :showRefreshButton="false"
-                  :showColumnsButton="false"
-                  :showDownloadButton="false"
-                />
-                <CircuitDataTable
-                  :columns="serverColumns"
-                  :data="serversData"
-                  selectionMode="multiple"
-                  :selection="selectedServers"
-                  @update:selection="selectedServers = $event"
-                  @row-click="handleServerRowClick"
-                  :card="true"
-                  size="default"
-                  :scrollable="true"
-                  scrollHeight="flex"
-                />
-              </div>
+              <CircuitDataTable
+                :columns="serverColumns"
+                :data="serversData"
+                selectionMode="multiple"
+                :selection="selectedServers"
+                @update:selection="selectedServers = $event"
+                @row-click="handleServerRowClick"
+                :card="true"
+                size="default"
+                :scrollable="true"
+                scrollHeight="flex"
+              >
+                <template #toolbar>
+                  <DataTableToolbar
+                    searchPlaceholder="Search servers..."
+                    :showAddButton="true"
+                    addButtonLabel="Add Server"
+                    :showFilterButton="false"
+                    :showRefreshButton="false"
+                    :showColumnsButton="false"
+                    :showDownloadButton="false"
+                  />
+                </template>
+              </CircuitDataTable>
             </ListPageLayout>
           </div>
 
           <!-- Profiles Tab -->
           <div v-if="activeTab === 'profiles'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
             <ListPageLayout class="w-full! h-full!">
-              <div class="flex flex-col gap-0">
-                <DataTableToolbar
-                  searchPlaceholder="Search profiles..."
-                  :showAddButton="true"
-                  addButtonLabel="Add Profile"
-                  @add="openAddProfile"
-                  :showFilterButton="false"
-                  :showRefreshButton="false"
-                  :showColumnsButton="false"
-                  :showDownloadButton="false"
-                />
-                <CircuitDataTable
-                  :columns="profileColumns"
-                  :data="profilesData"
-                  @row-click="handleProfileRowClick"
-                  :card="true"
-                  size="default"
-                  :scrollable="true"
-                  scrollHeight="flex"
-                />
-              </div>
+              <CircuitDataTable
+                :columns="profileColumns"
+                :data="profilesData"
+                @row-click="handleProfileRowClick"
+                :card="true"
+                size="default"
+                :scrollable="true"
+                scrollHeight="flex"
+              >
+                <template #toolbar>
+                  <DataTableToolbar
+                    searchPlaceholder="Search profiles..."
+                    :showAddButton="true"
+                    addButtonLabel="Add Profile"
+                    @add="openAddProfile"
+                    :showFilterButton="false"
+                    :showRefreshButton="false"
+                    :showColumnsButton="false"
+                    :showDownloadButton="false"
+                  />
+                </template>
+              </CircuitDataTable>
             </ListPageLayout>
           </div>
 
           <!-- Activity Log Tab -->
           <div v-if="activeTab === 'activity'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
             <ListPageLayout class="w-full! h-full!">
-              <div class="flex flex-col gap-0">
-                <DataTableToolbar
-                  searchPlaceholder="Search activity..."
-                  :showAddButton="false"
-                  :showFilterButton="true"
-                  :showRefreshButton="true"
-                  :showDownloadButton="true"
-                  :showColumnsButton="false"
-                  :activeFilters="activityFilters"
-                  :maxVisibleFilters="5"
-                  @search="handleActivitySearch"
-                  @clear-filters="clearActivityFilters"
-                  @remove-filter="removeActivityFilter"
-                >
-                  <template #saved-views>
-                    <span class="text-body-md text-neutral-subtle">{{ filteredActivityData.length }} Events</span>
-                  </template>
-                </DataTableToolbar>
-                <CircuitDataTable
-                  :columns="activityLogColumns"
-                  :data="filteredActivityData"
-                  :card="true"
-                  size="default"
-                  :scrollable="true"
-                  scrollHeight="flex"
-                  :paginator="true"
-                  :rows="10"
-                >
-                  <template #empty>
-                    <div class="flex flex-col items-center justify-center py-16 text-neutral-subtle">
-                      <span class="text-body-md">No activity matches your filters</span>
-                      <span class="text-body-sm mt-1">Try adjusting your search or filter criteria</span>
-                    </div>
-                  </template>
-                </CircuitDataTable>
-              </div>
+              <CircuitDataTable
+                :columns="activityLogColumns"
+                :data="filteredActivityData"
+                :card="true"
+                size="default"
+                :scrollable="true"
+                scrollHeight="flex"
+                :paginator="true"
+                :rows="10"
+              >
+                <template #toolbar>
+                  <DataTableToolbar
+                    searchPlaceholder="Search activity..."
+                    :showAddButton="false"
+                    :showFilterButton="true"
+                    :showRefreshButton="true"
+                    :showDownloadButton="true"
+                    :showColumnsButton="false"
+                    :activeFilters="activityFilters"
+                    :maxVisibleFilters="5"
+                    @search="handleActivitySearch"
+                    @clear-filters="clearActivityFilters"
+                    @remove-filter="removeActivityFilter"
+                  >
+                    <template #saved-views>
+                      <span class="text-body-md text-neutral-subtle">{{ filteredActivityData.length }} Events</span>
+                    </template>
+                  </DataTableToolbar>
+                </template>
+                <template #empty>
+                  <div class="flex flex-col items-center justify-center py-16 text-neutral-subtle">
+                    <span class="text-body-md">No activity matches your filters</span>
+                    <span class="text-body-sm mt-1">Try adjusting your search or filter criteria</span>
+                  </div>
+                </template>
+              </CircuitDataTable>
             </ListPageLayout>
           </div>
         </template>

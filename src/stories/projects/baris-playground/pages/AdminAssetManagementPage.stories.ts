@@ -1156,19 +1156,7 @@ const AdminAssetManagementPage = defineComponent({
         <template v-if="currentView === 'list'">
 
           <!-- Devices Tab -->
-          <div v-if="activeListTab === 'devices'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
-            <div class="shrink-0 px-6">
-              <DataTableToolbar
-                searchPlaceholder="Search devices..."
-                :showAddButton="true"
-                addButtonLabel="Add Asset"
-                @add="openAddAsset"
-                :showFilterButton="true"
-                :showRefreshButton="true"
-                :showColumnsButton="true"
-              />
-            </div>
-            <div class="flex-1 flex flex-col min-h-0 px-6">
+          <div v-if="activeListTab === 'devices'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 relative bg-neutral-surface">
               <CircuitDataTable
                 :columns="deviceColumnsWithActions"
                 :data="assets"
@@ -1194,24 +1182,23 @@ const AdminAssetManagementPage = defineComponent({
                   tableContainer: { style: 'flex: 1 1 0; min-height: 0; height: 100%;' },
                 }"
                 :ptOptions="{ mergeSections: true, mergeProps: true }"
-              />
-            </div>
+              >
+                <template #toolbar>
+                  <DataTableToolbar
+                    searchPlaceholder="Search devices..."
+                    :showAddButton="true"
+                    addButtonLabel="Add Asset"
+                    @add="openAddAsset"
+                    :showFilterButton="true"
+                    :showRefreshButton="true"
+                    :showColumnsButton="true"
+                  />
+                </template>
+              </CircuitDataTable>
           </div>
 
           <!-- Accessories Tab -->
-          <div v-if="activeListTab === 'accessories'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
-            <div class="shrink-0 px-6">
-              <DataTableToolbar
-                searchPlaceholder="Search accessories..."
-                :showAddButton="true"
-                addButtonLabel="Add Accessory"
-                @add="openAddAsset"
-                :showFilterButton="true"
-                :showRefreshButton="true"
-                :showColumnsButton="true"
-              />
-            </div>
-            <div class="flex-1 flex flex-col min-h-0 px-6">
+          <div v-if="activeListTab === 'accessories'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 relative bg-neutral-surface">
               <CircuitDataTable
                 :columns="accessoryColumns"
                 :data="accessoryAssetsData"
@@ -1226,23 +1213,23 @@ const AdminAssetManagementPage = defineComponent({
                   tableContainer: { style: 'flex: 1 1 0; min-height: 0; height: 100%;' },
                 }"
                 :ptOptions="{ mergeSections: true, mergeProps: true }"
-              />
-            </div>
+              >
+                <template #toolbar>
+                  <DataTableToolbar
+                    searchPlaceholder="Search accessories..."
+                    :showAddButton="true"
+                    addButtonLabel="Add Accessory"
+                    @add="openAddAsset"
+                    :showFilterButton="true"
+                    :showRefreshButton="true"
+                    :showColumnsButton="true"
+                  />
+                </template>
+              </CircuitDataTable>
           </div>
 
           <!-- Locations Tab -->
-          <div v-if="activeListTab === 'locations'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
-            <div class="shrink-0 px-6">
-              <DataTableToolbar
-                searchPlaceholder="Search locations..."
-                :showAddButton="true"
-                addButtonLabel="Add Location"
-                @add="openAddAsset"
-                :showFilterButton="true"
-                :showRefreshButton="true"
-              />
-            </div>
-            <div class="flex-1 flex flex-col min-h-0 px-6">
+          <div v-if="activeListTab === 'locations'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 relative bg-neutral-surface">
               <CircuitDataTable
                 :columns="locationColumns"
                 :data="locationData"
@@ -1255,8 +1242,18 @@ const AdminAssetManagementPage = defineComponent({
                   tableContainer: { style: 'flex: 1 1 0; min-height: 0; height: 100%;' },
                 }"
                 :ptOptions="{ mergeSections: true, mergeProps: true }"
-              />
-            </div>
+              >
+                <template #toolbar>
+                  <DataTableToolbar
+                    searchPlaceholder="Search locations..."
+                    :showAddButton="true"
+                    addButtonLabel="Add Location"
+                    @add="openAddAsset"
+                    :showFilterButton="true"
+                    :showRefreshButton="true"
+                  />
+                </template>
+              </CircuitDataTable>
           </div>
         </template>
 

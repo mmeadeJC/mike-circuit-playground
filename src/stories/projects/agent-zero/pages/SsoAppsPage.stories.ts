@@ -776,49 +776,48 @@ const SsoAppsPage = defineComponent({
         </PageHeader>
 
         <!-- ============ LIST VIEW ============ -->
-        <div v-if="currentView === 'list'" class="flex-1 flex flex-col min-h-0 overflow-hidden">
-          <div class="shrink-0 px-6">
-            <DataTableToolbar
-              addButtonLabel="Add SSO App"
-              searchPlaceholder="Search"
-              :showAddButton="true"
-              :showRefreshButton="true"
-              :showColumnsButton="false"
-              :showDownloadButton="true"
-            >
-              <template #saved-views>
-                <span class="text-body-md text-neutral-subtle">75 Applications</span>
-              </template>
-            </DataTableToolbar>
-          </div>
-          <div class="flex-1 flex flex-col min-h-0 px-6">
-            <CircuitDataTable
-              :columns="listColumns"
-              :data="ssoAppsData"
-              selectionMode="multiple"
-              :selection="selectedApps"
-              @update:selection="selectedApps = $event"
-              @row-click="handleAppClick($event.data)"
-              :card="true"
-              size="default"
-              scrollable
-              scrollHeight="flex"
-              :paginator="true"
-              :rows="10"
-              :rowsPerPageOptions="[
-                { label: '10 Items per page', value: 10 },
-                { label: '20 Items per page', value: 20 },
-                { label: '50 Items per page', value: 50 },
-              ]"
-              :showRowsPerPageOptions="true"
-              :showPageReport="true"
-              :pt="{
-                root: { style: 'flex: 1 1 0; min-height: 0; height: 100%;' },
-                tableContainer: { style: 'flex: 1 1 0; min-height: 0; height: 100%;' },
-              }"
-              :ptOptions="{ mergeSections: true, mergeProps: true }"
-            />
-          </div>
+        <div v-if="currentView === 'list'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 relative">
+          <CircuitDataTable
+            :columns="listColumns"
+            :data="ssoAppsData"
+            selectionMode="multiple"
+            :selection="selectedApps"
+            @update:selection="selectedApps = $event"
+            @row-click="handleAppClick($event.data)"
+            :card="true"
+            size="default"
+            scrollable
+            scrollHeight="flex"
+            :paginator="true"
+            :rows="10"
+            :rowsPerPageOptions="[
+              { label: '10 Items per page', value: 10 },
+              { label: '20 Items per page', value: 20 },
+              { label: '50 Items per page', value: 50 },
+            ]"
+            :showRowsPerPageOptions="true"
+            :showPageReport="true"
+            :pt="{
+              root: { style: 'flex: 1 1 0; min-height: 0; height: 100%;' },
+              tableContainer: { style: 'flex: 1 1 0; min-height: 0; height: 100%;' },
+            }"
+            :ptOptions="{ mergeSections: true, mergeProps: true }"
+          >
+            <template #toolbar>
+              <DataTableToolbar
+                addButtonLabel="Add SSO App"
+                searchPlaceholder="Search"
+                :showAddButton="true"
+                :showRefreshButton="true"
+                :showColumnsButton="false"
+                :showDownloadButton="true"
+              >
+                <template #saved-views>
+                  <span class="text-body-md text-neutral-subtle">75 Applications</span>
+                </template>
+              </DataTableToolbar>
+            </template>
+          </CircuitDataTable>
         </div>
 
         <!-- ============ DETAIL VIEW ============ -->
@@ -1109,49 +1108,48 @@ const SsoAppsPage = defineComponent({
           </ConfigPageLayout>
 
           <!-- ── Tab: User Groups ── -->
-          <div v-if="activeTab === 'user-groups'" class="flex-1 flex flex-col min-h-0 overflow-hidden">
-            <div class="shrink-0 px-6">
-              <DataTableToolbar
-                searchPlaceholder="Search..."
-                :showAddButton="false"
-                :showFilterButton="true"
-                :showRefreshButton="true"
-                :showColumnsButton="true"
-              >
-                <template #saved-views>
-                  <CheckboxWithLabel :modelValue="false">
-                    <template #label>Show bound User Groups (0)</template>
-                  </CheckboxWithLabel>
-                </template>
-              </DataTableToolbar>
-            </div>
-            <div class="flex-1 flex flex-col min-h-0 px-6">
-              <CircuitDataTable
-                :columns="userGroupsColumns"
-                :data="userGroupsData"
-                selectionMode="multiple"
-                :selection="selectedDetailGroups"
-                @update:selection="selectedDetailGroups = $event"
-                :card="true"
-                size="default"
-                scrollable
-                scrollHeight="flex"
-                :paginator="true"
-                :rows="10"
-                :rowsPerPageOptions="[
-                  { label: '10 Items per page', value: 10 },
-                  { label: '20 Items per page', value: 20 },
-                  { label: '50 Items per page', value: 50 },
-                ]"
-                :showRowsPerPageOptions="true"
-                :showPageReport="true"
-                :pt="{
-                  root: { style: 'flex: 1 1 0; min-height: 0; height: 100%;' },
-                  tableContainer: { style: 'flex: 1 1 0; min-height: 0; height: 100%;' },
-                }"
-                :ptOptions="{ mergeSections: true, mergeProps: true }"
-              />
-            </div>
+          <div v-if="activeTab === 'user-groups'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 relative">
+            <CircuitDataTable
+              :columns="userGroupsColumns"
+              :data="userGroupsData"
+              selectionMode="multiple"
+              :selection="selectedDetailGroups"
+              @update:selection="selectedDetailGroups = $event"
+              :card="true"
+              size="default"
+              scrollable
+              scrollHeight="flex"
+              :paginator="true"
+              :rows="10"
+              :rowsPerPageOptions="[
+                { label: '10 Items per page', value: 10 },
+                { label: '20 Items per page', value: 20 },
+                { label: '50 Items per page', value: 50 },
+              ]"
+              :showRowsPerPageOptions="true"
+              :showPageReport="true"
+              :pt="{
+                root: { style: 'flex: 1 1 0; min-height: 0; height: 100%;' },
+                tableContainer: { style: 'flex: 1 1 0; min-height: 0; height: 100%;' },
+              }"
+              :ptOptions="{ mergeSections: true, mergeProps: true }"
+            >
+              <template #toolbar>
+                <DataTableToolbar
+                  searchPlaceholder="Search..."
+                  :showAddButton="false"
+                  :showFilterButton="true"
+                  :showRefreshButton="true"
+                  :showColumnsButton="true"
+                >
+                  <template #saved-views>
+                    <CheckboxWithLabel :modelValue="false">
+                      <template #label>Show bound User Groups (0)</template>
+                    </CheckboxWithLabel>
+                  </template>
+                </DataTableToolbar>
+              </template>
+            </CircuitDataTable>
           </div>
 
         </template>

@@ -657,17 +657,7 @@ const UserPortalAssetsPage = defineComponent({
 
         <!-- ============ LIST VIEW ============ -->
         <div v-if="currentView === 'list'" class="flex-1 flex flex-col min-h-0 overflow-hidden">
-          <div class="flex-1 flex flex-col min-h-0 w-full max-w-5xl mx-auto px-6">
-            <div class="shrink-0">
-              <DataTableToolbar
-                searchPlaceholder="Search assets..."
-                :showAddButton="false"
-                :showFilterButton="true"
-                :showRefreshButton="true"
-                :showColumnsButton="true"
-              />
-            </div>
-            <div class="flex-1 flex flex-col min-h-0">
+          <div class="flex-1 flex flex-col min-h-0 w-full max-w-5xl mx-auto px-6 relative">
               <CircuitDataTable
                 :columns="assetColumnsWithClick"
                 :data="assets"
@@ -690,8 +680,17 @@ const UserPortalAssetsPage = defineComponent({
                   tableContainer: { style: 'flex: 1 1 0; min-height: 0; height: 100%;' },
                 }"
                 :ptOptions="{ mergeSections: true, mergeProps: true }"
-              />
-            </div>
+              >
+                <template #toolbar>
+                  <DataTableToolbar
+                    searchPlaceholder="Search assets..."
+                    :showAddButton="false"
+                    :showFilterButton="true"
+                    :showRefreshButton="true"
+                    :showColumnsButton="true"
+                  />
+                </template>
+              </CircuitDataTable>
           </div>
         </div>
 

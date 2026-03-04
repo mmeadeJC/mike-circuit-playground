@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
-import { ref, computed, markRaw, defineComponent, reactive } from 'vue';
+import { ref, computed, markRaw, defineComponent, reactive, onMounted, onUnmounted, watch } from 'vue';
 import {
   AppNavigation,
   PageHeader,
@@ -13,6 +13,7 @@ import {
   FormField,
   ToggleSwitch,
   SeverityDialog,
+  CheckboxWithLabel,
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
@@ -22,6 +23,9 @@ import Select from 'primevue/select';
 import MultiSelect from 'primevue/multiselect';
 import Dialog from 'primevue/dialog';
 import Divider from 'primevue/divider';
+import Drawer from 'primevue/drawer';
+import SelectButton from 'primevue/selectbutton';
+import Chart from 'primevue/chart';
 
 import {
   RocketLaunchIcon,
@@ -46,6 +50,7 @@ import {
   EyeIcon,
   EyeSlashIcon,
   ArrowTrendingUpIcon,
+  ArrowUpIcon,
   ServerStackIcon,
   UserCircleIcon,
   ClockIcon,
@@ -54,6 +59,7 @@ import {
 } from '@heroicons/vue/24/outline';
 
 import TopBar from '../../../../components/TopBar.vue';
+import PageSection from '../../../../components/PageSection.vue';
 import ListPageLayout from '../../../../components/layout/page-layouts/ListPageLayout.vue';
 import ConfigPageLayout from '../../../../components/layout/page-layouts/ConfigPageLayout.vue';
 import DashboardPageLayout from '../../../../components/layout/page-layouts/DashboardPageLayout.vue';
@@ -313,6 +319,32 @@ const profilesData: Profile[] = [
   },
 ];
 
+// ─── Mock Data: User Groups (bound to profiles) ───
+
+interface UserGroup {
+  id: number;
+  name: string;
+  slug: string;
+  memberCount: number;
+  createdAt: string;
+}
+
+const userGroupsData: UserGroup[] = [
+  { id: 1, name: 'Backend Engineers', slug: 'backend-eng', memberCount: 24, createdAt: '1/15/2026' },
+  { id: 2, name: 'Frontend Engineers', slug: 'frontend-eng', memberCount: 18, createdAt: '1/15/2026' },
+  { id: 3, name: 'DevOps', slug: 'devops', memberCount: 8, createdAt: '1/20/2026' },
+  { id: 4, name: 'Design Team', slug: 'design-team', memberCount: 12, createdAt: '2/01/2026' },
+  { id: 5, name: 'Sales Team', slug: 'sales-team', memberCount: 15, createdAt: '2/05/2026' },
+  { id: 6, name: 'Marketing', slug: 'marketing', memberCount: 10, createdAt: '2/05/2026' },
+  { id: 7, name: 'QA Engineers', slug: 'qa-eng', memberCount: 6, createdAt: '2/10/2026' },
+];
+
+const profileUserGroups: Record<string, string[]> = {
+  engineering: ['backend-eng', 'frontend-eng', 'devops', 'qa-eng'],
+  design: ['design-team', 'frontend-eng'],
+  sales: ['sales-team', 'marketing'],
+};
+
 // ─── Tabs ───
 
 const mainTabs = [
@@ -320,6 +352,96 @@ const mainTabs = [
   { label: 'Servers', value: 'servers' },
   { label: 'Profiles', value: 'profiles' },
   { label: 'Activity Log', value: 'activity' },
+];
+
+const profileDetailTabs = [
+  { label: 'Overview', value: 'overview' },
+  { label: 'Servers', value: 'profile-servers' },
+  { label: 'User Groups', value: 'profile-user-groups' },
+];
+
+// ─── Profile Detail: Bound Servers Columns ───
+
+const profileServerColumns = [
+  {
+    field: 'name',
+    header: 'Server Name',
+    sortable: true,
+    component: markRaw(DataTableCellLink),
+    componentProps: (sp: { data: Record<string, unknown> }) => ({
+      label: sp.data.name,
+      href: '#',
+    }),
+  },
+  {
+    field: 'url',
+    header: 'URL',
+    sortable: true,
+    component: markRaw(DataTableCellText),
+    componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.url }),
+  },
+  {
+    field: 'connectionType',
+    header: 'Connection Type',
+    sortable: true,
+    width: '160px',
+    component: markRaw(DataTableCellToken),
+    componentProps: (sp: { data: Record<string, unknown> }) => ({
+      label: sp.data.connectionType,
+      severity: sp.data.connectionTypeSeverity,
+    }),
+  },
+  {
+    field: 'status',
+    header: 'Status',
+    sortable: true,
+    width: '140px',
+    component: markRaw(DataTableCellText),
+    componentProps: (sp: { data: Record<string, unknown> }) => ({
+      label: sp.data.status,
+      class: sp.data.statusConnected ? 'text-status-success-base' : 'text-error-base',
+    }),
+  },
+];
+
+// ─── Profile Detail: Bound User Groups Columns ───
+
+const profileUserGroupColumns = [
+  {
+    field: 'name',
+    header: 'Group Name',
+    sortable: true,
+    component: markRaw(DataTableCellLink),
+    componentProps: (sp: { data: Record<string, unknown> }) => ({
+      label: sp.data.name,
+      href: '#',
+    }),
+  },
+  {
+    field: 'slug',
+    header: 'Slug',
+    sortable: true,
+    component: markRaw(DataTableCellText),
+    componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.slug }),
+  },
+  {
+    field: 'memberCount',
+    header: 'Members',
+    sortable: true,
+    width: '120px',
+    component: markRaw(DataTableCellText),
+    componentProps: (sp: { data: Record<string, unknown> }) => ({
+      label: String(sp.data.memberCount),
+    }),
+  },
+  {
+    field: 'createdAt',
+    header: 'Created At',
+    sortable: true,
+    width: '140px',
+    component: markRaw(DataTableCellText),
+    componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.createdAt }),
+  },
 ];
 
 // ─── Server Table Columns ───
@@ -399,7 +521,6 @@ function getProfileColumns(serversRef: Server[]) {
       field: 'name',
       header: 'Name',
       sortable: true,
-      width: '200px',
       component: markRaw(DataTableCellLink),
       componentProps: (sp: { data: Record<string, unknown> }) => ({
         label: sp.data.name,
@@ -410,7 +531,6 @@ function getProfileColumns(serversRef: Server[]) {
     {
       field: 'serverIds',
       header: 'Servers',
-      width: '200px',
       component: markRaw(DataTableCellText),
       componentProps: (sp: { data: Record<string, unknown> }) => {
         const ids = sp.data.serverIds as string[];
@@ -459,20 +579,234 @@ const dashboardStats = [
 ];
 
 const recentActivity = [
-  { time: '2 min ago', event: 'User john.doe@company.com connected to Figma MCP server' },
-  { time: '5 min ago', event: 'Profile "engineering" updated — added Github server' },
-  { time: '12 min ago', event: 'Atlassian server health check passed' },
-  { time: '28 min ago', event: 'New user sarah.chen@company.com added to Design profile' },
-  { time: '1 hour ago', event: 'Salesforce server connection failed — retrying' },
-  { time: '2 hours ago', event: 'LLM configuration updated — switched to Bedrock Claude' },
-  { time: '3 hours ago', event: 'Slack server added by admin' },
+  { user: 'John Doe', server: 'Figma', time: '2 min ago', event: 'Connected to Figma MCP server' },
+  { user: 'John Doe', server: 'Github', time: '8 min ago', event: 'Tool call: list_pull_requests — 1,240 tokens' },
+  { user: 'Sarah Chen', server: 'Figma', time: '12 min ago', event: 'Tool call: get_file — 8,750 tokens' },
+  { user: 'Sarah Chen', server: 'Figma', time: '15 min ago', event: 'OAuth token refreshed automatically' },
+  { user: 'John Doe', server: 'Atlassian', time: '18 min ago', event: 'Tool call: search_issues — 3,420 tokens' },
+  { user: 'Mike Ross', server: 'Salesforce', time: '25 min ago', event: 'Tool call: query_records — failed (connection timeout)' },
+  { user: 'Sarah Chen', server: 'Atlassian', time: '32 min ago', event: 'Connected to Atlassian MCP server' },
+  { user: 'John Doe', server: 'Github', time: '38 min ago', event: 'Tool call: create_pull_request — 1,890 tokens' },
+  { user: 'Lisa Wang', server: 'Figma', time: '45 min ago', event: 'Tool call: get_comments — 560 tokens' },
+  { user: 'Mike Ross', server: 'Salesforce', time: '52 min ago', event: 'Connected to Salesforce MCP server' },
+  { user: 'Sarah Chen', server: 'JumpCloud Labs', time: '1 hour ago', event: 'Tool call: list_users — 4,200 tokens' },
+  { user: 'John Doe', server: 'Github', time: '1.2 hours ago', event: 'Tool call: get_file_contents — 6,320 tokens' },
+  { user: 'Lisa Wang', server: 'Atlassian', time: '1.5 hours ago', event: 'Connected to Atlassian MCP server' },
+  { user: 'Alex Kim', server: 'Github', time: '1.8 hours ago', event: 'Tool call: list_repositories — 3,750 tokens' },
+  { user: 'Sarah Chen', server: 'Figma', time: '2 hours ago', event: 'Tool call: search_files — 2,100 tokens' },
+  { user: 'Mike Ross', server: 'Salesforce', time: '2.2 hours ago', event: 'Tool call: update_record — failed (auth expired)' },
+  { user: 'John Doe', server: 'Atlassian', time: '2.5 hours ago', event: 'Tool call: create_issue — 2,870 tokens' },
+  { user: 'Alex Kim', server: 'Github', time: '2.8 hours ago', event: 'Connected to Github MCP server' },
+  { user: 'Sarah Chen', server: 'JumpCloud Labs', time: '3 hours ago', event: 'Tool call: create_user_group — 980 tokens' },
+  { user: 'Lisa Wang', server: 'Figma', time: '3.2 hours ago', event: 'Tool call: get_file — 4,100 tokens' },
+  { user: 'John Doe', server: 'Github', time: '3.5 hours ago', event: 'Tool call: search_code — 1,450 tokens' },
+  { user: 'Mike Ross', server: 'Salesforce', time: '4 hours ago', event: 'OAuth token refreshed automatically' },
+  { user: 'Sarah Chen', server: 'Atlassian', time: '4.3 hours ago', event: 'Tool call: get_project — 1,620 tokens' },
+  { user: 'Alex Kim', server: 'JumpCloud Labs', time: '4.5 hours ago', event: 'Tool call: list_devices — 3,200 tokens' },
+  { user: 'John Doe', server: 'Figma', time: '5 hours ago', event: 'Tool call: export_component — 5,800 tokens' },
+  { user: 'Lisa Wang', server: 'Atlassian', time: '5.5 hours ago', event: 'Tool call: add_comment — 720 tokens' },
+  { user: 'Sarah Chen', server: 'Github', time: '6 hours ago', event: 'Connected to Github MCP server' },
+  { user: 'Mike Ross', server: 'JumpCloud Labs', time: '6.5 hours ago', event: 'Tool call: get_user — 890 tokens' },
+  { user: 'John Doe', server: 'Atlassian', time: '7 hours ago', event: 'Tool call: transition_issue — 1,100 tokens' },
+  { user: 'Alex Kim', server: 'Figma', time: '7.5 hours ago', event: 'Connected to Figma MCP server' },
+  { user: 'Sarah Chen', server: 'Github', time: '8 hours ago', event: 'Tool call: create_issue — 1,950 tokens' },
+  { user: 'Lisa Wang', server: 'JumpCloud Labs', time: '8.5 hours ago', event: 'Tool call: list_user_groups — 2,400 tokens' },
+  { user: 'John Doe', server: 'Github', time: '9 hours ago', event: 'Tool call: merge_pull_request — 680 tokens' },
+  { user: 'Alex Kim', server: 'Atlassian', time: '10 hours ago', event: 'Tool call: search_issues — 3,100 tokens' },
+  { user: 'Sarah Chen', server: 'Figma', time: '11 hours ago', event: 'Tool call: get_styles — 1,340 tokens' },
+  { user: 'John Doe', server: 'JumpCloud Labs', time: '12 hours ago', event: 'Tool call: list_policies — 2,750 tokens' },
+  { user: 'Mike Ross', server: 'Salesforce', time: 'Yesterday', event: 'Tool call: create_lead — 1,560 tokens' },
+  { user: 'Lisa Wang', server: 'Github', time: 'Yesterday', event: 'Tool call: list_commits — 4,200 tokens' },
+  { user: 'Alex Kim', server: 'Figma', time: 'Yesterday', event: 'Tool call: get_variables — 920 tokens' },
+  { user: 'John Doe', server: 'Atlassian', time: 'Yesterday', event: 'Connected to Atlassian MCP server' },
 ];
 
 const topServerUsage = [
-  { name: 'Atlassian', requests: 4521, percentage: 35 },
-  { name: 'Github', requests: 3892, percentage: 30 },
-  { name: 'Figma', requests: 2614, percentage: 20 },
-  { name: 'JumpCloud Labs Admin', requests: 1820, percentage: 15 },
+  { name: 'Atlassian', requests: 4521 },
+  { name: 'Github', requests: 3892 },
+  { name: 'Figma', requests: 2614 },
+  { name: 'JumpCloud Labs', requests: 1820 },
+  { name: 'Salesforce', requests: 1340 },
+];
+
+// ─── Monthly Usage by Server (Chart.js line chart) ───
+
+const getCssVar = (name: string) =>
+  typeof document !== 'undefined'
+    ? getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+    : '';
+
+const monthlyChartData = {
+  labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+  datasets: [
+    {
+      label: 'Github',
+      data: [820, 1450, 2100, 2680, 3200, 3540, 3892],
+      borderColor: 'rgb(45, 180, 175)',
+      backgroundColor: 'rgb(45, 180, 175)',
+      pointBackgroundColor: 'rgb(45, 180, 175)',
+      pointStyle: 'circle',
+      tension: 0.3,
+      pointRadius: 2,
+      pointHoverRadius: 4,
+      fill: false,
+    },
+    {
+      label: 'Atlassian',
+      data: [600, 1100, 1800, 2900, 3600, 4100, 4521],
+      borderColor: 'rgb(76, 172, 246)',
+      backgroundColor: 'rgb(76, 172, 246)',
+      pointBackgroundColor: 'rgb(76, 172, 246)',
+      pointStyle: 'circle',
+      tension: 0.3,
+      pointRadius: 2,
+      pointHoverRadius: 4,
+      fill: false,
+    },
+    {
+      label: 'Figma',
+      data: [400, 750, 1200, 1600, 1900, 2300, 2614],
+      borderColor: 'rgb(242, 138, 13)',
+      backgroundColor: 'rgb(242, 138, 13)',
+      pointBackgroundColor: 'rgb(242, 138, 13)',
+      pointStyle: 'circle',
+      tension: 0.3,
+      pointRadius: 2,
+      pointHoverRadius: 4,
+      fill: false,
+    },
+    {
+      label: 'JumpCloud Labs',
+      data: [200, 380, 620, 900, 1200, 1540, 1820],
+      borderColor: 'rgb(240, 135, 96)',
+      backgroundColor: 'rgb(240, 135, 96)',
+      pointBackgroundColor: 'rgb(240, 135, 96)',
+      pointStyle: 'circle',
+      tension: 0.3,
+      pointRadius: 2,
+      pointHoverRadius: 4,
+      fill: false,
+    },
+    {
+      label: 'Salesforce',
+      data: [0, 0, 100, 320, 580, 740, 860],
+      borderColor: 'rgb(231, 126, 206)',
+      backgroundColor: 'rgb(231, 126, 206)',
+      pointBackgroundColor: 'rgb(231, 126, 206)',
+      pointStyle: 'circle',
+      tension: 0.3,
+      pointRadius: 2,
+      pointHoverRadius: 4,
+      fill: false,
+    },
+    {
+      label: 'Slack',
+      data: [0, 0, 0, 0, 80, 180, 310],
+      borderColor: 'rgb(177, 147, 235)',
+      backgroundColor: 'rgb(177, 147, 235)',
+      pointBackgroundColor: 'rgb(177, 147, 235)',
+      pointStyle: 'circle',
+      tension: 0.3,
+      pointRadius: 2,
+      pointHoverRadius: 4,
+      fill: false,
+    },
+  ],
+};
+
+function buildMonthlyChartOptions() {
+  const subtleText = getCssVar('--jc-color-text-neutral-subtle');
+  const gridColor = getCssVar('--jc-color-border-neutral-default_alpha');
+
+  return {
+    responsive: true,
+    maintainAspectRatio: true,
+    interaction: {
+      mode: 'index' as const,
+      intersect: false,
+    },
+    plugins: {
+      legend: {
+        position: 'bottom' as const,
+        align: 'center' as const,
+        labels: {
+          usePointStyle: false,
+          boxWidth: 8,
+          boxHeight: 8,
+          useBorderRadius: true,
+          borderRadius: 4,
+          padding: 20,
+          color: subtleText,
+          font: { size: 12 },
+        },
+      },
+      tooltip: {
+        enabled: false,
+        callbacks: {
+          label: (ctx: { dataset: { label: string }; parsed: { y: number } }) =>
+            `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString()} requests`,
+        },
+        external: (context: { chart: { canvas: HTMLCanvasElement }; tooltip: { opacity: number; caretX: number; caretY: number; title: string[]; body: { lines: string[] }[]; labelColors: { borderColor: string; backgroundColor: string }[] } }) => {
+          const { chart, tooltip } = context;
+          let el = chart.canvas.parentNode?.querySelector('.circuit-chart-tooltip') as HTMLDivElement | null;
+          if (!el) {
+            el = document.createElement('div');
+            el.classList.add('circuit-chart-tooltip');
+            chart.canvas.parentNode?.appendChild(el);
+          }
+          if (tooltip.opacity === 0) { el.style.opacity = '0'; return; }
+          const title = tooltip.title?.[0] || '';
+          const rows = tooltip.body?.map((b: { lines: string[] }, i: number) => {
+            const color = tooltip.labelColors?.[i]?.backgroundColor || '#ccc';
+            const text = b.lines[0] || '';
+            return `<div style="display:flex;align-items:center;gap:6px;padding:3px 0;">
+              <span style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0;display:inline-block;"></span>
+              <span class="text-body-sm text-neutral-base">${text}</span>
+            </div>`;
+          }).join('') || '';
+          el.className = 'circuit-chart-tooltip shadow-e300 rounded-md bg-neutral-surface';
+          el.style.cssText = 'position:absolute;pointer-events:none;transition:opacity 0.15s ease;z-index:50;padding:12px 14px;min-width:180px;';
+          el.innerHTML = `<div class="text-body-sm-semi-bold text-neutral-base" style="margin-bottom:8px;">${title}</div>${rows}`;
+          el.style.opacity = '1';
+          el.style.left = tooltip.caretX + 'px';
+          el.style.top = tooltip.caretY + 'px';
+          el.style.transform = 'translate(-50%, calc(-100% - 12px))';
+        },
+      },
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        border: { display: false },
+        ticks: {
+          color: subtleText,
+          font: { size: 12 },
+        },
+      },
+      y: {
+        beginAtZero: true,
+        border: { display: false },
+        ticks: {
+          color: subtleText,
+          font: { size: 12 },
+          callback: (value: number) => (value >= 1000 ? `${value / 1000}k` : value),
+        },
+        grid: {
+          color: gridColor,
+        },
+      },
+    },
+  };
+}
+
+// ─── Top Users ───
+
+const topUsers = [
+  { name: 'John Doe', toolCalls: 8240 },
+  { name: 'Sarah Chen', toolCalls: 6890 },
+  { name: 'Alex Kim', toolCalls: 4120 },
+  { name: 'Lisa Wang', toolCalls: 3450 },
+  { name: 'Mike Ross', toolCalls: 2180 },
 ];
 
 // ─── Settings Data ───
@@ -494,7 +828,6 @@ interface ActivityLogEntry {
   server: string;
   detail: string;
   tokensUsed: number;
-  cost: string;
   status: string;
   statusSeverity: string;
 }
@@ -509,7 +842,7 @@ const activityLogData: ActivityLogEntry[] = [
     server: 'Github',
     detail: 'list_pull_requests — repo:jumpcloud/admin-portal',
     tokensUsed: 1240,
-    cost: '$0.0037',
+
     status: 'Success',
     statusSeverity: 'success',
   },
@@ -522,7 +855,6 @@ const activityLogData: ActivityLogEntry[] = [
     server: 'Figma',
     detail: 'OAuth token issued — scopes: read, write',
     tokensUsed: 0,
-    cost: '$0.00',
     status: 'Success',
     statusSeverity: 'success',
   },
@@ -535,7 +867,6 @@ const activityLogData: ActivityLogEntry[] = [
     server: 'Atlassian',
     detail: 'search_issues — jql:project=ADMIN AND status="In Progress"',
     tokensUsed: 3420,
-    cost: '$0.0103',
     status: 'Success',
     statusSeverity: 'success',
   },
@@ -548,7 +879,6 @@ const activityLogData: ActivityLogEntry[] = [
     server: 'Slack',
     detail: 'API token revoked for user mike.ross@company.com',
     tokensUsed: 0,
-    cost: '$0.00',
     status: 'Success',
     statusSeverity: 'success',
   },
@@ -561,7 +891,6 @@ const activityLogData: ActivityLogEntry[] = [
     server: 'Figma',
     detail: 'get_file — file_key:xH2k9mZ, node_ids:12:44',
     tokensUsed: 8750,
-    cost: '$0.0263',
     status: 'Success',
     statusSeverity: 'success',
   },
@@ -574,7 +903,6 @@ const activityLogData: ActivityLogEntry[] = [
     server: 'Salesforce',
     detail: 'query_records — SOQL:SELECT Id,Name FROM Account LIMIT 10',
     tokensUsed: 2100,
-    cost: '$0.0063',
     status: 'Failed',
     statusSeverity: 'danger',
   },
@@ -587,7 +915,6 @@ const activityLogData: ActivityLogEntry[] = [
     server: '—',
     detail: 'Daily budget threshold reached — 80% of $50.00 limit',
     tokensUsed: 0,
-    cost: '$40.00',
     status: 'Warning',
     statusSeverity: 'warn',
   },
@@ -600,7 +927,6 @@ const activityLogData: ActivityLogEntry[] = [
     server: 'Github',
     detail: 'API token issued — permissions: repo, read:org',
     tokensUsed: 0,
-    cost: '$0.00',
     status: 'Success',
     statusSeverity: 'success',
   },
@@ -613,7 +939,6 @@ const activityLogData: ActivityLogEntry[] = [
     server: 'JumpCloud Labs Admin',
     detail: 'list_users — filter:active, limit:50',
     tokensUsed: 4200,
-    cost: '$0.0126',
     status: 'Success',
     statusSeverity: 'success',
   },
@@ -626,7 +951,6 @@ const activityLogData: ActivityLogEntry[] = [
     server: 'Atlassian',
     detail: 'OAuth token auto-refreshed — expires in 3600s',
     tokensUsed: 0,
-    cost: '$0.00',
     status: 'Success',
     statusSeverity: 'success',
   },
@@ -639,7 +963,6 @@ const activityLogData: ActivityLogEntry[] = [
     server: 'Github',
     detail: 'create_pull_request — repo:jumpcloud/circuit, base:main',
     tokensUsed: 1890,
-    cost: '$0.0057',
     status: 'Success',
     statusSeverity: 'success',
   },
@@ -652,7 +975,6 @@ const activityLogData: ActivityLogEntry[] = [
     server: '—',
     detail: 'Monthly budget increased from $500 to $750',
     tokensUsed: 0,
-    cost: '$0.00',
     status: 'Success',
     statusSeverity: 'success',
   },
@@ -665,7 +987,6 @@ const activityLogData: ActivityLogEntry[] = [
     server: 'Figma',
     detail: 'get_comments — file_key:xH2k9mZ',
     tokensUsed: 560,
-    cost: '$0.0017',
     status: 'Success',
     statusSeverity: 'success',
   },
@@ -678,7 +999,6 @@ const activityLogData: ActivityLogEntry[] = [
     server: 'Salesforce',
     detail: 'update_record — object:Contact, id:003xx000004Tmnz',
     tokensUsed: 1450,
-    cost: '$0.0044',
     status: 'Failed',
     statusSeverity: 'danger',
   },
@@ -691,7 +1011,6 @@ const activityLogData: ActivityLogEntry[] = [
     server: 'JumpCloud Labs Admin',
     detail: 'OAuth token issued — scopes: admin:read, admin:write',
     tokensUsed: 0,
-    cost: '$0.00',
     status: 'Success',
     statusSeverity: 'success',
   },
@@ -704,7 +1023,6 @@ const activityLogData: ActivityLogEntry[] = [
     server: 'Atlassian',
     detail: 'create_issue — project:DESIGN, type:Task',
     tokensUsed: 2870,
-    cost: '$0.0086',
     status: 'Success',
     statusSeverity: 'success',
   },
@@ -717,7 +1035,6 @@ const activityLogData: ActivityLogEntry[] = [
     server: '—',
     detail: 'Weekly spending report — total: $127.45 across 4 servers',
     tokensUsed: 0,
-    cost: '$127.45',
     status: 'Info',
     statusSeverity: 'info',
   },
@@ -730,7 +1047,6 @@ const activityLogData: ActivityLogEntry[] = [
     server: 'Slack',
     detail: 'API token expired — last used 14 days ago',
     tokensUsed: 0,
-    cost: '$0.00',
     status: 'Warning',
     statusSeverity: 'warn',
   },
@@ -743,7 +1059,6 @@ const activityLogData: ActivityLogEntry[] = [
     server: 'Github',
     detail: 'get_file_contents — repo:jumpcloud/admin-portal, path:src/index.ts',
     tokensUsed: 6320,
-    cost: '$0.0190',
     status: 'Success',
     statusSeverity: 'success',
   },
@@ -756,7 +1071,6 @@ const activityLogData: ActivityLogEntry[] = [
     server: 'JumpCloud Labs Admin',
     detail: 'create_user_group — name:design-team-beta',
     tokensUsed: 980,
-    cost: '$0.0029',
     status: 'Success',
     statusSeverity: 'success',
   },
@@ -835,16 +1149,6 @@ const activityLogColumns = [
     },
   },
   {
-    field: 'cost',
-    header: 'Cost',
-    sortable: true,
-    width: '100px',
-    component: markRaw(DataTableCellText),
-    componentProps: (sp: { data: Record<string, unknown> }) => ({
-      label: sp.data.cost,
-    }),
-  },
-  {
     field: 'status',
     header: 'Status',
     sortable: true,
@@ -875,6 +1179,7 @@ const Agent0Page = defineComponent({
     FormField,
     ToggleSwitch,
     SeverityDialog,
+    CheckboxWithLabel,
     PvButton: Button,
     PvTag: Tag,
     PvInputText: InputText,
@@ -883,7 +1188,11 @@ const Agent0Page = defineComponent({
     PvMultiSelect: MultiSelect,
     PvDialog: Dialog,
     PvDivider: Divider,
+    PvDrawer: Drawer,
+    PvSelectButton: SelectButton,
+    PvChart: Chart,
     TopBar,
+    PageSection,
     ListPageLayout,
     ConfigPageLayout,
     DashboardPageLayout,
@@ -891,13 +1200,40 @@ const Agent0Page = defineComponent({
     EyeIcon,
     EyeSlashIcon,
     ArrowTrendingUpIcon,
+    ArrowUpIcon,
     CheckCircleIcon,
     TrashIcon: TrashIcon,
+    Cog6ToothIcon,
   },
   setup() {
     // ─── View State ───
-    const currentView = ref<'main' | 'server-detail' | 'settings'>('main');
+    const currentView = ref<'main' | 'settings' | 'profile-detail'>('main');
     const activeTab = ref('dashboard');
+    const profileDetailTab = ref('overview');
+
+    // ─── Content Width Tracking (inline panel vs drawer) ───
+    const serversContainerRef = ref<HTMLElement | null>(null);
+    const contentWidth = ref(1200);
+    const useInlinePanel = computed(() => contentWidth.value >= 1024);
+    let resizeObserver: ResizeObserver | null = null;
+
+    onMounted(() => {
+      resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          contentWidth.value = entry.contentRect.width;
+        }
+      });
+    });
+
+    watch(serversContainerRef, (el) => {
+      if (el && resizeObserver) {
+        resizeObserver.observe(el);
+      }
+    });
+
+    onUnmounted(() => {
+      resizeObserver?.disconnect();
+    });
 
     // ─── Selected Items ───
     const selectedServer = ref<Server | null>(null);
@@ -1000,8 +1336,8 @@ const Agent0Page = defineComponent({
 
     // ─── Computed ───
     const pageTitle = computed(() => {
-      if (currentView.value === 'server-detail' && selectedServer.value) {
-        return selectedServer.value.name;
+      if (currentView.value === 'profile-detail' && editingProfile.value) {
+        return editingProfile.value.name;
       }
       if (currentView.value === 'settings') {
         return 'Agent0 Settings';
@@ -1011,11 +1347,13 @@ const Agent0Page = defineComponent({
 
     const pageTabs = computed(() => {
       if (currentView.value === 'main') return mainTabs;
+      if (currentView.value === 'profile-detail') return profileDetailTabs;
       return undefined;
     });
 
     const currentActiveTab = computed(() => {
       if (currentView.value === 'main') return activeTab.value;
+      if (currentView.value === 'profile-detail') return profileDetailTab.value;
       return undefined;
     });
 
@@ -1027,12 +1365,18 @@ const Agent0Page = defineComponent({
 
     // ─── Navigation ───
     function handleTabChange(tab: string) {
-      activeTab.value = tab;
+      if (currentView.value === 'profile-detail') {
+        profileDetailTab.value = tab;
+      } else {
+        activeTab.value = tab;
+      }
     }
 
     function openSettings() {
       currentView.value = 'settings';
     }
+
+    const showServerDrawer = ref(false);
 
     function openServerDetail(server: Server) {
       selectedServer.value = server;
@@ -1041,7 +1385,7 @@ const Agent0Page = defineComponent({
       serverForm.url = server.url;
       serverForm.authStyle = server.connectionType;
       serverForm.authConfig = server.authConfig;
-      currentView.value = 'server-detail';
+      showServerDrawer.value = true;
     }
 
     function backToMain() {
@@ -1049,12 +1393,13 @@ const Agent0Page = defineComponent({
     }
 
     function backFromServerDetail() {
-      activeTab.value = 'servers';
-      currentView.value = 'main';
+      showServerDrawer.value = false;
+      selectedServers.value = [];
     }
 
     // ─── Server Row Click ───
     function handleServerRowClick(row: { data: Server }) {
+      selectedServers.value = [row.data];
       openServerDetail(row.data);
     }
 
@@ -1076,8 +1421,78 @@ const Agent0Page = defineComponent({
     }
 
     function handleProfileRowClick(row: { data: Profile }) {
-      openEditProfile(row.data);
+      openProfileDetail(row.data);
     }
+
+    function openProfileDetail(profile: Profile) {
+      editingProfile.value = profile;
+      profileForm.profileId = profile.profileId;
+      profileForm.label = profile.label;
+      profileForm.serverIds = [...profile.serverIds];
+      profileDetailTab.value = 'overview';
+      currentView.value = 'profile-detail';
+    }
+
+    function backFromProfileDetail() {
+      activeTab.value = 'profiles';
+      currentView.value = 'main';
+    }
+
+    const profileBoundServers = computed(() => {
+      if (!editingProfile.value) return [];
+      return serversData.filter((s) => editingProfile.value!.serverIds.includes(s.slug));
+    });
+
+    const profileBoundUserGroups = computed(() => {
+      if (!editingProfile.value) return [];
+      const groupSlugs = profileUserGroups[editingProfile.value.profileId] || [];
+      return userGroupsData.filter((g) => groupSlugs.includes(g.slug));
+    });
+
+    const showBoundServersOnly = ref(false);
+    const showBoundUserGroupsOnly = ref(false);
+    const selectedProfileServerSlugs = ref<Set<string>>(new Set());
+    const selectedProfileUserGroupSlugs = ref<Set<string>>(new Set());
+
+    const profileServersTableData = computed(() => {
+      const boundSlugs = editingProfile.value?.serverIds || [];
+      const source = showBoundServersOnly.value ? profileBoundServers.value : serversData;
+      return source
+        .map((s) => ({ ...s, bound: boundSlugs.includes(s.slug) }))
+        .sort((a, b) => Number(b.bound) - Number(a.bound));
+    });
+
+    const selectedProfileServers = computed({
+      get: () => profileServersTableData.value.filter((s) => selectedProfileServerSlugs.value.has(s.slug)),
+      set: (val) => { selectedProfileServerSlugs.value = new Set(val.map((s) => s.slug)); },
+    });
+
+    watch(editingProfile, () => {
+      const boundSlugs = editingProfile.value?.serverIds || [];
+      selectedProfileServerSlugs.value = new Set(boundSlugs);
+    });
+
+    const profileUserGroupsTableData = computed(() => {
+      const boundSlugs = editingProfile.value
+        ? (profileUserGroups[editingProfile.value.profileId] || [])
+        : [];
+      const source = showBoundUserGroupsOnly.value ? profileBoundUserGroups.value : userGroupsData;
+      return source
+        .map((g) => ({ ...g, bound: boundSlugs.includes(g.slug) }))
+        .sort((a, b) => Number(b.bound) - Number(a.bound));
+    });
+
+    const selectedProfileUserGroups = computed({
+      get: () => profileUserGroupsTableData.value.filter((g) => selectedProfileUserGroupSlugs.value.has(g.slug)),
+      set: (val) => { selectedProfileUserGroupSlugs.value = new Set(val.map((g) => g.slug)); },
+    });
+
+    watch(editingProfile, () => {
+      const boundSlugs = editingProfile.value
+        ? (profileUserGroups[editingProfile.value.profileId] || [])
+        : [];
+      selectedProfileUserGroupSlugs.value = new Set(boundSlugs);
+    });
 
     // ─── Delete ───
     function openDeleteDialog(name: string) {
@@ -1104,6 +1519,9 @@ const Agent0Page = defineComponent({
       activeTab,
       selectedServer,
       selectedServers,
+      showServerDrawer,
+      serversContainerRef,
+      useInlinePanel,
       serverForm,
       authStyleOptions,
       showProfileDialog,
@@ -1124,12 +1542,16 @@ const Agent0Page = defineComponent({
       menuItems,
       profileMenuItems,
       serversData,
+      userGroupsData,
       serverColumns,
       profilesData,
       profileColumns,
       dashboardStats,
       recentActivity,
       topServerUsage,
+      monthlyChartData,
+      monthlyChartOptions: buildMonthlyChartOptions(),
+      topUsers,
       llmProviders,
       activityLogColumns,
       filteredActivityData,
@@ -1146,6 +1568,19 @@ const Agent0Page = defineComponent({
       openAddProfile,
       openEditProfile,
       handleProfileRowClick,
+      openProfileDetail,
+      backFromProfileDetail,
+      profileDetailTab,
+      profileBoundServers,
+      profileBoundUserGroups,
+      profileServerColumns,
+      profileUserGroupColumns,
+      showBoundServersOnly,
+      showBoundUserGroupsOnly,
+      selectedProfileServers,
+      selectedProfileUserGroups,
+      profileServersTableData,
+      profileUserGroupsTableData,
       openDeleteDialog,
       addInstruction,
       removeInstruction,
@@ -1168,16 +1603,16 @@ const Agent0Page = defineComponent({
           v-if="currentView === 'main'"
         />
         <TopBar
-          v-if="currentView === 'server-detail'"
-          showBackButton
-          backButtonLabel="Servers"
-          @back="backFromServerDetail"
-        />
-        <TopBar
           v-if="currentView === 'settings'"
           showBackButton
           backButtonLabel="Agent0"
           @back="backToMain"
+        />
+        <TopBar
+          v-if="currentView === 'profile-detail'"
+          showBackButton
+          backButtonLabel="Profiles"
+          @back="backFromProfileDetail"
         />
 
         <!-- PageHeader -->
@@ -1193,7 +1628,11 @@ const Agent0Page = defineComponent({
               label="Agent0 Settings"
               severity="secondary"
               @click="openSettings"
-            />
+            >
+              <template #icon="iconProps">
+                <Cog6ToothIcon :class="iconProps.class" />
+              </template>
+            </PvButton>
           </template>
         </PageHeader>
 
@@ -1201,74 +1640,186 @@ const Agent0Page = defineComponent({
         <template v-if="currentView === 'main'">
 
           <!-- Dashboard Tab -->
-          <div v-if="activeTab === 'dashboard'" class="flex-1 overflow-auto bg-neutral-surface">
+          <div v-if="activeTab === 'dashboard'" class="flex-1 overflow-hidden bg-neutral-surface">
             <DashboardPageLayout class="w-full! h-full!">
               <div class="flex flex-col gap-6">
 
                 <!-- Stat Cards -->
-                <div class="grid grid-cols-3 gap-4">
-                  <div
-                    v-for="stat in dashboardStats"
-                    :key="stat.label"
-                    class="rounded-lg border border-neutral-default_solid bg-neutral-surface_raised p-md"
-                  >
-                    <div class="flex items-center justify-between mb-3">
-                      <span class="text-body-sm text-neutral-subtle">{{ stat.label }}</span>
-                      <component :is="stat.icon" class="size-5 text-neutral-subtle" />
+                <div class="grid grid-cols-3 gap-6">
+                  <CollapsiblePanel header="Total Users">
+                    <div class="flex flex-col gap-2">
+                      <div class="flex items-center gap-[7px]">
+                        <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-neutral-base">142</span>
+                        <span class="text-heading-3 text-neutral-base self-end">Users</span>
+                      </div>
+                      <div class="flex items-center gap-1.5">
+                        <div class="flex items-center gap-0.5">
+                          <ArrowUpIcon class="w-4 h-4 text-success-base" />
+                          <span class="text-body-sm-bold text-success-base">12%</span>
+                        </div>
+                        <span class="text-body-sm text-neutral-subtle">vs last month</span>
+                      </div>
                     </div>
-                    <div class="flex items-end gap-2">
-                      <span class="text-heading-1 text-neutral-base">{{ stat.value }}</span>
-                      <span
-                        v-if="stat.trend"
-                        class="text-body-sm text-status-success-base mb-0.5"
-                      >{{ stat.trend }}</span>
+                  </CollapsiblePanel>
+
+                  <CollapsiblePanel header="Active Servers">
+                    <div class="flex flex-col gap-2">
+                      <div class="flex items-center gap-[7px]">
+                        <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-neutral-base">4 / 6</span>
+                        <span class="text-heading-3 text-neutral-base self-end">Servers</span>
+                      </div>
+                      <div class="flex items-center gap-1.5">
+                        <span class="text-body-sm-bold text-success-base">66%</span>
+                        <span class="text-body-sm text-neutral-subtle">active</span>
+                      </div>
                     </div>
-                  </div>
+                  </CollapsiblePanel>
+
+                  <CollapsiblePanel header="Profiles">
+                    <div class="flex flex-col gap-2">
+                      <div class="flex items-center gap-[7px]">
+                        <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-neutral-base">3</span>
+                        <span class="text-heading-3 text-neutral-base self-end">Profiles</span>
+                      </div>
+                      <span class="text-body-sm text-neutral-subtle">Configured</span>
+                    </div>
+                  </CollapsiblePanel>
+
+                  <CollapsiblePanel header="Total Requests (24h)">
+                    <div class="flex flex-col gap-2">
+                      <div class="flex items-center gap-[7px]">
+                        <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-neutral-base">12,847</span>
+                        <span class="text-heading-3 text-neutral-base self-end">Requests</span>
+                      </div>
+                      <div class="flex items-center gap-1.5">
+                        <div class="flex items-center gap-0.5">
+                          <ArrowUpIcon class="w-4 h-4 text-success-base" />
+                          <span class="text-body-sm-bold text-success-base">8.3%</span>
+                        </div>
+                        <span class="text-body-sm text-neutral-subtle">vs last month</span>
+                      </div>
+                    </div>
+                  </CollapsiblePanel>
+
+                  <CollapsiblePanel header="Avg Response Time">
+                    <div class="flex flex-col gap-2">
+                      <div class="flex items-center gap-[7px]">
+                        <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-neutral-base">245ms</span>
+                      </div>
+                      <div class="flex items-center gap-1.5">
+                        <div class="flex items-center gap-0.5">
+                          <ArrowUpIcon class="w-4 h-4 text-success-base" />
+                          <span class="text-body-sm-bold text-success-base">-12ms</span>
+                        </div>
+                        <span class="text-body-sm text-neutral-subtle">vs last month</span>
+                      </div>
+                    </div>
+                  </CollapsiblePanel>
+
+                  <CollapsiblePanel header="Error Rate">
+                    <div class="flex flex-col gap-2">
+                      <div class="flex items-center gap-[7px]">
+                        <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-success-base">0.8%</span>
+                      </div>
+                      <div class="flex items-center gap-1.5">
+                        <div class="flex items-center gap-0.5">
+                          <ArrowUpIcon class="w-4 h-4 text-success-base" />
+                          <span class="text-body-sm-bold text-success-base">-0.2%</span>
+                        </div>
+                        <span class="text-body-sm text-neutral-subtle">vs last month</span>
+                      </div>
+                    </div>
+                  </CollapsiblePanel>
                 </div>
 
-                <!-- Recent Activity -->
-                <CollapsiblePanel header="Recent Activity">
-                  <div class="flex flex-col gap-3">
+                <!-- Monthly Usage by Server (Line Chart) -->
+                <CollapsiblePanel header="Monthly Usage by Server">
+                  <PvChart type="line" :data="monthlyChartData" :options="monthlyChartOptions" />
+                </CollapsiblePanel>
+
+                <!-- Top Servers & Top Users — 2-column grid -->
+                <div class="grid grid-cols-2 gap-6">
+                  <CollapsiblePanel header="Top Servers">
+                    <template #actions>
+                      <PvButton label="See All" severity="secondary" variant="outlined" size="small" @click="activeTab = 'servers'" />
+                    </template>
+                    <div class="flex flex-col">
+                      <div class="flex items-center gap-3 mb-3">
+                        <span class="text-body-sm text-neutral-base"><span class="text-body-sm-bold">{{ topServerUsage.length }}</span> Active servers</span>
+                        <div class="flex items-center gap-1.5">
+                          <ArrowUpIcon class="w-4 h-4 text-status-success-base" />
+                          <span class="text-body-sm-bold text-status-success-base">12%</span>
+                          <span class="text-body-sm text-neutral-subtle">vs last month</span>
+                        </div>
+                      </div>
+                      <div class="flex flex-col divide-y divide-neutral-default_solid border-t border-neutral-default_solid">
+                        <div
+                          v-for="server in topServerUsage"
+                          :key="server.name"
+                          class="flex items-center justify-between py-3"
+                        >
+                          <span class="text-body-md text-neutral-base">{{ server.name }}</span>
+                          <span class="text-body-sm-bold text-neutral-base">{{ server.requests.toLocaleString() }} requests</span>
+                        </div>
+                      </div>
+                    </div>
+                  </CollapsiblePanel>
+
+                  <CollapsiblePanel header="Top Users">
+                    <template #actions>
+                      <PvButton label="See All" severity="secondary" variant="outlined" size="small" @click="activeTab = 'profiles'" />
+                    </template>
+                    <div class="flex flex-col">
+                      <div class="flex items-center gap-3 mb-3">
+                        <span class="text-body-sm text-neutral-base"><span class="text-body-sm-bold">{{ topUsers.length }}</span> Active users</span>
+                        <div class="flex items-center gap-1.5">
+                          <ArrowUpIcon class="w-4 h-4 text-status-success-base" />
+                          <span class="text-body-sm-bold text-status-success-base">8%</span>
+                          <span class="text-body-sm text-neutral-subtle">vs last month</span>
+                        </div>
+                      </div>
+                      <div class="flex flex-col divide-y divide-neutral-default_solid border-t border-neutral-default_solid">
+                        <div
+                          v-for="user in topUsers"
+                          :key="user.name"
+                          class="flex items-center justify-between py-3"
+                        >
+                          <span class="text-body-md text-neutral-base">{{ user.name }}</span>
+                          <span class="text-body-sm-bold text-neutral-base">{{ user.toolCalls.toLocaleString() }} tool calls</span>
+                        </div>
+                      </div>
+                    </div>
+                  </CollapsiblePanel>
+                </div>
+              </div>
+
+              <template #sidebar>
+                <div class="flex flex-col">
+                  <div class="sticky top-0 z-10 bg-neutral-surface border-b border-neutral-default_solid" style="top: -24px; padding-top: 24px; padding-bottom: 16px; margin-top: -24px;">
+                    <div class="flex items-center justify-between">
+                      <span class="text-heading-3 text-neutral-base">Recent Activity</span>
+                      <PvButton label="See All" severity="secondary" variant="outlined" size="small" @click="activeTab = 'activity'" />
+                    </div>
+                  </div>
+                  <div class="flex flex-col pb-6">
                     <div
                       v-for="(activity, i) in recentActivity"
                       :key="i"
-                      class="flex items-start gap-3 py-2"
+                      class="flex flex-col gap-1 py-3"
                       :class="{ 'border-b border-neutral-default_solid': i < recentActivity.length - 1 }"
                     >
-                      <span class="text-body-sm text-neutral-subtle whitespace-nowrap min-w-[90px]">{{ activity.time }}</span>
+                      <span class="text-body-sm text-neutral-subtle"><span class="text-body-sm-semi-bold">{{ activity.user }}</span><template v-if="activity.server !== '—'"> · <span class="text-body-sm-semi-bold">{{ activity.server }}</span></template> · {{ activity.time }}</span>
                       <span class="text-body-md text-neutral-base">{{ activity.event }}</span>
                     </div>
                   </div>
-                </CollapsiblePanel>
-
-                <!-- Top Servers by Usage -->
-                <CollapsiblePanel header="Top Servers by Usage">
-                  <div class="flex flex-col gap-4">
-                    <div
-                      v-for="server in topServerUsage"
-                      :key="server.name"
-                      class="flex flex-col gap-1.5"
-                    >
-                      <div class="flex items-center justify-between">
-                        <span class="text-body-md text-neutral-base">{{ server.name }}</span>
-                        <span class="text-body-sm text-neutral-subtle">{{ server.requests.toLocaleString() }} requests</span>
-                      </div>
-                      <div class="h-2 rounded-full bg-neutral-surface_deep overflow-hidden">
-                        <div
-                          class="h-full rounded-full bg-button-primary-base"
-                          :style="{ width: server.percentage + '%' }"
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-                </CollapsiblePanel>
-              </div>
+                </div>
+              </template>
             </DashboardPageLayout>
           </div>
 
           <!-- Servers Tab -->
-          <div v-if="activeTab === 'servers'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
-            <ListPageLayout class="w-full! h-full!">
+          <div v-if="activeTab === 'servers'" ref="serversContainerRef" class="flex-1 flex min-h-0 overflow-hidden bg-neutral-surface">
+            <ListPageLayout class="flex-1 min-w-0 h-full! transition-all duration-300 ease-in-out">
               <CircuitDataTable
                 :columns="serverColumns"
                 :data="serversData"
@@ -1280,6 +1831,8 @@ const Agent0Page = defineComponent({
                 size="default"
                 :scrollable="true"
                 scrollHeight="flex"
+                :paginator="true"
+                :rows="10"
               >
                 <template #toolbar>
                   <DataTableToolbar
@@ -1294,7 +1847,117 @@ const Agent0Page = defineComponent({
                 </template>
               </CircuitDataTable>
             </ListPageLayout>
+
+            <!-- Server Detail Inline Side Panel (>= 1024px) -->
+            <div
+              v-if="useInlinePanel"
+              class="shrink-0 border-l border-neutral-default_solid bg-neutral-base flex flex-col h-full overflow-hidden transition-[width] duration-300 ease-in-out"
+              :class="showServerDrawer && selectedServer ? 'w-[480px]' : 'w-0 border-l-0'"
+            >
+              <template v-if="selectedServer">
+                <div class="flex items-center justify-between p-4 shrink-0 min-w-[480px]">
+                  <span class="text-heading-3 text-neutral-base">{{ selectedServer.name }}</span>
+                  <PvButton severity="secondary" variant="text" size="small" @click="backFromServerDetail">
+                    <template #icon><XMarkIcon class="w-5 h-5" /></template>
+                  </PvButton>
+                </div>
+                <div class="flex-1 overflow-auto p-4 border-t border-b border-neutral-default_solid min-w-[480px]">
+                  <div class="flex flex-col gap-4">
+                    <FormField label="Target ID" helpText="Unique identifier for this target">
+                      <template #default="{ inputId }">
+                        <PvInputText :id="inputId" v-model="serverForm.targetId" class="w-full" disabled />
+                      </template>
+                    </FormField>
+                    <FormField label="Name">
+                      <template #default="{ inputId }">
+                        <PvInputText :id="inputId" v-model="serverForm.name" class="w-full" />
+                      </template>
+                    </FormField>
+                    <FormField label="URL">
+                      <template #default="{ inputId }">
+                        <PvInputText :id="inputId" v-model="serverForm.url" class="w-full" />
+                      </template>
+                    </FormField>
+                    <FormField label="Auth Style">
+                      <template #default="{ inputId }">
+                        <PvSelect
+                          :id="inputId"
+                          v-model="serverForm.authStyle"
+                          :options="authStyleOptions"
+                          optionLabel="label"
+                          optionValue="value"
+                          class="w-full"
+                        />
+                      </template>
+                    </FormField>
+                    <FormField label="Auth Config (JSON)" helpText="JSON object with authentication configuration">
+                      <template #default="{ inputId }">
+                        <PvTextarea :id="inputId" v-model="serverForm.authConfig" class="w-full" :rows="6" />
+                      </template>
+                    </FormField>
+                  </div>
+                </div>
+                <div class="flex items-center justify-end gap-3 p-4 shrink-0 min-w-[480px]">
+                  <PvButton label="Cancel" severity="secondary" variant="outlined" @click="backFromServerDetail" />
+                  <PvButton label="Save" @click="backFromServerDetail" />
+                </div>
+              </template>
+            </div>
           </div>
+
+          <!-- Server Detail Drawer (< 1024px) -->
+          <PvDrawer
+            v-if="!useInlinePanel"
+            v-model:visible="showServerDrawer"
+            :header="selectedServer?.name || 'Server Configuration'"
+            position="right"
+            size="lg"
+            modal
+          >
+            <template #closebutton="btnProps">
+              <PvButton severity="secondary" variant="text" size="small" @click="btnProps.closeCallback">
+                <template #icon><XMarkIcon class="w-5 h-5" /></template>
+              </PvButton>
+            </template>
+            <div class="flex flex-col gap-4">
+              <FormField label="Target ID" helpText="Unique identifier for this target">
+                <template #default="{ inputId }">
+                  <PvInputText :id="inputId" v-model="serverForm.targetId" class="w-full" disabled />
+                </template>
+              </FormField>
+              <FormField label="Name">
+                <template #default="{ inputId }">
+                  <PvInputText :id="inputId" v-model="serverForm.name" class="w-full" />
+                </template>
+              </FormField>
+              <FormField label="URL">
+                <template #default="{ inputId }">
+                  <PvInputText :id="inputId" v-model="serverForm.url" class="w-full" />
+                </template>
+              </FormField>
+              <FormField label="Auth Style">
+                <template #default="{ inputId }">
+                  <PvSelect
+                    :id="inputId"
+                    v-model="serverForm.authStyle"
+                    :options="authStyleOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    class="w-full"
+                  />
+                </template>
+              </FormField>
+              <FormField label="Auth Config (JSON)" helpText="JSON object with authentication configuration">
+                <template #default="{ inputId }">
+                  <PvTextarea :id="inputId" v-model="serverForm.authConfig" class="w-full" :rows="6" />
+                </template>
+              </FormField>
+            </div>
+            <template #footer>
+              <PvButton label="Cancel" severity="secondary" variant="outlined" @click="backFromServerDetail" />
+              <PvButton label="Save" @click="backFromServerDetail" />
+            </template>
+          </PvDrawer>
 
           <!-- Profiles Tab -->
           <div v-if="activeTab === 'profiles'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
@@ -1307,6 +1970,8 @@ const Agent0Page = defineComponent({
                 size="default"
                 :scrollable="true"
                 scrollHeight="flex"
+                :paginator="true"
+                :rows="10"
               >
                 <template #toolbar>
                   <DataTableToolbar
@@ -1367,57 +2032,6 @@ const Agent0Page = defineComponent({
           </div>
         </template>
 
-        <!-- ═══════════════ SERVER DETAIL VIEW ═══════════════ -->
-        <template v-if="currentView === 'server-detail' && selectedServer">
-          <div class="flex-1 overflow-auto bg-neutral-surface">
-            <ConfigPageLayout class="w-full! h-full!" maxWidth="1024">
-              <div class="flex flex-col gap-6">
-                <CollapsiblePanel header="Server Configuration">
-                  <div class="flex flex-col gap-4">
-                    <FormField label="Target ID" helpText="Unique identifier for this target">
-                      <template #default="{ inputId }">
-                        <PvInputText :id="inputId" v-model="serverForm.targetId" class="w-full" disabled />
-                      </template>
-                    </FormField>
-                    <FormField label="Name">
-                      <template #default="{ inputId }">
-                        <PvInputText :id="inputId" v-model="serverForm.name" class="w-full" />
-                      </template>
-                    </FormField>
-                    <FormField label="URL">
-                      <template #default="{ inputId }">
-                        <PvInputText :id="inputId" v-model="serverForm.url" class="w-full" />
-                      </template>
-                    </FormField>
-                    <FormField label="Auth Style">
-                      <template #default="{ inputId }">
-                        <PvSelect
-                          :id="inputId"
-                          v-model="serverForm.authStyle"
-                          :options="authStyleOptions"
-                          optionLabel="label"
-                          optionValue="value"
-                          class="w-full"
-                        />
-                      </template>
-                    </FormField>
-                    <FormField label="Auth Config (JSON)" helpText="JSON object with authentication configuration">
-                      <template #default="{ inputId }">
-                        <PvTextarea :id="inputId" v-model="serverForm.authConfig" class="w-full" :rows="6" />
-                      </template>
-                    </FormField>
-                  </div>
-                </CollapsiblePanel>
-
-                <PvDivider />
-                <div class="flex justify-end gap-sm">
-                  <PvButton label="Cancel" severity="secondary" variant="outlined" @click="backFromServerDetail" />
-                  <PvButton label="Save" @click="backFromServerDetail" />
-                </div>
-              </div>
-            </ConfigPageLayout>
-          </div>
-        </template>
 
         <!-- ═══════════════ SETTINGS VIEW ═══════════════ -->
         <template v-if="currentView === 'settings'">
@@ -1426,96 +2040,94 @@ const Agent0Page = defineComponent({
               <div class="flex flex-col gap-6">
 
                 <!-- LLM Configuration -->
-                <CollapsiblePanel header="LLM Configuration">
-                  <div class="flex flex-col gap-6">
-                    <p class="text-body-md text-neutral-subtle">
-                      Configure the LLM provider used for A2A and ADK agent orchestration. The LLM selects which targets and tools to use when processing A2A and ADK requests.
-                    </p>
-
-                    <!-- Provider Cards -->
-                    <div>
-                      <span class="text-body-md-semi-bold text-neutral-base mb-3 block">LLM Provider</span>
-                      <div class="grid grid-cols-3 gap-3">
-                        <div
-                          v-for="provider in llmProviders"
-                          :key="provider.id"
-                          class="relative rounded-lg border-2 p-md cursor-pointer transition-all"
-                          :class="selectedProvider === provider.id
-                            ? 'border-button-primary-base bg-neutral-surface_raised'
-                            : 'border-neutral-default_solid bg-neutral-surface_raised hover:border-neutral-strong_solid'"
-                          @click="selectedProvider = provider.id"
-                        >
-                          <div v-if="selectedProvider === provider.id" class="absolute top-2 right-2">
-                            <CheckCircleIcon class="size-5 text-button-primary-base" />
-                          </div>
-                          <div class="flex flex-col gap-1">
-                            <span class="text-body-md-semi-bold text-neutral-base">{{ provider.name }}</span>
-                            <span class="text-body-sm text-neutral-subtle">{{ provider.subtitle }}</span>
-                            <span class="text-body-xs text-neutral-muted font-mono mt-1">{{ provider.model }}</span>
-                          </div>
+                <div>
+                  <PageSection title="LLM Configuration">
+                    <template #subtitle>
+                      <span class="text-body-xs text-neutral-muted">
+                        Configure the LLM provider used for A2A and ADK agent orchestration. The LLM selects which targets and tools to use when processing A2A and ADK requests.
+                      </span>
+                    </template>
+                    <template #actions><span /></template>
+                  </PageSection>
+                  <div class="rounded-lg border border-neutral-default_solid p-md">
+                    <div class="flex flex-col gap-6">
+                      <!-- LLM Provider -->
+                      <div class="flex flex-col gap-3">
+                        <PvSelectButton
+                          v-model="selectedProvider"
+                          :options="llmProviders"
+                          optionLabel="name"
+                          optionValue="id"
+                        />
+                        <div v-if="selectedProviderData" class="flex flex-col gap-1">
+                          <span class="text-body-md-bold text-neutral-base">{{ selectedProviderData.name }}</span>
+                          <span class="text-body-xs text-neutral-subtle">{{ selectedProviderData.subtitle }}</span>
                         </div>
                       </div>
-                    </div>
 
-                    <!-- API Key -->
-                    <FormField label="API Key" helpText="For Bedrock, use your AWS access key. Ensure IAM permissions for bedrock:InvokeModel.">
-                      <template #default="{ inputId }">
-                        <div class="relative">
-                          <PvInputText
-                            :id="inputId"
-                            v-model="apiKey"
-                            :type="apiKeyVisible ? 'text' : 'password'"
-                            class="w-full"
-                            placeholder="API key is set (leave blank to keep current)"
-                          />
-                          <button
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-subtle hover:text-neutral-base"
-                            @click="apiKeyVisible = !apiKeyVisible"
-                          >
-                            <component :is="apiKeyVisible ? EyeSlashIcon : EyeIcon" class="size-5" />
-                          </button>
-                        </div>
-                      </template>
-                    </FormField>
+                      <!-- API Key -->
+                      <FormField label="API Key" helpText="For Bedrock, use your AWS access key. Ensure IAM permissions for bedrock:InvokeModel.">
+                        <template #default="{ inputId }">
+                          <div class="relative">
+                            <PvInputText
+                              :id="inputId"
+                              v-model="apiKey"
+                              :type="apiKeyVisible ? 'text' : 'password'"
+                              class="w-full"
+                              placeholder="API key is set (leave blank to keep current)"
+                            />
+                            <button
+                              class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-subtle hover:text-neutral-base"
+                              @click="apiKeyVisible = !apiKeyVisible"
+                            >
+                              <component :is="apiKeyVisible ? EyeSlashIcon : EyeIcon" class="size-5" />
+                            </button>
+                          </div>
+                        </template>
+                      </FormField>
 
-                    <!-- Model ID -->
-                    <FormField
-                      label="Model ID (optional)"
-                      :helpText="'Override the default model. Leave blank to use: ' + (selectedProviderData?.model || '')"
-                    >
-                      <template #default="{ inputId }">
-                        <PvInputText :id="inputId" v-model="modelId" class="w-full" />
-                      </template>
-                    </FormField>
+                      <!-- Model ID -->
+                      <FormField
+                        label="Model ID (optional)"
+                        :helpText="'Override the default model. Leave blank to use: ' + (selectedProviderData?.model || '')"
+                      >
+                        <template #default="{ inputId }">
+                          <PvInputText :id="inputId" v-model="modelId" class="w-full" />
+                        </template>
+                      </FormField>
 
-                    <!-- Action Buttons -->
-                    <div class="flex gap-sm">
-                      <PvButton label="Save LLM Settings" />
-                      <PvButton label="Test Connection" severity="secondary" variant="outlined" />
+                      <!-- Action Buttons -->
+                      <div class="flex gap-sm">
+                        <PvButton label="Save LLM Settings" />
+                        <PvButton label="Test Connection" severity="secondary" variant="outlined" />
+                      </div>
                     </div>
                   </div>
-                </CollapsiblePanel>
+                </div>
 
                 <!-- Instructions -->
-                <CollapsiblePanel header="Instructions">
-                  <template #actions>
-                    <PvButton label="+ Add Instruction" size="small" severity="secondary" variant="outlined" @click="addInstruction" />
-                  </template>
-                  <div class="flex flex-col gap-2">
-                    <p class="text-body-md text-neutral-subtle mb-2">
-                      Configure prompts that guide the LLM's behavior during A2A task planning and execution.
-                    </p>
+                <div>
+                  <PageSection title="Instructions">
+                    <template #subtitle>
+                      <span class="text-body-xs text-neutral-muted">
+                        Configure prompts that guide the LLM's behavior during A2A task planning and execution.
+                      </span>
+                    </template>
+                    <template #actions>
+                      <PvButton label="+ Add Instruction" severity="secondary" variant="outlined" @click="addInstruction" />
+                    </template>
+                  </PageSection>
+                  <div class="flex flex-col gap-4">
                     <div
-                      v-for="instruction in instructions"
+                      v-for="(instruction, index) in instructions"
                       :key="instruction.id"
                       class="rounded-lg border border-neutral-default_solid p-md"
                     >
                       <div class="flex items-center gap-3 mb-3">
-                        <ToggleSwitch v-model="instruction.enabled" />
-                        <span class="text-body-md-semi-bold text-neutral-base flex-1">{{ instruction.name }}</span>
+                        <span class="text-body-md-semi-bold text-neutral-base flex-1">Instruction {{ index + 1 }}</span>
                         <PvButton
                           severity="secondary"
-                          variant="text"
+                          variant="outlined"
                           rounded
                           size="small"
                           @click="removeInstruction(instruction.id)"
@@ -1529,10 +2141,123 @@ const Agent0Page = defineComponent({
                       <PvTextarea v-model="instruction.content" class="w-full" :rows="3" />
                     </div>
                   </div>
-                </CollapsiblePanel>
+                </div>
               </div>
             </ConfigPageLayout>
           </div>
+        </template>
+
+        <!-- ═══════════════ PROFILE DETAIL VIEW ═══════════════ -->
+        <template v-if="currentView === 'profile-detail' && editingProfile">
+
+          <!-- ============ TAB: OVERVIEW ============ -->
+          <div v-if="profileDetailTab === 'overview'" class="flex-1 overflow-auto p-6">
+            <div class="max-w-2xl flex flex-col gap-6">
+              <CollapsiblePanel header="Profile Information">
+                <div class="flex flex-col gap-4">
+                  <div class="flex items-center justify-between py-2 border-b border-neutral-default_solid">
+                    <span class="text-body-md text-neutral-subtle">Profile ID</span>
+                    <span class="text-body-md-semi-bold text-neutral-base">{{ editingProfile.profileId }}</span>
+                  </div>
+                  <div class="flex items-center justify-between py-2 border-b border-neutral-default_solid">
+                    <span class="text-body-md text-neutral-subtle">Label</span>
+                    <span class="text-body-md-semi-bold text-neutral-base">{{ editingProfile.label }}</span>
+                  </div>
+                  <div class="flex items-center justify-between py-2 border-b border-neutral-default_solid">
+                    <span class="text-body-md text-neutral-subtle">Bound Servers</span>
+                    <span class="text-body-md-semi-bold text-neutral-base">{{ profileBoundServers.length }}</span>
+                  </div>
+                  <div class="flex items-center justify-between py-2 border-b border-neutral-default_solid">
+                    <span class="text-body-md text-neutral-subtle">Bound User Groups</span>
+                    <span class="text-body-md-semi-bold text-neutral-base">{{ profileBoundUserGroups.length }}</span>
+                  </div>
+                  <div class="flex items-center justify-between py-2">
+                    <span class="text-body-md text-neutral-subtle">Created At</span>
+                    <span class="text-body-md-semi-bold text-neutral-base">{{ editingProfile.createdAt }}</span>
+                  </div>
+                </div>
+              </CollapsiblePanel>
+            </div>
+          </div>
+
+          <!-- ============ TAB: SERVERS (bound to profile) ============ -->
+          <div v-if="profileDetailTab === 'profile-servers'" class="flex-1 flex flex-col overflow-hidden p-6 pb-0">
+            <CircuitDataTable
+              :columns="profileServerColumns"
+              :data="profileServersTableData"
+              dataKey="slug"
+              selectionMode="multiple"
+              :selection="selectedProfileServers"
+              @update:selection="selectedProfileServers = $event"
+              :paginator="true"
+              :rows="10"
+              scrollable
+              scrollHeight="flex"
+            >
+              <template #toolbar>
+                <DataTableToolbar
+                  searchPlaceholder="Search servers..."
+                  :showAddButton="false"
+                  :showFilterButton="false"
+                  :showRefreshButton="false"
+                  :showColumnsButton="false"
+                  :showDownloadButton="false"
+                >
+                  <template #saved-views>
+                    <div class="flex items-center gap-4 px-2 py-1.5 text-body-md">
+                      <CheckboxWithLabel v-model="showBoundServersOnly" :binary="true">
+                        <template #label>show bound servers ({{ profileBoundServers.length }})</template>
+                      </CheckboxWithLabel>
+                      <div class="border-l border-neutral-default_solid h-5 shrink-0" />
+                      <p class="text-body-md text-neutral-base whitespace-nowrap">
+                        <span class="font-semibold">{{ profileBoundServers.length }} of {{ serversData.length }}</span> servers bound
+                      </p>
+                    </div>
+                  </template>
+                </DataTableToolbar>
+              </template>
+            </CircuitDataTable>
+          </div>
+
+          <!-- ============ TAB: USER GROUPS (bound to profile) ============ -->
+          <div v-if="profileDetailTab === 'profile-user-groups'" class="flex-1 flex flex-col overflow-hidden p-6 pb-0">
+            <CircuitDataTable
+              :columns="profileUserGroupColumns"
+              :data="profileUserGroupsTableData"
+              dataKey="slug"
+              selectionMode="multiple"
+              :selection="selectedProfileUserGroups"
+              @update:selection="selectedProfileUserGroups = $event"
+              :paginator="true"
+              :rows="10"
+              scrollable
+              scrollHeight="flex"
+            >
+              <template #toolbar>
+                <DataTableToolbar
+                  searchPlaceholder="Search user groups..."
+                  :showAddButton="false"
+                  :showFilterButton="false"
+                  :showRefreshButton="false"
+                  :showColumnsButton="false"
+                  :showDownloadButton="false"
+                >
+                  <template #saved-views>
+                    <div class="flex items-center gap-4 px-2 py-1.5 text-body-md">
+                      <CheckboxWithLabel v-model="showBoundUserGroupsOnly" :binary="true">
+                        <template #label>show bound user groups ({{ profileBoundUserGroups.length }})</template>
+                      </CheckboxWithLabel>
+                      <div class="border-l border-neutral-default_solid h-5 shrink-0" />
+                      <p class="text-body-md text-neutral-base whitespace-nowrap">
+                        <span class="font-semibold">{{ profileBoundUserGroups.length }} of {{ userGroupsData.length }}</span> user groups bound
+                      </p>
+                    </div>
+                  </template>
+                </DataTableToolbar>
+              </template>
+            </CircuitDataTable>
+          </div>
+
         </template>
 
         <!-- ═══════════════ DIALOGS ═══════════════ -->

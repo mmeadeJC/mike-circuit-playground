@@ -186,9 +186,9 @@ These patterns come from the official Circuit DS docs. Follow them exactly.
 |---|---|
 | `Button` | Use `#icon` slot with `iconProps.class` for leading icons. `loading` prop disables and replaces content with spinner. |
 | `FormField` | Always bind `inputId` from the default slot to the input's `:id` for accessibility: `<template #default="{ inputId }">`. |
-| `DataTable` | Always use `markRaw()` when passing component references in column definitions. |
-| `DataTableToolbar` | Primary "Add" button MUST be on the toolbar (see Section 6). Default `showAddButton` is `true`. |
-| `ActionsToolbar` | Hides automatically when `selectedItems` is empty. Use for bulk actions on table selections. |
+| `DataTable` | Always use `markRaw()` for column components. Use `#toolbar` slot for `DataTableToolbar`, `#empty` and `#initialEmpty` for empty states. See Section 6 for the full mandatory list page pattern. When a `DataTableCellLink` column `onClick` and `@row-click` both call the same idempotent handler, this is **intended behavior — NOT a bug**. Both the row and the cell link should be clickable; do not add `e.stopPropagation()`. |
+| `DataTableToolbar` | **Always** inside `DataTable`'s `#toolbar` slot — never as a sibling. Primary "Add" button via `add-button-label` prop. See Section 6. |
+| `ActionsToolbar` | **Always** absolutely positioned floating over the table bottom (`absolute bottom-16 left-1/2 -translate-x-1/2 z-10`), wrapped in `<Transition>`. See Section 6. |
 | `Checkbox` (primitive) | Only use raw `Checkbox` from `primevue/checkbox` when NO label is needed. For labeled checkboxes, ALWAYS use `CheckboxWithLabel`. |
 | `RadioButton` (primitive) | Only use raw `RadioButton` from `primevue/radiobutton` when NO label is needed. For labeled radios, ALWAYS use `RadioButtonWithLabel`. |
 | `RadioButtonGroup` | Horizontal by default. Use `class="flex-col"` for vertical layout. |
@@ -227,31 +227,139 @@ Never use arbitrary spacing (`p-[12px]`) or radius (`rounded-[8px]`) values.
 **How to find available tokens:**
 - Read the Tailwind preset for `spacing` and `borderRadius` keys to discover all Circuit aliases (e.g. `xs`, `sm`, `md`, `lg`, `xl`).
 
-## 6. DataTableToolbar — Primary Add Button Rule
+## 6. List Page Pattern — DataTable + DataTableToolbar (Mandatory)
 
-On **list/table pages**, the primary "Add" action (e.g. "Add Asset", "Add Application", "Add User") **MUST** use the `DataTableToolbar`'s built-in add button. Never place a separate primary add button in the `PageHeader` actions when a `DataTableToolbar` is present on the page.
+> **⛔ Every list/table page MUST follow this exact pattern. No exceptions.**
 
-### DataTableToolbar Add Button Props
+On list pages, `DataTableToolbar` goes inside `DataTable`'s `#toolbar` slot. `ActionsToolbar` floats over the table using absolute positioning. `FilterModal` is a sibling at the same level.
+
+### 6a. Complete Reference Example
+
+This is the **canonical pattern** for every list page. Follow it exactly:
+
+```html
+<div class="flex flex-col h-full relative">
+  <DataTable
+    :data="currentPageData"
+    :columns="columns"
+    :loading="loading"
+    selection-mode="multiple"
+    v-model:selection="selection"
+    :paginator="true"
+    :rows="rows"
+    :first="first"
+    :total-records="totalRecords"
+    :lazy="true"
+    scrollable
+    scroll-height="flex"
+    @update:first="(v) => first = v"
+    @update:rows="(v) => rows = v"
+    @page-change="handlePageChange"
+    @row-click="handleRowClick"
+  >
+    <template #toolbar>
+      <DataTableToolbar
+        ref="toolbarRef"
+        :loading="loading"
+        add-button-label="Add Item"
+        search-placeholder="Search items..."
+        :saved-views="savedViews"
+        :default-views="defaultViews"
+        :selected-view-id="selectedViewId"
+        :columns="columnConfigs"
+        :export-options="exportOptions"
+        :active-filters="activeFiltersData"
+        :show-save-view-button="true"
+        :show-save-view-panel="showSaveViewPanel"
+        :sort-options="sortOptions"
+        :visible-columns-count="visibleColumnsCount"
+        @add="handleAdd"
+        @search="handleSearch"
+        @filter="handleFilter"
+        @refresh="handleRefresh"
+        @view-select="handleViewSelect"
+        @column-visibility-change="handleColumnVisibilityChange"
+        @export-select="handleExportSelect"
+        @filter-remove="handleFilterRemove"
+        @clear-all="handleClearAll"
+        @save-view="handleSaveView"
+        @save-view-submit="handleSaveViewSubmit"
+        @save-view-cancel="handleSaveViewCancel"
+      />
+    </template>
+
+    <template #empty>
+      <div class="flex flex-col items-center justify-center py-16 text-neutral-subtle">
+        <span class="text-body-md">No items match your filters</span>
+        <span class="text-body-sm mt-1">Try adjusting your search or filter criteria</span>
+      </div>
+    </template>
+
+    <template #initialEmpty>
+      <div class="flex flex-col items-center justify-center py-16 text-neutral-subtle">
+        <span class="text-body-md">No items yet</span>
+        <span class="text-body-sm mt-1">Add your first item to get started</span>
+      </div>
+    </template>
+  </DataTable>
+
+  <!-- ActionsToolbar — Floating over the table when items selected -->
+  <Transition
+    enter-active-class="transition-all duration-200 ease-out"
+    enter-from-class="opacity-0 translate-y-4"
+    enter-to-class="opacity-100 translate-y-0"
+    leave-active-class="transition-all duration-150 ease-in"
+    leave-from-class="opacity-100 translate-y-0"
+    leave-to-class="opacity-0 translate-y-4"
+  >
+    <div
+      v-if="selectedItems.length > 0"
+      class="absolute bottom-16 left-1/2 -translate-x-1/2 z-10"
+    >
+      <ActionsToolbar
+        :actions="bulkActions"
+        :selected-items="selectedItems"
+        :selection-label="selection.length === 1 ? 'Item selected' : 'Items selected'"
+        @action="handleBulkAction"
+        @close="handleClearSelection"
+      />
+    </div>
+  </Transition>
+
+  <!-- FilterModal -->
+  <FilterModal
+    v-model:visible="showFilterModal"
+    :basic-filters="basicFilters"
+    :additional-filters="additionalFilters"
+    :applied-filters="appliedFilters"
+    @apply="handleFilterApply"
+    @clear-all="handleFilterClearAll"
+  />
+</div>
+```
+
+### 6b. Key Rules
+
+| Rule | Detail |
+|---|---|
+| `DataTableToolbar` location | **Always** inside `DataTable`'s `#toolbar` slot — never as a sibling element |
+| `ActionsToolbar` location | **Always** absolutely positioned floating over the table bottom, wrapped in `<Transition>` |
+| `FilterModal` location | Sibling of `DataTable`, inside the same `relative` container |
+| Container | Outer `div` must have `class="flex flex-col h-full relative"` |
+| Scrolling | `DataTable` must have `scrollable` and `scroll-height="flex"` for flex-based scrolling |
+| Pagination | Use `DataTable`'s built-in `:paginator="true"` with `:rows`, `:first`, `:total-records`, `:lazy` |
+| Empty states | Use `#empty` slot (filtered, no results) and `#initialEmpty` slot (no data at all) |
+
+### 6c. Primary Add Button Rule
+
+On **list/table pages**, the primary "Add" action (e.g. "Add Asset", "Add Application", "Add User") **MUST** use the `DataTableToolbar`'s built-in add button via the `add-button-label` prop. Never place a separate primary add button in the `PageHeader` actions when a `DataTableToolbar` is present on the page.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `showAddButton` | `boolean` | `true` | Show/hide the built-in primary add button |
 | `addButtonLabel` | `string` | `"Add"` | Label text — customize per context (e.g. `"Add Asset"`, `"Add User"`) |
 
-The toolbar emits an `@add` event when the button is clicked.
-
 ```html
-<!-- ✅ CORRECT — primary add action on the toolbar -->
-<DataTableToolbar
-  searchPlaceholder="Search devices..."
-  :showAddButton="true"
-  addButtonLabel="Add Asset"
-  @add="openAddDialog"
-  :showFilterButton="true"
-  :showRefreshButton="true"
-  :showColumnsButton="true"
-/>
-
 <!-- ❌ WRONG — separate add button in PageHeader when toolbar exists -->
 <PageHeader title="Devices">
   <template #actions>
@@ -260,12 +368,24 @@ The toolbar emits an `@add` event when the button is clicked.
 </PageHeader>
 ```
 
-### What Goes in PageHeader Actions?
+### 6d. What Goes in PageHeader Actions?
 
 `PageHeader` `#actions` slot is for **secondary/contextual actions** that apply to the whole page, not to the table. Examples:
 - Settings button (navigates to settings)
 - Export/Import at a page level
 - Actions dropdown on detail views
+
+### 6e. Common Mistakes
+
+| Mistake | Correct Approach |
+|---|---|
+| Placing `DataTableToolbar` as a sibling above `DataTable` | Put it inside `DataTable`'s `#toolbar` slot |
+| Building a custom toolbar with `InputText` + icons | Use `DataTableToolbar` inside `#toolbar` slot |
+| Placing `ActionsToolbar` inline in the layout flow | Use absolute positioning with `bottom-16 left-1/2 -translate-x-1/2 z-10` |
+| Missing `<Transition>` on `ActionsToolbar` | Always wrap in `<Transition>` with enter/leave animation classes |
+| Forgetting `relative` on the container div | Required for `ActionsToolbar` absolute positioning |
+| Using custom pagination below the table | Use `DataTable`'s built-in `:paginator="true"` prop |
+| Using custom empty state divs outside the table | Use `#empty` and `#initialEmpty` slots inside `DataTable` |
 
 ## 7. Dialog — Circuit DS Primitive Usage
 

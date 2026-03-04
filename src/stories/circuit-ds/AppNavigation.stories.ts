@@ -80,7 +80,6 @@ const menuItems = [
   {
     label: 'Settings',
     leftIcon: markRaw(Cog6ToothIcon),
-    items: [{ label: 'Reports' }],
   },
 ];
 
@@ -135,6 +134,7 @@ export const Default: Story = {
           :profileMenuItems="profileMenuItems"
           activeItem="home"
           :collapsible="true"
+          :topNavToggle="true"
           v-bind="args"
         />
       </div>
@@ -143,7 +143,7 @@ export const Default: Story = {
   args: {},
 };
 
-export const NonCollapsible: Story = {
+export const Collapsible: Story = {
   render: (args) => ({
     components: { AppNavigation },
     setup() {
@@ -155,7 +155,7 @@ export const NonCollapsible: Story = {
           :menuItems="menuItems"
           :profileMenuItems="profileMenuItems"
           activeItem="home"
-          :collapsible="false"
+          :collapsible="true"
           v-bind="args"
         />
       </div>

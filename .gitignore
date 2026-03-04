@@ -4,3 +4,6 @@ dist
 storybook-static
 *.tgz
 *.local
+.env
+.env.*
+api-reference/

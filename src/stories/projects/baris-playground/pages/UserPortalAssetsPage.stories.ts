@@ -12,12 +12,15 @@ import {
   MessageNotification,
   SeverityDialog,
   RadioButtonWithLabel,
+  ToastNotification,
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import Dialog from 'primevue/dialog';
 import Textarea from 'primevue/textarea';
 import Divider from 'primevue/divider';
+import Avatar from 'primevue/avatar';
+import { useToast } from 'primevue/usetoast';
 
 import {
   ArrowRightStartOnRectangleIcon,
@@ -33,6 +36,8 @@ import {
   CubeIcon,
   TvIcon,
   DevicePhoneMobileIcon,
+  ChevronRightIcon,
+  ClockIcon,
 } from '@heroicons/vue/24/outline';
 
 import {
@@ -42,7 +47,9 @@ import {
   PasswordManagerIcon,
 } from '@jumpcloud/icons';
 
+// @ts-expect-error Vue SFC import
 import DetailsKeyValue from '../../../../components/DetailsKeyValue.vue';
+// @ts-expect-error Vue SFC import
 import DetailPageLayout from '../../../../components/layout/page-layouts/DetailPageLayout.vue';
 
 // ─── User Portal Navigation Data (flat, no nested items) ───
@@ -261,6 +268,9 @@ const assetColumns = [
 
 const UserPortalAssetsPage = defineComponent({
   name: 'UserPortalAssetsPage',
+  props: {
+    variant: { type: String as () => 'default' | 'optionA' | 'optionB' | 'optionD', default: 'default' },
+  },
   components: {
     AppNavigation,
     PageHeader,
@@ -276,6 +286,8 @@ const UserPortalAssetsPage = defineComponent({
     PvDialog: Dialog,
     PvTextarea: Textarea,
     PvDivider: Divider,
+    PvAvatar: Avatar,
+    ToastNotification,
     DetailPageLayout,
     DetailsKeyValue,
     ArrowLeftIcon,
@@ -287,9 +299,13 @@ const UserPortalAssetsPage = defineComponent({
     XCircleIcon,
     ExclamationTriangleIcon,
     XMarkIcon,
+    ChevronRightIcon,
+    ClockIcon,
   },
-  setup() {
-    const currentView = ref<'list' | 'detail'>('list');
+  setup(props) {
+    const variant = computed(() => props.variant);
+    const toast = useToast();
+    const currentView = ref<'list' | 'detail' | 'tasks'>(props.variant === 'optionB' ? 'tasks' : 'list');
     const selectedAsset = ref<UserAsset | null>(null);
     const assets = ref<UserAsset[]>(JSON.parse(JSON.stringify(initialAssets)));
 
@@ -301,13 +317,20 @@ const UserPortalAssetsPage = defineComponent({
     const editDenyReason = ref('');
     const denyReason = ref('');
 
+    const navigatedFrom = ref<'list' | 'tasks'>('list');
+
     function openAssetDetail(asset: UserAsset) {
       selectedAsset.value = asset;
+      navigatedFrom.value = 'list';
       currentView.value = 'detail';
     }
 
     function backToList() {
-      currentView.value = 'list';
+      if (navigatedFrom.value === 'tasks') {
+        currentView.value = 'tasks';
+      } else {
+        currentView.value = 'list';
+      }
       selectedAsset.value = null;
     }
 
@@ -331,12 +354,14 @@ const UserPortalAssetsPage = defineComponent({
       return col;
     });
 
-    const pageTitle = computed(() =>
-      currentView.value === 'list' ? 'My Assets' : selectedAsset.value?.name ?? ''
-    );
+    const pageTitle = computed(() => {
+      if (currentView.value === 'tasks') return 'Tasks';
+      return currentView.value === 'list' ? 'My Assets' : selectedAsset.value?.name ?? '';
+    });
 
     function confirmAcknowledge() {
       if (!selectedAsset.value) return;
+      const assetName = selectedAsset.value.name;
       const asset = assets.value.find(a => a.id === selectedAsset.value!.id);
       if (asset) {
         asset.acknowledged = 'Yes';
@@ -344,10 +369,12 @@ const UserPortalAssetsPage = defineComponent({
         selectedAsset.value = { ...asset };
       }
       showAcknowledgeDialog.value = false;
+      toast.add({ severity: 'success', summary: 'Asset Acknowledged', detail: `You have acknowledged ${assetName}.`, life: 4000 });
     }
 
     function confirmDeny() {
       if (!selectedAsset.value) return;
+      const assetName = selectedAsset.value.name;
       const asset = assets.value.find(a => a.id === selectedAsset.value!.id);
       if (asset) {
         asset.acknowledged = 'Denied';
@@ -357,6 +384,7 @@ const UserPortalAssetsPage = defineComponent({
       }
       showDenyDialog.value = false;
       denyReason.value = '';
+      toast.add({ severity: 'success', summary: 'Asset Denied', detail: `You have denied the assignment of ${assetName}.`, life: 4000 });
     }
 
     function confirmLostStolen() {
@@ -425,8 +453,89 @@ const UserPortalAssetsPage = defineComponent({
       return assetTypeIconMap[selectedAsset.value.type] || markRaw(CubeIcon);
     });
 
+    // ─── Tasks (Option B) ───
+
+    const pendingAckAssets = computed(() =>
+      assets.value.filter(a => a.acknowledged === 'Pending')
+    );
+
+    const accessRequestResolved = ref(false);
+
+    const taskCount = computed(() => {
+      let count = pendingAckAssets.value.length;
+      if (!accessRequestResolved.value) count += 1;
+      return count;
+    });
+
+    const taskExpandedMap = ref<Record<string, boolean>>({});
+
+    function isTaskCollapsed(key: string): boolean {
+      return !taskExpandedMap.value[key];
+    }
+
+    function setTaskExpanded(key: string, expanded: boolean) {
+      taskExpandedMap.value = { ...taskExpandedMap.value, [key]: expanded };
+    }
+
+    function viewAssetFromTask(asset: UserAsset) {
+      selectedAsset.value = asset;
+      navigatedFrom.value = 'tasks';
+      currentView.value = 'detail';
+    }
+
+    function goToTasksForAsset(asset: UserAsset) {
+      setTaskExpanded('task-' + asset.id, true);
+      currentView.value = 'tasks';
+      selectedAsset.value = null;
+    }
+
+    const computedMenuItems = computed(() =>
+      menuItems.map(item => ({
+        ...item,
+        ...(item.label === 'Tasks' && props.variant === 'optionB' && taskCount.value > 0
+          ? { label: `Tasks (${taskCount.value})`, command: () => { currentView.value = 'tasks'; selectedAsset.value = null; } }
+          : item.label === 'Tasks' && props.variant === 'optionB'
+            ? { command: () => { currentView.value = 'tasks'; selectedAsset.value = null; } }
+            : {}),
+        ...(item.label === 'My Assets' && props.variant === 'optionB'
+          ? { command: () => { currentView.value = 'list'; selectedAsset.value = null; } }
+          : {}),
+      }))
+    );
+
+    const activeNavItem = computed(() =>
+      currentView.value === 'tasks' ? computedMenuItems.value.find(i => i.label.startsWith('Tasks'))?.label.toLowerCase() ?? 'tasks' : 'my assets'
+    );
+
+    const pageTabs = computed(() => {
+      if (currentView.value === 'tasks') return [{ label: `Resources (${taskCount.value})`, value: 'resources' }];
+      return undefined;
+    });
+
+    const activePageTab = computed(() => {
+      if (currentView.value === 'tasks') return 'resources';
+      return undefined;
+    });
+
+    function acknowledgeFromTask(asset: UserAsset) {
+      selectedAsset.value = asset;
+      showAcknowledgeDialog.value = true;
+    }
+
+    function denyFromTask(asset: UserAsset) {
+      selectedAsset.value = asset;
+      denyReason.value = '';
+      showDenyDialog.value = true;
+    }
+
+    function resolveAccessRequest() {
+      accessRequestResolved.value = true;
+    }
+
     return {
-      menuItems,
+      variant,
+      computedMenuItems,
+      activeNavItem,
       profileMenuItems,
       currentView,
       selectedAsset,
@@ -440,6 +549,21 @@ const UserPortalAssetsPage = defineComponent({
       editDenyReason,
       denyReason,
       pageTitle,
+      pageTabs,
+      activePageTab,
+      pendingAckAssets,
+      accessRequestResolved,
+      taskCount,
+      navigatedFrom,
+      taskExpandedMap,
+      isTaskCollapsed,
+      setTaskExpanded,
+      viewAssetFromTask,
+      goToTasksForAsset,
+      assetTypeIconMap,
+      acknowledgeFromTask,
+      denyFromTask,
+      resolveAccessRequest,
       lostStolenDialogContent,
       hasHardwareSpecs,
       assetTypeIcon,
@@ -455,11 +579,12 @@ const UserPortalAssetsPage = defineComponent({
   },
   template: `
     <div class="flex h-screen overflow-hidden">
+      <ToastNotification />
       <AppNavigation
-        :menuItems="menuItems"
+        :menuItems="computedMenuItems"
         :profileMenuItems="profileMenuItems"
-        activeItem="my assets"
-        :collapsible="false"
+        :activeItem="activeNavItem"
+        :collapsible="true"
         :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
@@ -467,7 +592,7 @@ const UserPortalAssetsPage = defineComponent({
         <!-- Back button bar (detail view only) -->
         <div v-if="currentView === 'detail'" class="shrink-0 flex items-center h-12 px-4 border-b border-navigation-top_bar-default bg-navigation-top_bar-default">
           <PvButton
-            label="My Assets"
+            :label="navigatedFrom === 'tasks' ? 'Tasks' : 'My Assets'"
             severity="secondary"
             variant="text"
             size="small"
@@ -479,44 +604,46 @@ const UserPortalAssetsPage = defineComponent({
           </PvButton>
         </div>
 
-        <component :is="'style'">
-          .page-header-inline-tag .min-w-0.flex-1.flex-col {
-            flex-direction: row !important;
-            align-items: center !important;
-          }
-          .page-header-inline-tag .min-w-0.flex-1.flex-col .min-h-5 {
-            min-height: 0 !important;
-          }
-        </component>
         <PageHeader
           :title="pageTitle"
           :icon="currentView === 'detail' ? assetTypeIcon : undefined"
-          :class="{ 'page-header-inline-tag': currentView === 'detail' }"
+          :tabs="pageTabs"
+          :activeTab="activePageTab"
         >
-          <template v-if="currentView === 'detail' && selectedAsset" #subtitle>
-            <PvTag :value="selectedAsset.status" :severity="{ 'In Use': 'success', 'Ready': 'info', 'Retired': 'secondary', 'Repair': 'warn', 'Stolen': 'danger' }[selectedAsset.status]" />
+          <template v-if="currentView === 'detail' || currentView === 'tasks'" #subtitle>
+            <div v-if="currentView === 'detail' && selectedAsset" class="flex items-center">
+              <span class="text-body-sm text-neutral-subtle">Serial Number&nbsp;</span>
+              <span class="text-body-sm text-neutral-base">{{ selectedAsset.serialNumber }}</span>
+              <PvDivider layout="vertical" class="my-0!" />
+              <PvTag :value="selectedAsset.ownershipType" severity="info" class="!normal-case" />
+              <PvDivider layout="vertical" class="my-0!" />
+              <PvTag :value="selectedAsset.status" :severity="{ 'In Use': 'success', 'Ready': 'info', 'Retired': 'secondary', 'Repair': 'warn', 'Stolen': 'danger' }[selectedAsset.status] || 'info'" class="!normal-case" />
+            </div>
+            <span v-if="currentView === 'tasks'" class="text-body-md text-neutral-subtle">Your approval is needed for the following requests.</span>
           </template>
           <template #actions>
             <template v-if="currentView === 'detail' && selectedAsset">
-              <PvButton
-                v-if="selectedAsset.acknowledged === 'Pending'"
-                label="Acknowledge"
-                @click="showAcknowledgeDialog = true"
-              />
-              <PvButton
-                v-if="selectedAsset.acknowledged === 'Pending'"
-                label="Deny Asset"
-                severity="danger"
-                variant="outlined"
-                @click="openDenyDialog"
-              />
-              <PvButton
-                v-if="selectedAsset.acknowledged !== 'Pending'"
-                label="Edit Acknowledgment"
-                severity="secondary"
-                variant="outlined"
-                @click="openEditAcknowledgmentDialog"
-              />
+              <template v-if="variant !== 'optionD' && variant !== 'optionB'">
+                <PvButton
+                  v-if="selectedAsset.acknowledged === 'Pending'"
+                  label="Acknowledge"
+                  @click="showAcknowledgeDialog = true"
+                />
+                <PvButton
+                  v-if="selectedAsset.acknowledged === 'Pending'"
+                  label="Deny Asset"
+                  severity="danger"
+                  variant="outlined"
+                  @click="openDenyDialog"
+                />
+                <PvButton
+                  v-if="selectedAsset.acknowledged !== 'Pending'"
+                  label="Edit Acknowledgment"
+                  severity="secondary"
+                  variant="outlined"
+                  @click="openEditAcknowledgmentDialog"
+                />
+              </template>
               <PvButton
                 v-if="selectedAsset.status !== 'Stolen'"
                 label="Report Lost/Stolen"
@@ -528,28 +655,9 @@ const UserPortalAssetsPage = defineComponent({
           </template>
         </PageHeader>
 
-        <!-- Status tags row (detail view only) -->
-        <div v-if="currentView === 'detail' && selectedAsset" class="shrink-0 flex items-center gap-2 px-6 py-2 border-b border-neutral-default_solid bg-neutral-base">
-          <PvTag :value="selectedAsset.ownershipType" severity="info" />
-          <PvTag
-            :value="selectedAsset.acknowledged === 'Yes' ? 'Acknowledged' : selectedAsset.acknowledged === 'Denied' ? 'Denied' : 'Pending Acknowledgment'"
-            :severity="selectedAsset.acknowledged === 'Yes' ? 'success' : selectedAsset.acknowledged === 'Denied' ? 'danger' : 'warn'"
-          />
-        </div>
-
         <!-- ============ LIST VIEW ============ -->
         <div v-if="currentView === 'list'" class="flex-1 flex flex-col min-h-0 overflow-hidden">
-          <div class="flex-1 flex flex-col min-h-0 w-full max-w-5xl mx-auto px-6">
-            <div class="shrink-0">
-              <DataTableToolbar
-                searchPlaceholder="Search assets..."
-                :showAddButton="false"
-                :showFilterButton="true"
-                :showRefreshButton="true"
-                :showColumnsButton="true"
-              />
-            </div>
-            <div class="flex-1 flex flex-col min-h-0">
+          <div class="flex-1 flex flex-col min-h-0 w-full max-w-5xl mx-auto px-6 relative">
               <CircuitDataTable
                 :columns="assetColumnsWithClick"
                 :data="assets"
@@ -572,8 +680,17 @@ const UserPortalAssetsPage = defineComponent({
                   tableContainer: { style: 'flex: 1 1 0; min-height: 0; height: 100%;' },
                 }"
                 :ptOptions="{ mergeSections: true, mergeProps: true }"
-              />
-            </div>
+              >
+                <template #toolbar>
+                  <DataTableToolbar
+                    searchPlaceholder="Search assets..."
+                    :showAddButton="false"
+                    :showFilterButton="true"
+                    :showRefreshButton="true"
+                    :showColumnsButton="true"
+                  />
+                </template>
+              </CircuitDataTable>
           </div>
         </div>
 
@@ -582,6 +699,67 @@ const UserPortalAssetsPage = defineComponent({
           <DetailPageLayout class="w-full! h-full!" maxWidth="1024">
             <div class="flex flex-col gap-6">
 
+              <!-- Acknowledgment Section (top for optionA / optionB / optionD) -->
+              <CollapsiblePanel v-if="variant === 'optionA' || variant === 'optionB' || variant === 'optionD'" header="Acknowledgment">
+                <template #titleicon="iconProps">
+                  <CheckCircleIcon :class="iconProps.class" />
+                </template>
+                <template #actions>
+                  <div class="flex items-center">
+                    <PvTag v-if="selectedAsset.acknowledged === 'Yes'" value="Acknowledged" severity="success" class="!normal-case">
+                      <template #icon><CheckCircleIcon class="size-4" /></template>
+                    </PvTag>
+                    <PvTag v-else-if="selectedAsset.acknowledged === 'Denied'" value="Denied" severity="danger" class="!normal-case">
+                      <template #icon><XCircleIcon class="size-4" /></template>
+                    </PvTag>
+                    <template v-else>
+                      <PvTag value="Pending" severity="warn" class="!normal-case">
+                        <template #icon><ExclamationTriangleIcon class="size-4" /></template>
+                      </PvTag>
+                      <template v-if="variant === 'optionB'">
+                        <PvDivider layout="vertical" class="my-0!" />
+                        <PvButton label="Review in Tasks" variant="outlined" severity="secondary" size="small" @click="goToTasksForAsset(selectedAsset)" />
+                      </template>
+                    </template>
+                  </div>
+                </template>
+
+                <!-- Pending -->
+                <div v-if="selectedAsset.acknowledged === 'Pending'" class="flex flex-col gap-4">
+                  <p class="text-body-md text-neutral-base">
+                    This asset has been assigned to you and requires acknowledgment. Please review the details below and either acknowledge or deny the assignment.
+                  </p>
+                  <div v-if="variant === 'optionD'" class="flex items-center gap-3">
+                    <PvButton label="Acknowledge" @click="showAcknowledgeDialog = true" />
+                    <PvButton label="Deny Asset" severity="danger" variant="outlined" @click="openDenyDialog" />
+                  </div>
+                </div>
+
+                <!-- Acknowledged -->
+                <div v-if="selectedAsset.acknowledged === 'Yes'" class="flex flex-col gap-4">
+                  <p class="text-body-md text-neutral-base">
+                    You acknowledged this asset on <strong>{{ selectedAsset.acknowledgedAt }}</strong>.
+                  </p>
+                  <div v-if="variant === 'optionD'" class="flex items-center gap-3">
+                    <PvButton label="Edit Acknowledgment" severity="secondary" variant="outlined" @click="openEditAcknowledgmentDialog" />
+                  </div>
+                </div>
+
+                <!-- Denied -->
+                <div v-if="selectedAsset.acknowledged === 'Denied'" class="flex flex-col gap-4">
+                  <p class="text-body-md text-neutral-base">
+                    You denied this asset assignment<span v-if="selectedAsset.deniedAt"> on <strong>{{ selectedAsset.deniedAt }}</strong></span>.
+                  </p>
+                  <div v-if="selectedAsset.denialReason" class="flex flex-col gap-1">
+                    <span class="text-body-md-semi-bold text-neutral-base">Reason</span>
+                    <p class="text-body-md text-neutral-subtle">{{ selectedAsset.denialReason }}</p>
+                  </div>
+                  <div v-if="variant === 'optionD'" class="flex items-center gap-3">
+                    <PvButton label="Edit Acknowledgment" severity="secondary" variant="outlined" @click="openEditAcknowledgmentDialog" />
+                  </div>
+                </div>
+              </CollapsiblePanel>
+
               <!-- Asset Information -->
               <CollapsiblePanel header="Asset Information">
                 <template #titleicon="iconProps">
@@ -589,13 +767,17 @@ const UserPortalAssetsPage = defineComponent({
                 </template>
                 <div class="grid grid-cols-2 gap-x-6 gap-y-4">
                   <DetailsKeyValue label="Name" :value="selectedAsset.name" />
-                  <DetailsKeyValue label="Model" :value="selectedAsset.model" />
-                  <DetailsKeyValue label="Type" :value="selectedAsset.type" />
-                  <DetailsKeyValue label="Operating System" :value="selectedAsset.os" />
-                  <DetailsKeyValue label="Location" :value="selectedAsset.location" />
+                  <DetailsKeyValue label="Status">
+                    <PvTag :value="selectedAsset.status" :severity="{ 'In Use': 'success', 'Ready': 'info', 'Retired': 'secondary', 'Repair': 'warn', 'Stolen': 'danger' }[selectedAsset.status] || 'info'" class="!normal-case" />
+                  </DetailsKeyValue>
                   <DetailsKeyValue label="Asset Tag" :value="selectedAsset.assetTag" />
                   <DetailsKeyValue label="Serial Number" :value="selectedAsset.serialNumber" />
+                  <DetailsKeyValue label="Type" :value="selectedAsset.type" />
+                  <DetailsKeyValue label="Ownership Type" :value="selectedAsset.ownershipType" />
                   <DetailsKeyValue label="Manufacturer" :value="selectedAsset.manufacturer" />
+                  <DetailsKeyValue label="Model" :value="selectedAsset.model" />
+                  <DetailsKeyValue label="Location" :value="selectedAsset.location" />
+                  <DetailsKeyValue label="Operating System" :value="selectedAsset.os" />
                 </div>
               </CollapsiblePanel>
 
@@ -622,19 +804,25 @@ const UserPortalAssetsPage = defineComponent({
                 </div>
               </CollapsiblePanel>
 
-              <!-- Acknowledgment Section -->
-              <CollapsiblePanel header="Acknowledgment">
+              <!-- Acknowledgment Section (bottom for default) -->
+              <CollapsiblePanel v-if="variant === 'default'" header="Acknowledgment">
                 <template #titleicon="iconProps">
                   <CheckCircleIcon :class="iconProps.class" />
+                </template>
+                <template #actions>
+                  <PvTag v-if="selectedAsset.acknowledged === 'Yes'" value="Acknowledged" severity="success" class="!normal-case">
+                    <template #icon><CheckCircleIcon class="size-4" /></template>
+                  </PvTag>
+                  <PvTag v-else-if="selectedAsset.acknowledged === 'Denied'" value="Denied" severity="danger" class="!normal-case">
+                    <template #icon><XCircleIcon class="size-4" /></template>
+                  </PvTag>
+                  <PvTag v-else value="Pending" severity="warn" class="!normal-case">
+                    <template #icon><ExclamationTriangleIcon class="size-4" /></template>
+                  </PvTag>
                 </template>
 
                 <!-- Pending -->
                 <div v-if="selectedAsset.acknowledged === 'Pending'" class="flex flex-col gap-4">
-                  <MessageNotification
-                    severity="warn"
-                    title="Acknowledgment Required"
-                    detail="Please review this asset and confirm or deny its assignment."
-                  />
                   <p class="text-body-md text-neutral-base">
                     This asset has been assigned to you and requires acknowledgment. Please review the details above and either acknowledge or deny the assignment.
                   </p>
@@ -646,10 +834,6 @@ const UserPortalAssetsPage = defineComponent({
 
                 <!-- Acknowledged -->
                 <div v-if="selectedAsset.acknowledged === 'Yes'" class="flex flex-col gap-4">
-                  <MessageNotification
-                    severity="success"
-                    title="Asset Acknowledged"
-                  />
                   <p class="text-body-md text-neutral-base">
                     You acknowledged this asset on <strong>{{ selectedAsset.acknowledgedAt }}</strong>.
                   </p>
@@ -657,10 +841,6 @@ const UserPortalAssetsPage = defineComponent({
 
                 <!-- Denied -->
                 <div v-if="selectedAsset.acknowledged === 'Denied'" class="flex flex-col gap-4">
-                  <MessageNotification
-                    severity="error"
-                    title="Asset Denied"
-                  />
                   <p class="text-body-md text-neutral-base">
                     You denied this asset assignment<span v-if="selectedAsset.deniedAt"> on <strong>{{ selectedAsset.deniedAt }}</strong></span>.
                   </p>
@@ -673,6 +853,84 @@ const UserPortalAssetsPage = defineComponent({
 
             </div>
           </DetailPageLayout>
+        </div>
+
+        <!-- ============ TASKS VIEW (Option B) ============ -->
+        <div v-if="currentView === 'tasks'" class="flex-1 min-h-0 overflow-auto bg-neutral-surface">
+          <div class="w-full max-w-3xl mx-auto px-6 py-6">
+            <div class="flex flex-col gap-4">
+
+              <!-- Access Request Task -->
+              <CollapsiblePanel
+                v-if="!accessRequestResolved"
+                toggleable
+                :collapsed="isTaskCollapsed('access-request')"
+                @update:collapsed="setTaskExpanded('access-request', !$event)"
+                header="Serhat Test App"
+              >
+                <template #titleicon="iconProps">
+                  <CubeIcon :class="iconProps.class" />
+                </template>
+                <template #actions>
+                  <PvButton label="Deny Access" severity="danger" variant="outlined" size="small" @click="resolveAccessRequest" />
+                  <PvButton label="Grant Access" variant="outlined" size="small" @click="resolveAccessRequest" />
+                </template>
+                <template #toggleicon="iconProps">
+                  <ChevronRightIcon :class="iconProps.class" />
+                </template>
+                <div class="flex flex-col gap-3">
+                  <PvAvatar label="S" shape="circle" size="large" class="bg-[#E87B5E]! text-white!" />
+                  <div class="flex items-center gap-4 flex-wrap">
+                    <span class="text-body-md text-neutral-base"><strong>Requester:</strong> Serhat Can</span>
+                    <span class="text-body-md text-neutral-base"><strong>Email:</strong> serhat.can+afrc@jumpcloud.com</span>
+                  </div>
+                  <p class="text-body-md text-neutral-base"><strong>Request Reason:</strong> need access to serhat app please please!!!</p>
+                  <div class="flex flex-col gap-2">
+                    <span class="text-body-md-semi-bold text-neutral-base">Approval Flow</span>
+                    <div class="flex items-center gap-2">
+                      <ClockIcon class="size-4 text-warning-base" />
+                      <span class="text-body-md text-neutral-base">Barış Ermut <span class="text-neutral-subtle">(Pending Required Approval)</span></span>
+                    </div>
+                  </div>
+                </div>
+              </CollapsiblePanel>
+
+              <!-- Asset Acknowledgment Tasks -->
+              <CollapsiblePanel
+                v-for="asset in pendingAckAssets"
+                :key="'task-' + asset.id"
+                toggleable
+                :collapsed="isTaskCollapsed('task-' + asset.id)"
+                @update:collapsed="setTaskExpanded('task-' + asset.id, !$event)"
+                :header="asset.name"
+              >
+                <template #titleicon="iconProps">
+                  <component :is="assetTypeIconMap[asset.type] || assetTypeIconMap['Accessory']" :class="iconProps.class" />
+                </template>
+                <template #actions>
+                  <PvButton label="Deny Asset" severity="danger" variant="outlined" size="small" @click="denyFromTask(asset)" />
+                  <PvButton label="Acknowledge" variant="outlined" size="small" @click="acknowledgeFromTask(asset)" />
+                </template>
+                <template #toggleicon="iconProps">
+                  <ChevronRightIcon :class="iconProps.class" />
+                </template>
+                <div class="flex flex-col gap-3">
+                  <span class="text-body-md text-neutral-base"><strong>Serial Number:</strong> {{ asset.serialNumber }}</span>
+                  <div class="flex items-center justify-between">
+                    <span class="text-body-md text-neutral-base"><strong>Requested by:</strong> Admin IT</span>
+                    <PvButton label="View Details" severity="secondary" variant="text" size="small" @click="viewAssetFromTask(asset)" />
+                  </div>
+                </div>
+              </CollapsiblePanel>
+
+              <!-- Empty State -->
+              <div v-if="taskCount === 0" class="flex flex-col items-center gap-3 py-12">
+                <CheckCircleIcon class="size-10 text-success-base" />
+                <p class="text-body-md text-neutral-subtle">No pending tasks. You're all caught up!</p>
+              </div>
+
+            </div>
+          </div>
         </div>
 
         <!-- ============ ACKNOWLEDGE DIALOG ============ -->
@@ -839,3 +1097,18 @@ export default meta;
 type Story = StoryObj<typeof UserPortalAssetsPage>;
 
 export const Default: Story = {};
+
+export const OptionA: Story = {
+  name: 'Option A — Panel Top, CTAs in Header',
+  args: { variant: 'optionA' },
+};
+
+export const OptionB: Story = {
+  name: 'Option B — Tasks Page',
+  args: { variant: 'optionB' },
+};
+
+export const OptionD: Story = {
+  name: 'Option C — Panel Top, CTAs in Panel',
+  args: { variant: 'optionD' },
+};

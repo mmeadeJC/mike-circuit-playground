@@ -59,9 +59,13 @@ import {
   PlusIcon,
 } from '@heroicons/vue/24/outline';
 
+// @ts-expect-error Vue SFC import
 import TopBar from '../../../../components/TopBar.vue';
+// @ts-expect-error Vue SFC import
 import DetailPageLayout from '../../../../components/layout/page-layouts/DetailPageLayout.vue';
+// @ts-expect-error Vue SFC import
 import ConfigPageLayout from '../../../../components/layout/page-layouts/ConfigPageLayout.vue';
+// @ts-expect-error Vue SFC import
 import DetailsKeyValue from '../../../../components/DetailsKeyValue.vue';
 
 import {
@@ -72,6 +76,7 @@ import {
   SsoIcon,
   SaasManagementIcon,
   PasswordManagerIcon,
+  WorkflowIcon,
   AppleIcon,
   WindowsIcon,
   UbuntuIcon,
@@ -80,8 +85,19 @@ import {
 // ─── Navigation Data ───
 
 const menuItems = [
-  { label: 'Get Started', leftIcon: markRaw(RocketLaunchIcon) },
-  { label: 'Home', leftIcon: markRaw(HomeIcon) },
+  {
+    label: 'Get Started',
+    leftIcon: markRaw(RocketLaunchIcon),
+  },
+  {
+    label: 'Home',
+    leftIcon: markRaw(HomeIcon),
+  },
+  {
+    label: 'Alerts',
+    leftIcon: markRaw(BellIcon),
+    count: 25,
+  },
   {
     label: 'User Management',
     leftIcon: markRaw(UserGroupIcon),
@@ -89,10 +105,10 @@ const menuItems = [
       { label: 'Users', leftIcon: markRaw(UserIcon) },
       { label: 'User Groups', leftIcon: markRaw(UsersIcon) },
       { separator: true },
-      { label: 'Active Directory' },
+      { label: 'Active Directories' },
       { label: 'Cloud Directories' },
       { label: 'HR Directories' },
-      { label: 'Identity Provider' },
+      { label: 'Identity Providers' },
     ],
   },
   {
@@ -105,32 +121,39 @@ const menuItems = [
       { label: 'Asset Management', leftIcon: markRaw(ClipboardDocumentListIcon), isNew: true },
       { separator: true },
       { label: 'Policy Management' },
+      { label: 'Patch Management' },
       { label: 'Policy Groups' },
-      { label: 'Software Deployment' },
+      { label: 'Software Management' },
       { label: 'MDM' },
     ],
   },
   {
     label: 'Access',
     leftIcon: markRaw(AccessIcon),
-    count: 1,
     items: [
       { label: 'SSO Applications', leftIcon: markRaw(SsoIcon) },
-      { label: 'Access Reports', isNew: true },
-      { label: 'SaaS Management', leftIcon: markRaw(SaasManagementIcon) },
-      { label: 'Password Management', leftIcon: markRaw(PasswordManagerIcon) },
+      { label: 'Access Requests', leftIcon: markRaw(ClipboardDocumentCheckIcon) },
+      { label: 'AI & SaaS Management', leftIcon: markRaw(SaasManagementIcon) },
+      { label: 'Vault', leftIcon: markRaw(PasswordManagerIcon), isNew: true },
+      { separator: true },
       { label: 'LDAP' },
       { label: 'RADIUS' },
     ],
+  },
+  {
+    label: 'Workflows',
+    leftIcon: markRaw(WorkflowIcon),
   },
   {
     label: 'Security',
     leftIcon: markRaw(ShieldCheckIcon),
     items: [
       { label: 'Conditional Access Policies' },
-      { label: 'Conditional List' },
+      { label: 'Conditional Lists' },
+      { label: 'Certificate Authority', isNew: true },
       { label: 'MFA Configurations' },
       { label: 'Device Trust' },
+      { label: 'Password Policies' },
     ],
   },
   {
@@ -144,9 +167,7 @@ const menuItems = [
   {
     label: 'Settings',
     leftIcon: markRaw(Cog6ToothIcon),
-    items: [{ label: 'Reports' }],
   },
-  { label: 'Alert', leftIcon: markRaw(BellIcon), count: 23, isNew: true },
 ];
 
 const profileMenuItems = [
@@ -1092,6 +1113,7 @@ const AdminAssetManagementPage = defineComponent({
         :profileMenuItems="profileMenuItems"
         activeItem="device management"
         :collapsible="true"
+        :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
@@ -1134,19 +1156,7 @@ const AdminAssetManagementPage = defineComponent({
         <template v-if="currentView === 'list'">
 
           <!-- Devices Tab -->
-          <div v-if="activeListTab === 'devices'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
-            <div class="shrink-0 px-6">
-              <DataTableToolbar
-                searchPlaceholder="Search devices..."
-                :showAddButton="true"
-                addButtonLabel="Add Asset"
-                @add="openAddAsset"
-                :showFilterButton="true"
-                :showRefreshButton="true"
-                :showColumnsButton="true"
-              />
-            </div>
-            <div class="flex-1 flex flex-col min-h-0 px-6">
+          <div v-if="activeListTab === 'devices'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 relative bg-neutral-surface">
               <CircuitDataTable
                 :columns="deviceColumnsWithActions"
                 :data="assets"
@@ -1172,24 +1182,23 @@ const AdminAssetManagementPage = defineComponent({
                   tableContainer: { style: 'flex: 1 1 0; min-height: 0; height: 100%;' },
                 }"
                 :ptOptions="{ mergeSections: true, mergeProps: true }"
-              />
-            </div>
+              >
+                <template #toolbar>
+                  <DataTableToolbar
+                    searchPlaceholder="Search devices..."
+                    :showAddButton="true"
+                    addButtonLabel="Add Asset"
+                    @add="openAddAsset"
+                    :showFilterButton="true"
+                    :showRefreshButton="true"
+                    :showColumnsButton="true"
+                  />
+                </template>
+              </CircuitDataTable>
           </div>
 
           <!-- Accessories Tab -->
-          <div v-if="activeListTab === 'accessories'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
-            <div class="shrink-0 px-6">
-              <DataTableToolbar
-                searchPlaceholder="Search accessories..."
-                :showAddButton="true"
-                addButtonLabel="Add Accessory"
-                @add="openAddAsset"
-                :showFilterButton="true"
-                :showRefreshButton="true"
-                :showColumnsButton="true"
-              />
-            </div>
-            <div class="flex-1 flex flex-col min-h-0 px-6">
+          <div v-if="activeListTab === 'accessories'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 relative bg-neutral-surface">
               <CircuitDataTable
                 :columns="accessoryColumns"
                 :data="accessoryAssetsData"
@@ -1204,23 +1213,23 @@ const AdminAssetManagementPage = defineComponent({
                   tableContainer: { style: 'flex: 1 1 0; min-height: 0; height: 100%;' },
                 }"
                 :ptOptions="{ mergeSections: true, mergeProps: true }"
-              />
-            </div>
+              >
+                <template #toolbar>
+                  <DataTableToolbar
+                    searchPlaceholder="Search accessories..."
+                    :showAddButton="true"
+                    addButtonLabel="Add Accessory"
+                    @add="openAddAsset"
+                    :showFilterButton="true"
+                    :showRefreshButton="true"
+                    :showColumnsButton="true"
+                  />
+                </template>
+              </CircuitDataTable>
           </div>
 
           <!-- Locations Tab -->
-          <div v-if="activeListTab === 'locations'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
-            <div class="shrink-0 px-6">
-              <DataTableToolbar
-                searchPlaceholder="Search locations..."
-                :showAddButton="true"
-                addButtonLabel="Add Location"
-                @add="openAddAsset"
-                :showFilterButton="true"
-                :showRefreshButton="true"
-              />
-            </div>
-            <div class="flex-1 flex flex-col min-h-0 px-6">
+          <div v-if="activeListTab === 'locations'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 relative bg-neutral-surface">
               <CircuitDataTable
                 :columns="locationColumns"
                 :data="locationData"
@@ -1233,8 +1242,18 @@ const AdminAssetManagementPage = defineComponent({
                   tableContainer: { style: 'flex: 1 1 0; min-height: 0; height: 100%;' },
                 }"
                 :ptOptions="{ mergeSections: true, mergeProps: true }"
-              />
-            </div>
+              >
+                <template #toolbar>
+                  <DataTableToolbar
+                    searchPlaceholder="Search locations..."
+                    :showAddButton="true"
+                    addButtonLabel="Add Location"
+                    @add="openAddAsset"
+                    :showFilterButton="true"
+                    :showRefreshButton="true"
+                  />
+                </template>
+              </CircuitDataTable>
           </div>
         </template>
 
@@ -1297,7 +1316,7 @@ const AdminAssetManagementPage = defineComponent({
               <!-- Acknowledgment -->
               <CollapsiblePanel
                 v-model:collapsed="ackPanelCollapsed"
-                toggleable
+                :toggleable="selectedAsset.acknowledged !== 'Not Requested'"
                 header="Acknowledgment"
               >
                 <template #titleicon="iconProps">
@@ -1346,12 +1365,10 @@ const AdminAssetManagementPage = defineComponent({
                     </template>
                   </div>
                 </template>
-                <template #toggleicon="iconProps">
+                <template v-if="selectedAsset.acknowledged !== 'Not Requested'" #toggleicon="iconProps">
                   <ChevronRightIcon :class="iconProps.class" />
                 </template>
-                <div class="flex flex-col gap-4">
-
-                  <!-- Not Requested (no additional fields) -->
+                <div v-if="selectedAsset.acknowledged !== 'Not Requested'" class="flex flex-col gap-4">
 
                   <!-- Pending -->
                   <template v-if="selectedAsset.acknowledged === 'Pending'">
@@ -1546,21 +1563,23 @@ const AdminAssetManagementPage = defineComponent({
                     </div>
                     <ToggleSwitch v-model="ackEnabled" />
                   </div>
-                  <PvDivider />
-                  <div class="flex items-center justify-between">
-                    <div class="flex flex-col gap-1">
-                      <span class="text-body-md-semi-bold text-neutral-base">Notify Admins on Acknowledgment & Denial</span>
-                      <span class="text-body-sm text-neutral-subtle">Send email notifications to selected admins when an end user acknowledges or denies an asset.</span>
+                  <template v-if="ackEnabled">
+                    <PvDivider />
+                    <div class="flex items-center justify-between">
+                      <div class="flex flex-col gap-1">
+                        <span class="text-body-md-semi-bold text-neutral-base">Notify Admins on Acknowledgment & Denial</span>
+                        <span class="text-body-sm text-neutral-subtle">Send email notifications to selected admins when an end user acknowledges or denies an asset.</span>
+                      </div>
+                      <ToggleSwitch v-model="notifyOnAckDeny" />
                     </div>
-                    <ToggleSwitch v-model="notifyOnAckDeny" />
-                  </div>
-                  <div v-if="notifyOnAckDeny" class="pl-0">
-                    <FormField label="Select admins to notify">
-                      <template #default="{ inputId }">
-                        <PvMultiSelect :id="inputId" v-model="notifyAdminsOnAckDeny" :options="adminOptions" optionLabel="label" optionValue="value" class="w-full" placeholder="Select admins..." :filter="true" filterPlaceholder="Search admins..." display="chip" :showToggleAll="false" />
-                      </template>
-                    </FormField>
-                  </div>
+                    <div v-if="notifyOnAckDeny" class="pl-0">
+                      <FormField label="Select admins to notify">
+                        <template #default="{ inputId }">
+                          <PvMultiSelect :id="inputId" v-model="notifyAdminsOnAckDeny" :options="adminOptions" optionLabel="label" optionValue="value" class="w-full" placeholder="Select admins..." :filter="true" filterPlaceholder="Search admins..." display="chip" :showToggleAll="false" />
+                        </template>
+                      </FormField>
+                    </div>
+                  </template>
                 </div>
               </CollapsiblePanel>
 
@@ -1629,28 +1648,27 @@ const AdminAssetManagementPage = defineComponent({
                     <!-- Acknowledgment Status Mapping -->
                     <div class="flex flex-col gap-4">
                       <h3 class="text-heading-4 text-neutral-base">Acknowledgment Status Mapping</h3>
-                      <div class="grid grid-cols-2 gap-x-4 gap-y-4">
-                        <FormField label="Auto-Status on Acknowledgment" helpText="Automatically change asset status when a user acknowledges the asset.">
-                          <template #default="{ inputId }">
-                            <PvSelect :id="inputId" v-model="ackAutoStatus" :options="statusOptions" optionLabel="label" optionValue="value" class="w-full" placeholder="No change" />
-                          </template>
-                        </FormField>
-                        <FormField label="Auto-Status on Denial" helpText="Automatically change asset status when a user denies the asset.">
-                          <template #default="{ inputId }">
-                            <PvSelect :id="inputId" v-model="denyAutoStatus" :options="statusOptions" optionLabel="label" optionValue="value" class="w-full" placeholder="No change" />
-                          </template>
-                        </FormField>
+                      <div class="flex flex-col border border-neutral-default_solid rounded-lg overflow-hidden">
+                        <div class="flex items-center justify-between px-4 py-3 border-b border-neutral-default_solid">
+                          <span class="text-body-md text-neutral-base"><strong>Default</strong> Status on Acknowledgment:</span>
+                          <PvSelect v-model="ackAutoStatus" :options="statusOptions" optionLabel="label" optionValue="value" class="w-40" placeholder="No change" />
+                        </div>
+                        <div class="flex items-center justify-between px-4 py-3">
+                          <span class="text-body-md text-neutral-base"><strong>Default</strong> Status on Denial:</span>
+                          <PvSelect v-model="denyAutoStatus" :options="statusOptions" optionLabel="label" optionValue="value" class="w-40" placeholder="No change" />
+                        </div>
                       </div>
                     </div>
 
                     <!-- Lost/Stolen Status Mapping -->
                     <div class="flex flex-col gap-4">
                       <h3 class="text-heading-4 text-neutral-base">Lost/Stolen Status Mapping</h3>
-                      <FormField label="Auto-Status on Lost/Stolen Report" helpText="Automatically change asset status when an end user reports the asset as lost or stolen.">
-                        <template #default="{ inputId }">
-                          <PvSelect :id="inputId" v-model="lostStolenAutoStatus" :options="statusOptions" optionLabel="label" optionValue="value" class="w-full" placeholder="Lost" />
-                        </template>
-                      </FormField>
+                      <div class="flex flex-col border border-neutral-default_solid rounded-lg overflow-hidden">
+                        <div class="flex items-center justify-between px-4 py-3">
+                          <span class="text-body-md text-neutral-base"><strong>Default</strong> Status on Lost/Stolen Report:</span>
+                          <PvSelect v-model="lostStolenAutoStatus" :options="statusOptions" optionLabel="label" optionValue="value" class="w-40" placeholder="Lost" />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -954,7 +954,7 @@ const AssetManagementPage = defineComponent({
 
           <!-- Devices Tab -->
           <div v-if="activeListTab === 'devices'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
-            <div class="shrink-0 px-6">
+            <div class="shrink-0 px-6 pt-6">
               <DataTableToolbar
                 searchPlaceholder="Search devices..."
                 :showAddButton="true"
@@ -997,7 +997,7 @@ const AssetManagementPage = defineComponent({
 
           <!-- Accessories Tab -->
           <div v-if="activeListTab === 'accessories'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
-            <div class="shrink-0 px-6">
+            <div class="shrink-0 px-6 pt-6">
               <DataTableToolbar
                 searchPlaceholder="Search accessories..."
                 :showAddButton="true"
@@ -1029,7 +1029,7 @@ const AssetManagementPage = defineComponent({
 
           <!-- Locations Tab -->
           <div v-if="activeListTab === 'locations'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
-            <div class="shrink-0 px-6">
+            <div class="shrink-0 px-6 pt-6">
               <DataTableToolbar
                 searchPlaceholder="Search locations..."
                 :showAddButton="true"
@@ -1199,7 +1199,7 @@ const AssetManagementPage = defineComponent({
 
           <!-- History Tab -->
           <div v-if="activeDetailTab === 'history'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
-            <div class="shrink-0 px-6">
+            <div class="shrink-0 px-6 pt-6">
               <DataTableToolbar
                 searchPlaceholder="Search history..."
                 :showFilterButton="true"

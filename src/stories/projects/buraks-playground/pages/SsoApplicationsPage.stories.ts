@@ -780,7 +780,7 @@ const SsoApplicationsPage = defineComponent({
 
         <!-- ============ LIST VIEW ============ -->
         <div v-if="currentView === 'list'" class="flex-1 flex flex-col min-h-0 overflow-hidden">
-          <div class="shrink-0 px-6">
+          <div class="shrink-0 px-6 pt-6">
             <DataTableToolbar
               searchPlaceholder="Search applications..."
               :showFilterButton="true"
@@ -1065,7 +1065,7 @@ const SsoApplicationsPage = defineComponent({
 
           <!-- ── Tab: User Groups ── -->
           <div v-if="activeTab === 'user-groups'" class="flex-1 flex flex-col min-h-0 overflow-hidden">
-            <div class="shrink-0 px-6">
+            <div class="shrink-0 px-6 pt-6">
               <DataTableToolbar
                 searchPlaceholder="Search..."
                 :showFilterButton="true"

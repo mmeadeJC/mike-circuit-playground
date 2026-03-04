@@ -657,7 +657,7 @@ const UserPortalAssetsPage = defineComponent({
 
         <!-- ============ LIST VIEW ============ -->
         <div v-if="currentView === 'list'" class="flex-1 flex flex-col min-h-0 overflow-hidden">
-          <div class="flex-1 flex flex-col min-h-0 w-full max-w-5xl mx-auto px-6 relative">
+          <div class="flex-1 flex flex-col min-h-0 w-full max-w-5xl mx-auto px-6 pt-6 relative">
               <CircuitDataTable
                 :columns="assetColumnsWithClick"
                 :data="assets"

@@ -835,7 +835,7 @@ const CisBenchmarkPage = defineComponent({
               optionValue="value"
             />
           </div>
-          <div class="shrink-0 px-6">
+          <div class="shrink-0 px-6 pt-6">
             <DataTableToolbar
               searchPlaceholder="Search Windows rules..."
               :showAddButton="false"
@@ -889,7 +889,7 @@ const CisBenchmarkPage = defineComponent({
               optionValue="value"
             />
           </div>
-          <div class="shrink-0 px-6">
+          <div class="shrink-0 px-6 pt-6">
             <DataTableToolbar
               searchPlaceholder="Search macOS rules..."
               :showAddButton="false"
@@ -943,7 +943,7 @@ const CisBenchmarkPage = defineComponent({
               optionValue="value"
             />
           </div>
-          <div class="shrink-0 px-6">
+          <div class="shrink-0 px-6 pt-6">
             <DataTableToolbar
               searchPlaceholder="Search Linux rules..."
               :showAddButton="false"

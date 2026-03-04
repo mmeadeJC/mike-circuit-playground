@@ -43,6 +43,7 @@ const preview: Preview = {
     // Disable Storybook's built-in backgrounds addon toolbar —
     // Circuit DS bg-neutral-base handles the background and switches with the theme.
     backgrounds: { disable: true },
+    outline: { disable: true },
   },
   globalTypes: {
     theme: {

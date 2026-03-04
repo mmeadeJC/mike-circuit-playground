@@ -51,11 +51,6 @@ import {
   EyeSlashIcon,
   ArrowTrendingUpIcon,
   ArrowUpIcon,
-  ServerStackIcon,
-  UserCircleIcon,
-  ClockIcon,
-  ExclamationTriangleIcon,
-  BoltIcon,
 } from '@heroicons/vue/24/outline';
 
 import TopBar from '../../../../components/TopBar.vue';
@@ -568,15 +563,6 @@ function getProfileColumns(serversRef: Server[]) {
 }
 
 // ─── Dashboard Data ───
-
-const dashboardStats = [
-  { label: 'Total Users', value: '142', trend: '+12%', trendUp: true, icon: markRaw(UserCircleIcon) },
-  { label: 'Active Servers', value: '4 / 6', trend: '66%', trendUp: true, icon: markRaw(ServerStackIcon) },
-  { label: 'Profiles', value: '3', trend: '', trendUp: true, icon: markRaw(UsersIcon) },
-  { label: 'Total Requests (24h)', value: '12,847', trend: '+8.3%', trendUp: true, icon: markRaw(BoltIcon) },
-  { label: 'Avg Response Time', value: '245ms', trend: '-12ms', trendUp: true, icon: markRaw(ClockIcon) },
-  { label: 'Error Rate', value: '0.8%', trend: '-0.2%', trendUp: true, icon: markRaw(ExclamationTriangleIcon) },
-];
 
 const recentActivity = [
   { user: 'John Doe', server: 'Figma', time: '2 min ago', event: 'Connected to Figma MCP server' },
@@ -1217,11 +1203,23 @@ const Agent0Page = defineComponent({
     const useInlinePanel = computed(() => contentWidth.value >= 1024);
     let resizeObserver: ResizeObserver | null = null;
 
+    // ─── Theme-Reactive Chart Options ───
+    const monthlyChartOptions = ref(buildMonthlyChartOptions());
+    let themeObserver: MutationObserver | null = null;
+
     onMounted(() => {
       resizeObserver = new ResizeObserver((entries) => {
         for (const entry of entries) {
           contentWidth.value = entry.contentRect.width;
         }
+      });
+
+      themeObserver = new MutationObserver(() => {
+        monthlyChartOptions.value = buildMonthlyChartOptions();
+      });
+      themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme'],
       });
     });
 
@@ -1233,6 +1231,7 @@ const Agent0Page = defineComponent({
 
     onUnmounted(() => {
       resizeObserver?.disconnect();
+      themeObserver?.disconnect();
     });
 
     // ─── Selected Items ───
@@ -1546,11 +1545,10 @@ const Agent0Page = defineComponent({
       serverColumns,
       profilesData,
       profileColumns,
-      dashboardStats,
       recentActivity,
       topServerUsage,
       monthlyChartData,
-      monthlyChartOptions: buildMonthlyChartOptions(),
+      monthlyChartOptions,
       topUsers,
       llmProviders,
       activityLogColumns,

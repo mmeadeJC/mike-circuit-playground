@@ -572,63 +572,6 @@ const appleColumns = [
   },
 ];
 
-// ─── Google Software Application Data ───
-
-interface GoogleSoftwareApp {
-  id: number;
-  name: string;
-  applicationType: string;
-  supportedDevices?: string;
-  version?: string;
-  versionLastUpdated?: string;
-}
-
-const googleSoftwareData: GoogleSoftwareApp[] = [
-  { id: 1, name: 'Boxer - Workspace ONE', applicationType: 'Public', supportedDevices: 'Android' },
-  { id: 2, name: 'Cisco Secure Client-AnyConnect', applicationType: 'Public', supportedDevices: 'Android' },
-  { id: 3, name: 'Dexcom G7', applicationType: 'Public', supportedDevices: 'Android' },
-  { id: 4, name: 'inDrive. Rides with fair fares', applicationType: 'Public', supportedDevices: 'Android' },
-  { id: 5, name: 'JumpCloud Protect', applicationType: 'Public', supportedDevices: 'Android' },
-  { id: 6, name: 'Knox Service Plugin', applicationType: 'Public', supportedDevices: 'Android' },
-  { id: 7, name: 'Microsoft Authenticator', applicationType: 'Public', supportedDevices: 'Android' },
-  { id: 8, name: 'Microsoft Outlook', applicationType: 'Public', supportedDevices: 'Android' },
-  { id: 9, name: 'OPay Business', applicationType: 'Public', supportedDevices: 'Android' },
-  { id: 10, name: 'PayPal Business', applicationType: 'Public', supportedDevices: 'Android' },
-  { id: 11, name: 'Google Chrome', applicationType: 'Public', supportedDevices: 'Android' },
-  { id: 12, name: 'Gmail', applicationType: 'Public', supportedDevices: 'Android' },
-  { id: 13, name: 'Google Drive', applicationType: 'Public', supportedDevices: 'Android' },
-  { id: 14, name: 'Google Meet', applicationType: 'Public', supportedDevices: 'Android' },
-  { id: 15, name: 'Slack', applicationType: 'Public', supportedDevices: 'Android' },
-  { id: 16, name: 'Zoom', applicationType: 'Public', supportedDevices: 'Android' },
-  { id: 17, name: 'Dropbox', applicationType: 'Public', supportedDevices: 'Android' },
-  { id: 18, name: '1Password', applicationType: 'Public', supportedDevices: 'Android' },
-];
-
-// ─── Google Column Definitions ───
-
-const googleColumns = [
-  {
-    field: 'name',
-    header: 'Name',
-    sortable: true,
-    width: '320px',
-    component: NameCell,
-    componentProps: (sp: { data: Record<string, unknown> }) => ({
-      data: sp.data,
-    }),
-  },
-  {
-    field: 'applicationType',
-    header: 'Application Type',
-    sortable: true,
-    width: '180px',
-    component: markRaw(DataTableCellText),
-    componentProps: (sp: { data: Record<string, unknown> }) => ({
-      label: sp.data.applicationType,
-    }),
-  },
-];
-
 // ─── App Catalog Data (for Add Wizard Step 1) ───
 
 interface CatalogApp {
@@ -985,34 +928,6 @@ const deviceGroupsColumns = [
   },
 ];
 
-// ─── Google Play Store Apps (for Add Application modal) ───
-
-const googlePlayApps = [
-  { id: 1, name: 'WhatsApp Business', rating: '4.5' },
-  { id: 2, name: 'Meta Business Suite', rating: '4.3' },
-  { id: 3, name: 'PhonePe', rating: '4.6' },
-  { id: 4, name: 'Revolut Business', rating: '4.4' },
-  { id: 5, name: 'LinkedIn', rating: '4.2' },
-  { id: 6, name: 'Youtube Studio', rating: '4.1' },
-  { id: 7, name: 'Square Point of Sale', rating: '4.5' },
-  { id: 8, name: 'O-Pay Business', rating: '4.4' },
-  { id: 9, name: 'Google Analytics', rating: '4.3' },
-  { id: 10, name: 'Indeed Job Search', rating: '4.2' },
-  { id: 11, name: 'Uber', rating: '4.1' },
-  { id: 12, name: 'ADP Mobile Solutions', rating: '4.0' },
-  { id: 13, name: 'Shopify Sell online', rating: '4.5' },
-  { id: 14, name: 'InDrive', rating: '4.4' },
-  { id: 15, name: 'Slack', rating: '4.3' },
-  { id: 16, name: 'Google Pay for Business', rating: '4.2' },
-  { id: 17, name: 'DoorDash', rating: '4.1' },
-  { id: 18, name: 'Adobe Express', rating: '4.4' },
-  { id: 19, name: 'Google Ads', rating: '4.0' },
-  { id: 20, name: 'Square Invoices', rating: '4.3' },
-  { id: 21, name: 'Grab Driver', rating: '4.2' },
-  { id: 22, name: 'Amazon Shopping', rating: '4.1' },
-  { id: 23, name: 'Bolt', rating: '4.0' },
-];
-
 // ─── Platform Tabs ───
 
 const platformTabs = [
@@ -1092,11 +1007,10 @@ const SoftwareManagementPage = defineComponent({
     const activePlatformTab = ref(props.initialTab);
     const selectedApps = ref([]);
     const selectedAppleApps = ref([]);
-    const selectedGoogleApps = ref([]);
 
     const currentView = ref<'list' | 'detail'>(props.initialView);
     const initialApp = props.initialView === 'detail' ? softwareData[3] : null; // Adobe Acrobat Reader DC for Device Groups demo
-    const selectedApp = ref<SoftwareApp | AppleSoftwareApp | GoogleSoftwareApp | null>(initialApp);
+    const selectedApp = ref<SoftwareApp | AppleSoftwareApp | null>(initialApp);
     const activeDetailTab = ref(props.initialView === 'detail' ? props.initialDetailTab : 'details');
     const softwareName = ref(initialApp?.name ?? '');
     const autoUpdate = ref(true);
@@ -1197,12 +1111,8 @@ const SoftwareManagementPage = defineComponent({
         const w = app as SoftwareApp;
         return { name: w.name, type, version: w.currentVersion, versionLastUpdated: w.versionLastUpdated, supportedDevices: 'Windows', locationName: undefined };
       }
-      if ('locationName' in app) {
-        const a = app as AppleSoftwareApp;
-        return { name: a.name, type, version: '--', versionLastUpdated: a.versionLastUpdated, supportedDevices: a.supportedDevices, locationName: a.locationName };
-      }
-      const g = app as GoogleSoftwareApp;
-      return { name: g.name, type, version: g.version ?? '--', versionLastUpdated: g.versionLastUpdated ?? '--', supportedDevices: g.supportedDevices ?? 'Android', locationName: undefined };
+      const a = app as AppleSoftwareApp;
+      return { name: a.name, type, version: '--', versionLastUpdated: a.versionLastUpdated, supportedDevices: a.supportedDevices, locationName: a.locationName };
     });
 
     const appDeliveryMode = ref<'auto' | 'self-service'>('auto');
@@ -1394,7 +1304,7 @@ const SoftwareManagementPage = defineComponent({
       return addNewMenuOptions;
     });
 
-    function openAppDetail(app: SoftwareApp | AppleSoftwareApp | GoogleSoftwareApp) {
+    function openAppDetail(app: SoftwareApp | AppleSoftwareApp) {
       selectedApp.value = app;
       softwareName.value = app.name;
       autoUpdate.value = true;
@@ -1418,9 +1328,6 @@ const SoftwareManagementPage = defineComponent({
       openAppDetail(event.data);
     }
     function handleAppleRowClick(event: { data: AppleSoftwareApp }) {
-      openAppDetail(event.data);
-    }
-    function handleGoogleRowClick(event: { data: GoogleSoftwareApp }) {
       openAppDetail(event.data);
     }
 
@@ -1679,11 +1586,6 @@ const SoftwareManagementPage = defineComponent({
       return mode === 'auto' ? 'Auto-Install' : 'Self Service';
     }
 
-    const onAppIconError = (event: Event) => {
-      const target = event.target as HTMLImageElement;
-      if (target) target.src = 'https://www.google.com/s2/favicons?domain=play.google.com&sz=64';
-    };
-
     return {
       menuItems,
       profileMenuItems,
@@ -1693,9 +1595,6 @@ const SoftwareManagementPage = defineComponent({
       filteredAppleSoftwareData,
       appleColumns,
       appleSoftwareData,
-      googleColumns,
-      googleSoftwareData,
-      selectedGoogleApps,
       platformTabs,
       activePlatformTab,
       selectedApps,
@@ -1744,8 +1643,6 @@ const SoftwareManagementPage = defineComponent({
       packageIdHelpPopoverRef,
       togglePackageIdHelpPopover,
       addNewOptionsForPlatform,
-      onAppIconError,
-      googlePlayApps,
       getAppIconUrl,
       MagnifyingGlassIcon,
       PlayIcon,
@@ -1766,7 +1663,6 @@ const SoftwareManagementPage = defineComponent({
       autoUpdate,
       commandLineOptions,
       appDeliveryMode,
-      appDeliveryOptions,
       showAppDeliveryMethod,
       showPatchSettings,
       showLocationName,
@@ -1774,7 +1670,6 @@ const SoftwareManagementPage = defineComponent({
       backToList,
       handleWindowsRowClick,
       handleAppleRowClick,
-      handleGoogleRowClick,
       handleTabChange,
       deviceGroupsData,
       filteredDeviceGroupsData,

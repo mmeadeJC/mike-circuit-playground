@@ -1172,7 +1172,7 @@ const SsoAppsPage = defineComponent({
 // ─── Storybook Meta ───
 
 const meta: Meta<typeof SsoAppsPage> = {
-  title: 'Projects/Agent 0/Pages/SSO Apps',
+  title: 'Projects/Burak - Agent0/Pages/SSO Apps',
   component: SsoAppsPage,
   parameters: {
     layout: 'fullscreen',

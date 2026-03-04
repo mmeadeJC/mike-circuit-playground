@@ -2350,7 +2350,7 @@ const Agent0Page = defineComponent({
 });
 
 const meta: Meta<typeof Agent0Page> = {
-  title: 'Projects/Agent 0/Pages/Agent0',
+  title: 'Projects/Burak - Agent0/Pages/Agent0',
   component: Agent0Page,
   parameters: {
     layout: 'fullscreen',

@@ -1742,7 +1742,7 @@ const SoftwareManagementPage = defineComponent({
       <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         <div v-if="currentView === 'detail' || showPrivateRepoForm || showMicrosoftStoreForm" class="shrink-0 flex items-center h-12 px-4 border-b border-navigation-top_bar-default bg-navigation-top_bar-default">
           <PvButton
-            :label="showPrivateRepoForm ? 'Software Management' : (showMicrosoftStoreForm ? backLabel : backLabel)"
+            :label="showPrivateRepoForm ? 'Software Management' : backLabel"
             severity="secondary"
             variant="text"
             size="small"

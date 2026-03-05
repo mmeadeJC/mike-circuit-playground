@@ -3,7 +3,7 @@ import { ref, defineComponent, watch } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import { FormField } from '@jumpcloud/circuit/components';
-import PageSaveBar from '../../../components/PageSaveBar.vue';
+import PageSaveBar from '@/components/PageSaveBar.vue';
 
 const meta: Meta<typeof PageSaveBar> = {
   title: 'Circuit DS/Custom Components/PageSaveBar',

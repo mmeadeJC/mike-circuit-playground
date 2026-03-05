@@ -49,10 +49,10 @@ import {
   LinkIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '../../../../components/TopBar.vue';
-import DetailsKeyValue from '../../../../components/DetailsKeyValue.vue';
-import DetailPageLayout from '../../../../components/layout/page-layouts/DetailPageLayout.vue';
-import ConfigPageLayout from '../../../../components/layout/page-layouts/ConfigPageLayout.vue';
+import TopBar from '@/components/TopBar.vue';
+import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
+import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
+import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
 
 import {
   DeviceManagementIcon,

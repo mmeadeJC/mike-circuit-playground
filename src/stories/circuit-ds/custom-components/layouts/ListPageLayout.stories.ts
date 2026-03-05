@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
 import { defineComponent } from 'vue';
-import ListPageLayout from '../../../../components/layout/page-layouts/ListPageLayout.vue';
+import ListPageLayout from '@/components/layout/page-layouts/ListPageLayout.vue';
 
 const meta: Meta<typeof ListPageLayout> = {
   title: 'Circuit DS/Custom Components/Layouts/ListPageLayout',

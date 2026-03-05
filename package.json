@@ -8,7 +8,7 @@
     "build": "vite build",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "deploy-storybook": "pnpm run build-storybook && gh-pages -d storybook-static --dest master --dotfiles"
+    "deploy-storybook": "pnpm run build-storybook && pnpm exec gh-pages -d storybook-static --dest master --dotfiles --cname circuit-playground.jumpcloud.io"
   },
   "dependencies": {
     "@jumpcloud/circuit": "^0.0.100",

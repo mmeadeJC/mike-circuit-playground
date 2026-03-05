@@ -1647,7 +1647,7 @@ const Agent0Page = defineComponent({
                   <CollapsiblePanel header="Total Users">
                     <div class="flex flex-col gap-2">
                       <div class="flex items-center gap-[7px]">
-                        <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-neutral-base">142</span>
+                        <span class="text-heading-0 text-neutral-base">142</span>
                         <span class="text-heading-3 text-neutral-base self-end">Users</span>
                       </div>
                       <div class="flex items-center gap-1.5">
@@ -1663,7 +1663,7 @@ const Agent0Page = defineComponent({
                   <CollapsiblePanel header="Active Servers">
                     <div class="flex flex-col gap-2">
                       <div class="flex items-center gap-[7px]">
-                        <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-neutral-base">4 / 6</span>
+                        <span class="text-heading-0 text-neutral-base">4 / 6</span>
                         <span class="text-heading-3 text-neutral-base self-end">Servers</span>
                       </div>
                       <div class="flex items-center gap-1.5">
@@ -1676,7 +1676,7 @@ const Agent0Page = defineComponent({
                   <CollapsiblePanel header="Profiles">
                     <div class="flex flex-col gap-2">
                       <div class="flex items-center gap-[7px]">
-                        <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-neutral-base">3</span>
+                        <span class="text-heading-0 text-neutral-base">3</span>
                         <span class="text-heading-3 text-neutral-base self-end">Profiles</span>
                       </div>
                       <span class="text-body-sm text-neutral-subtle">Configured</span>
@@ -1686,7 +1686,7 @@ const Agent0Page = defineComponent({
                   <CollapsiblePanel header="Total Requests (24h)">
                     <div class="flex flex-col gap-2">
                       <div class="flex items-center gap-[7px]">
-                        <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-neutral-base">12,847</span>
+                        <span class="text-heading-0 text-neutral-base">12,847</span>
                         <span class="text-heading-3 text-neutral-base self-end">Requests</span>
                       </div>
                       <div class="flex items-center gap-1.5">
@@ -1702,7 +1702,7 @@ const Agent0Page = defineComponent({
                   <CollapsiblePanel header="Avg Response Time">
                     <div class="flex flex-col gap-2">
                       <div class="flex items-center gap-[7px]">
-                        <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-neutral-base">245ms</span>
+                        <span class="text-heading-0 text-neutral-base">245ms</span>
                       </div>
                       <div class="flex items-center gap-1.5">
                         <div class="flex items-center gap-0.5">
@@ -1717,7 +1717,7 @@ const Agent0Page = defineComponent({
                   <CollapsiblePanel header="Error Rate">
                     <div class="flex flex-col gap-2">
                       <div class="flex items-center gap-[7px]">
-                        <span class="text-[32px] font-semibold leading-8 tracking-[-0.5px] text-success-base">0.8%</span>
+                        <span class="text-heading-0 text-success-base">0.8%</span>
                       </div>
                       <div class="flex items-center gap-1.5">
                         <div class="flex items-center gap-0.5">
@@ -2208,7 +2208,7 @@ const Agent0Page = defineComponent({
                       </CheckboxWithLabel>
                       <div class="border-l border-neutral-default_solid h-5 shrink-0" />
                       <p class="text-body-md text-neutral-base whitespace-nowrap">
-                        <span class="font-semibold">{{ profileBoundServers.length }} of {{ serversData.length }}</span> servers bound
+                        <span class="text-body-md-semi-bold">{{ profileBoundServers.length }} of {{ serversData.length }}</span> servers bound
                       </p>
                     </div>
                   </template>
@@ -2247,7 +2247,7 @@ const Agent0Page = defineComponent({
                       </CheckboxWithLabel>
                       <div class="border-l border-neutral-default_solid h-5 shrink-0" />
                       <p class="text-body-md text-neutral-base whitespace-nowrap">
-                        <span class="font-semibold">{{ profileBoundUserGroups.length }} of {{ userGroupsData.length }}</span> user groups bound
+                        <span class="text-body-md-semi-bold">{{ profileBoundUserGroups.length }} of {{ userGroupsData.length }}</span> user groups bound
                       </p>
                     </div>
                   </template>

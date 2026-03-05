@@ -37,9 +37,9 @@ import {
   MagnifyingGlassIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '../../../../components/TopBar.vue';
-import DetailsKeyValue from '../../../../components/DetailsKeyValue.vue';
-import DetailPageLayout from '../../../../components/layout/page-layouts/DetailPageLayout.vue';
+import TopBar from '@/components/TopBar.vue';
+import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
+import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
 
 import {
   DeviceManagementIcon,

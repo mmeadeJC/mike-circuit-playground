@@ -33,7 +33,7 @@ import {
 
 import { CheckCircleIcon as CheckCircleSolidIcon } from '@heroicons/vue/24/solid';
 
-import TopBar from '../../../../components/TopBar.vue';
+import TopBar from '@/components/TopBar.vue';
 
 import {
   DeviceManagementIcon,

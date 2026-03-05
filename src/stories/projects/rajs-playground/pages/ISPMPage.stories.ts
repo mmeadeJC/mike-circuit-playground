@@ -79,9 +79,9 @@ import {
   SsoIcon,
 } from '@jumpcloud/icons';
 
-import TopBar from '../../../../components/TopBar.vue';
-import DetailsKeyValue from '../../../../components/DetailsKeyValue.vue';
-import ListPageLayout from '../../../../components/layout/page-layouts/ListPageLayout.vue';
+import TopBar from '@/components/TopBar.vue';
+import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
+import ListPageLayout from '@/components/layout/page-layouts/ListPageLayout.vue';
 
 // ─── Navigation ───────────────────────────────────────────────────────────────
 // ONE entry in Security for ISPM — not three separate items.

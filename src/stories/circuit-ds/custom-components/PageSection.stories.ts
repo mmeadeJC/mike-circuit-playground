@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
 import { h } from 'vue';
-import PageSection from '../../../components/PageSection.vue';
+import PageSection from '@/components/PageSection.vue';
 import Button from 'primevue/button';
 import { EllipsisHorizontalIcon } from '@heroicons/vue/24/outline';
 

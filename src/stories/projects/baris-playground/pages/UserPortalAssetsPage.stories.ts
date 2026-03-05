@@ -48,9 +48,9 @@ import {
 } from '@jumpcloud/icons';
 
 // @ts-expect-error Vue SFC import
-import DetailsKeyValue from '../../../../components/DetailsKeyValue.vue';
+import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
 // @ts-expect-error Vue SFC import
-import DetailPageLayout from '../../../../components/layout/page-layouts/DetailPageLayout.vue';
+import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
 
 // ─── User Portal Navigation Data (flat, no nested items) ───
 

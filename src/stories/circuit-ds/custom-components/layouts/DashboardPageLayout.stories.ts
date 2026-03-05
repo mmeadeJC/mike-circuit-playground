@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
 import { defineComponent } from 'vue';
-import DashboardPageLayout from '../../../../components/layout/page-layouts/DashboardPageLayout.vue';
+import DashboardPageLayout from '@/components/layout/page-layouts/DashboardPageLayout.vue';
 
 const meta: Meta<typeof DashboardPageLayout> = {
   title: 'Circuit DS/Custom Components/Layouts/DashboardPageLayout',

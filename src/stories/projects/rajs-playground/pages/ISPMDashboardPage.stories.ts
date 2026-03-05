@@ -48,8 +48,8 @@ import {
   WorkflowIcon,
 } from '@jumpcloud/icons';
 
-import TopBar from '../../../../components/TopBar.vue';
-import ListPageLayout from '../../../../components/layout/page-layouts/ListPageLayout.vue';
+import TopBar from '@/components/TopBar.vue';
+import ListPageLayout from '@/components/layout/page-layouts/ListPageLayout.vue';
 
 // ─── Navigation ───
 

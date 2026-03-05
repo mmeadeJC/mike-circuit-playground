@@ -60,13 +60,13 @@ import {
 } from '@heroicons/vue/24/outline';
 
 // @ts-expect-error Vue SFC import
-import TopBar from '../../../../components/TopBar.vue';
+import TopBar from '@/components/TopBar.vue';
 // @ts-expect-error Vue SFC import
-import DetailPageLayout from '../../../../components/layout/page-layouts/DetailPageLayout.vue';
+import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
 // @ts-expect-error Vue SFC import
-import ConfigPageLayout from '../../../../components/layout/page-layouts/ConfigPageLayout.vue';
+import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
 // @ts-expect-error Vue SFC import
-import DetailsKeyValue from '../../../../components/DetailsKeyValue.vue';
+import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
 
 import {
   DeviceManagementIcon,

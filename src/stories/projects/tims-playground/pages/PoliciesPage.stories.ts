@@ -56,7 +56,7 @@ import {
 
 import { CheckCircleIcon as CheckCircleSolidIcon, ShieldCheckIcon as ShieldCheckSolidIcon } from '@heroicons/vue/24/solid';
 
-import TopBar from '../../../../components/TopBar.vue';
+import TopBar from '@/components/TopBar.vue';
 
 import {
   DeviceManagementIcon,

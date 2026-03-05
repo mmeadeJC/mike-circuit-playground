@@ -1,0 +1,114 @@
+name: Deploy Storybook
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+  delete:
+
+concurrency:
+  group: deploy-storybook
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'delete' || github.event.ref_type == 'branch'
+    steps:
+      - name: Checkout source
+        if: github.event_name != 'delete'
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        if: github.event_name != 'delete'
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        if: github.event_name != 'delete'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install and build
+        if: github.event_name != 'delete'
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm run build-storybook
+
+      - name: Resolve deploy directory
+        id: dir
+        run: |
+          if [ "${{ github.event_name }}" = "delete" ]; then
+            REF="${{ github.event.ref }}"
+          else
+            REF="${GITHUB_REF_NAME}"
+          fi
+          SAFE=$(echo "$REF" | sed 's/[^a-zA-Z0-9._-]/-/g' | tr '[:upper:]' '[:lower:]')
+          echo "name=$SAFE" >> "$GITHUB_OUTPUT"
+
+      - name: Publish to gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          DIR="${{ steps.dir.outputs.name }}"
+
+          if [ -z "$DIR" ]; then
+            echo "::error::Empty deploy directory"
+            exit 1
+          fi
+
+          REMOTE="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Clone existing gh-pages branch or bootstrap a fresh one
+          if git ls-remote --exit-code --heads "$REMOTE" gh-pages >/dev/null 2>&1; then
+            git clone --single-branch --branch gh-pages --depth 1 "$REMOTE" _site
+          else
+            mkdir _site
+            cd _site
+            git init -b gh-pages
+            git remote add origin "$REMOTE"
+            cd ..
+          fi
+
+          if [ "${{ github.event_name }}" = "delete" ]; then
+            rm -rf "_site/$DIR"
+            echo "Cleaned up: $DIR"
+          else
+            rm -rf "_site/$DIR"
+            cp -r storybook-static "_site/$DIR"
+            echo "Deployed: $DIR"
+          fi
+
+          # Root-level files — always regenerate so they're never stale
+          echo "circuit-playground.jumpcloud.io" > _site/CNAME
+          touch _site/.nojekyll
+          cat > _site/index.html << 'EOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="refresh" content="0;url=./master/">
+  <title>Circuit Playground</title>
+</head>
+<body>
+  <p>Redirecting to <a href="./master/">master</a>&hellip;</p>
+</body>
+</html>
+EOF
+
+          cd _site
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nothing changed — skipping push"
+          else
+            git commit -m "storybook: $DIR (${{ github.event_name }})"
+            git push origin gh-pages
+          fi

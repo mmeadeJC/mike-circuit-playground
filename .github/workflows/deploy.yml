@@ -67,7 +67,6 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Clone existing gh-pages branch or bootstrap a fresh one
           if git ls-remote --exit-code --heads "$REMOTE" gh-pages >/dev/null 2>&1; then
             git clone --single-branch --branch gh-pages --depth 1 "$REMOTE" _site
           else
@@ -87,22 +86,18 @@ jobs:
             echo "Deployed: $DIR"
           fi
 
-          # Root-level files — always regenerate so they're never stale
           echo "circuit-playground.jumpcloud.io" > _site/CNAME
           touch _site/.nojekyll
-          cat > _site/index.html << 'EOF'
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="refresh" content="0;url=./master/">
-  <title>Circuit Playground</title>
-</head>
-<body>
-  <p>Redirecting to <a href="./master/">master</a>&hellip;</p>
-</body>
-</html>
-EOF
+          {
+            echo '<!DOCTYPE html>'
+            echo '<html lang="en"><head>'
+            echo '<meta charset="utf-8">'
+            echo '<meta http-equiv="refresh" content="0;url=./master/">'
+            echo '<title>Circuit Playground</title>'
+            echo '</head><body>'
+            echo '<p>Redirecting to <a href="./master/">master</a></p>'
+            echo '</body></html>'
+          } > _site/index.html
 
           cd _site
           git add -A

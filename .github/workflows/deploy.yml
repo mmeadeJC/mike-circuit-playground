@@ -22,16 +22,16 @@ jobs:
         if: github.event_name != 'delete'
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        if: github.event_name != 'delete'
-        uses: pnpm/action-setup@v4
-
       - name: Setup Node
         if: github.event_name != 'delete'
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
+
+      - name: Install pnpm
+        if: github.event_name != 'delete'
+        run: npm install -g pnpm
 
       - name: Install and build
         if: github.event_name != 'delete'

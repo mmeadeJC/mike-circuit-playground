@@ -21,9 +21,9 @@ export const WithAddonText: Story = {
     },
     template: `
       <InputGroup v-bind="args">
-        <InputGroupAddon>$</InputGroupAddon>
-        <InputText placeholder="Amount" />
-        <InputGroupAddon>.00</InputGroupAddon>
+        <InputGroupAddon aria-hidden="true">$</InputGroupAddon>
+        <InputText placeholder="Amount" aria-label="Amount in dollars" />
+        <InputGroupAddon aria-hidden="true">.00</InputGroupAddon>
       </InputGroup>
     `,
   }),
@@ -38,9 +38,9 @@ export const WithAddonIcon: Story = {
     template: `
       <InputGroup v-bind="args">
         <InputGroupAddon>
-          <i class="pi pi-user"></i>
+          <i class="pi pi-user" aria-hidden="true"></i>
         </InputGroupAddon>
-        <InputText placeholder="Username" />
+        <InputText placeholder="Username" aria-label="Username" />
       </InputGroup>
     `,
   }),
@@ -54,8 +54,8 @@ export const WithPrefix: Story = {
     },
     template: `
       <InputGroup v-bind="args">
-        <InputGroupAddon>https://</InputGroupAddon>
-        <InputText placeholder="domain.com" />
+        <InputGroupAddon aria-hidden="true">https://</InputGroupAddon>
+        <InputText placeholder="domain.com" aria-label="Domain name" />
       </InputGroup>
     `,
   }),

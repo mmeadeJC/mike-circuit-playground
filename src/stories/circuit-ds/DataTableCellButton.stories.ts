@@ -31,9 +31,9 @@ export const ButtonGroupType: Story = {
   args: {
     type: 'Button Group',
     iconButtons: [
-      { icon: markRaw(PencilSquareIcon) },
-      { icon: markRaw(Square2StackIcon) },
-      { icon: markRaw(TrashIcon) },
+      { icon: markRaw(PencilSquareIcon), ariaLabel: 'Edit' },
+      { icon: markRaw(Square2StackIcon), ariaLabel: 'Duplicate' },
+      { icon: markRaw(TrashIcon), ariaLabel: 'Delete' },
     ],
     maxVisibleIconButtons: 3,
   },
@@ -56,9 +56,9 @@ export const SmallSize: Story = {
   args: {
     type: 'Button Group',
     iconButtons: [
-      { icon: markRaw(PencilSquareIcon) },
-      { icon: markRaw(Square2StackIcon) },
-      { icon: markRaw(TrashIcon) },
+      { icon: markRaw(PencilSquareIcon), ariaLabel: 'Edit' },
+      { icon: markRaw(Square2StackIcon), ariaLabel: 'Duplicate' },
+      { icon: markRaw(TrashIcon), ariaLabel: 'Delete' },
     ],
     maxVisibleIconButtons: 3,
     size: 'small',

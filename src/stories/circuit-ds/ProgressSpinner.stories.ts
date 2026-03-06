@@ -25,7 +25,7 @@ export const Default: Story = {
       <ProgressSpinner v-bind="args" />
     `,
   }),
-  args: {},
+  args: { ariaLabel: 'Loading' },
 };
 
 export const Small: Story = {

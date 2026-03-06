@@ -44,6 +44,7 @@ import {
     TrashIcon,
     ChevronDownIcon,
     ChevronRightIcon,
+    PencilIcon,
 } from '@heroicons/vue/24/outline';
 
 import TopBar from '../../../../components/TopBar.vue';
@@ -223,11 +224,37 @@ const WorkflowDetailPage = defineComponent({
     ChevronDownIcon,
     ChevronRightIcon,
     ClipboardDocumentListIcon,
+    PencilIcon,
   },
   setup() {
     const activeTab = ref('overview');
     const isEnabled = ref(true);
     const selectedStep = ref<string | null>(null);
+
+    // ── Node name inline-editing ──
+    const nodeNames = ref<Record<string, string>>({
+      trigger: 'User suspended',
+      loop: 'Loop',
+      'remove-device': 'Remove device',
+      'send-email': 'Send email',
+      'if-else': 'If Else',
+    });
+    const editingNodeId = ref<string | null>(null);
+    const editingValue = ref('');
+
+    function startEditing(nodeId: string) {
+      editingNodeId.value = nodeId;
+      editingValue.value = nodeNames.value[nodeId] ?? '';
+    }
+
+    function finishEditing() {
+      if (editingNodeId.value) {
+        const trimmed = editingValue.value.trim();
+        if (trimmed) nodeNames.value[editingNodeId.value] = trimmed;
+      }
+      editingNodeId.value = null;
+      editingValue.value = '';
+    }
     const loopInputValue = ref('List user systems');
     const emailSubject = ref('Device removed');
     const emailChannels = ref(['Email channel 1', 'Email channel 2', 'Email channel 3']);
@@ -400,6 +427,11 @@ const WorkflowDetailPage = defineComponent({
       toggleBranch,
       addingActionToBranchIndex,
       WorkflowIcon: markRaw(WorkflowIcon),
+      nodeNames,
+      editingNodeId,
+      editingValue,
+      startEditing,
+      finishEditing,
     };
   },
   template: `
@@ -464,7 +496,29 @@ const WorkflowDetailPage = defineComponent({
                   <div class="flex items-center justify-center size-6 rounded bg-chart-warning-light">
                     <BoltIcon class="size-4 text-neutral-inverted-base" />
                   </div>
-                  <span class="text-body-md-semi-bold text-neutral-base">User suspended</span>
+                  <div class="group flex items-center gap-xs min-w-0" @click.stop>
+                    <span
+                      v-if="editingNodeId !== 'trigger'"
+                      class="text-body-md-semi-bold text-neutral-base cursor-text"
+                      @dblclick.stop="startEditing('trigger')"
+                    >{{ nodeNames['trigger'] }}</span>
+                    <PencilIcon
+                      v-if="editingNodeId !== 'trigger'"
+                      class="size-3.5 text-neutral-ghost opacity-0 group-hover:opacity-100 cursor-pointer shrink-0 transition-opacity"
+                      @click.stop="startEditing('trigger')"
+                    />
+                    <PvInputText
+                      v-else
+                      v-model="editingValue"
+                      autofocus
+                      size="small"
+                      class="h-6 py-0 px-1 min-w-0 w-36 text-body-md-semi-bold"
+                      @blur="finishEditing"
+                      @keydown.enter.prevent="finishEditing"
+                      @keydown.esc="editingNodeId = null"
+                      @click.stop
+                    />
+                  </div>
                 </div>
                 <div class="px-4 pb-4 flex flex-col gap-1">
                   <span class="text-body-sm text-neutral-subtle">user_id</span>
@@ -489,7 +543,29 @@ const WorkflowDetailPage = defineComponent({
                   <div class="flex items-center justify-center size-6 rounded bg-chart-violet-dark">
                     <ArrowPathIcon class="size-4 text-neutral-inverted-base" />
                   </div>
-                  <span class="text-body-md-semi-bold text-neutral-base">Loop</span>
+                  <div class="group flex items-center gap-xs min-w-0" @click.stop>
+                    <span
+                      v-if="editingNodeId !== 'loop'"
+                      class="text-body-md-semi-bold text-neutral-base cursor-text"
+                      @dblclick.stop="startEditing('loop')"
+                    >{{ nodeNames['loop'] }}</span>
+                    <PencilIcon
+                      v-if="editingNodeId !== 'loop'"
+                      class="size-3.5 text-neutral-ghost opacity-0 group-hover:opacity-100 cursor-pointer shrink-0 transition-opacity"
+                      @click.stop="startEditing('loop')"
+                    />
+                    <PvInputText
+                      v-else
+                      v-model="editingValue"
+                      autofocus
+                      size="small"
+                      class="h-6 py-0 px-1 min-w-0 w-36 text-body-md-semi-bold"
+                      @blur="finishEditing"
+                      @keydown.enter.prevent="finishEditing"
+                      @keydown.esc="editingNodeId = null"
+                      @click.stop
+                    />
+                  </div>
                 </div>
                 <div class="px-4 pb-4 flex flex-col gap-1">
                   <span class="text-body-sm text-neutral-subtle">Count</span>
@@ -514,7 +590,29 @@ const WorkflowDetailPage = defineComponent({
                   <div class="flex items-center justify-center size-6 rounded bg-chart-violet-dark">
                     <BoltIcon class="size-4 text-neutral-inverted-base" />
                   </div>
-                  <span class="text-body-md-semi-bold text-neutral-base">Remove device</span>
+                  <div class="group flex items-center gap-xs min-w-0" @click.stop>
+                    <span
+                      v-if="editingNodeId !== 'remove-device'"
+                      class="text-body-md-semi-bold text-neutral-base cursor-text"
+                      @dblclick.stop="startEditing('remove-device')"
+                    >{{ nodeNames['remove-device'] }}</span>
+                    <PencilIcon
+                      v-if="editingNodeId !== 'remove-device'"
+                      class="size-3.5 text-neutral-ghost opacity-0 group-hover:opacity-100 cursor-pointer shrink-0 transition-opacity"
+                      @click.stop="startEditing('remove-device')"
+                    />
+                    <PvInputText
+                      v-else
+                      v-model="editingValue"
+                      autofocus
+                      size="small"
+                      class="h-6 py-0 px-1 min-w-0 w-36 text-body-md-semi-bold"
+                      @blur="finishEditing"
+                      @keydown.enter.prevent="finishEditing"
+                      @keydown.esc="editingNodeId = null"
+                      @click.stop
+                    />
+                  </div>
                 </div>
                 <div class="px-4 pb-4 flex flex-col gap-1">
                   <span class="text-body-sm text-neutral-subtle">user_id</span>
@@ -539,7 +637,29 @@ const WorkflowDetailPage = defineComponent({
                   <div class="flex items-center justify-center size-6 rounded bg-chart-branding-base">
                     <EnvelopeIcon class="size-4 text-neutral-inverted-base" />
                   </div>
-                  <span class="text-body-md-semi-bold text-neutral-base">Send email</span>
+                  <div class="group flex items-center gap-xs min-w-0" @click.stop>
+                    <span
+                      v-if="editingNodeId !== 'send-email'"
+                      class="text-body-md-semi-bold text-neutral-base cursor-text"
+                      @dblclick.stop="startEditing('send-email')"
+                    >{{ nodeNames['send-email'] }}</span>
+                    <PencilIcon
+                      v-if="editingNodeId !== 'send-email'"
+                      class="size-3.5 text-neutral-ghost opacity-0 group-hover:opacity-100 cursor-pointer shrink-0 transition-opacity"
+                      @click.stop="startEditing('send-email')"
+                    />
+                    <PvInputText
+                      v-else
+                      v-model="editingValue"
+                      autofocus
+                      size="small"
+                      class="h-6 py-0 px-1 min-w-0 w-36 text-body-md-semi-bold"
+                      @blur="finishEditing"
+                      @keydown.enter.prevent="finishEditing"
+                      @keydown.esc="editingNodeId = null"
+                      @click.stop
+                    />
+                  </div>
                 </div>
                 <div class="px-4 pb-4 flex flex-col gap-md">
                   <!-- Recipients -->
@@ -585,7 +705,29 @@ const WorkflowDetailPage = defineComponent({
                     <div class="flex items-center justify-center size-6 rounded bg-chart-violet-dark">
                       <ArrowsRightLeftIcon class="size-4 text-neutral-inverted-base" />
                     </div>
-                    <span class="text-body-md-semi-bold text-neutral-base">If Else</span>
+                    <div class="group flex items-center gap-xs min-w-0" @click.stop>
+                      <span
+                        v-if="editingNodeId !== 'if-else'"
+                        class="text-body-md-semi-bold text-neutral-base cursor-text"
+                        @dblclick.stop="startEditing('if-else')"
+                      >{{ nodeNames['if-else'] }}</span>
+                      <PencilIcon
+                        v-if="editingNodeId !== 'if-else'"
+                        class="size-3.5 text-neutral-ghost opacity-0 group-hover:opacity-100 cursor-pointer shrink-0 transition-opacity"
+                        @click.stop="startEditing('if-else')"
+                      />
+                      <PvInputText
+                        v-else
+                        v-model="editingValue"
+                        autofocus
+                        size="small"
+                        class="h-6 py-0 px-1 min-w-0 w-36 text-body-md-semi-bold"
+                        @blur="finishEditing"
+                        @keydown.enter.prevent="finishEditing"
+                        @keydown.esc="editingNodeId = null"
+                        @click.stop
+                      />
+                    </div>
                   </div>
 
                   <!-- Branches visualization -->
@@ -653,34 +795,34 @@ const WorkflowDetailPage = defineComponent({
             <div class="flex items-center justify-between px-4 py-3 border-b border-neutral-default_solid">
               <div class="flex items-center gap-sm">
                 <template v-if="selectedStep === 'trigger'">
-                  <div class="flex items-center justify-center size-6 rounded bg-chart-warning-light">
+                  <div class="flex items-center justify-center size-6 rounded bg-chart-warning-light shrink-0">
                     <BoltIcon class="size-4 text-neutral-inverted-base" />
                   </div>
-                  <span class="text-heading-4 text-neutral-base">User suspended</span>
+                  <span class="text-heading-4 text-neutral-base truncate">{{ nodeNames['trigger'] }}</span>
                 </template>
                 <template v-else-if="selectedStep === 'loop'">
-                  <div class="flex items-center justify-center size-6 rounded bg-chart-violet-dark">
+                  <div class="flex items-center justify-center size-6 rounded bg-chart-violet-dark shrink-0">
                     <ArrowPathIcon class="size-4 text-neutral-inverted-base" />
                   </div>
-                  <span class="text-heading-4 text-neutral-base">Loop</span>
+                  <span class="text-heading-4 text-neutral-base truncate">{{ nodeNames['loop'] }}</span>
                 </template>
                 <template v-else-if="selectedStep === 'remove-device'">
-                  <div class="flex items-center justify-center size-6 rounded bg-chart-violet-dark">
+                  <div class="flex items-center justify-center size-6 rounded bg-chart-violet-dark shrink-0">
                     <BoltIcon class="size-4 text-neutral-inverted-base" />
                   </div>
-                  <span class="text-heading-4 text-neutral-base">Remove device</span>
+                  <span class="text-heading-4 text-neutral-base truncate">{{ nodeNames['remove-device'] }}</span>
                 </template>
                 <template v-else-if="selectedStep === 'send-email'">
-                  <div class="flex items-center justify-center size-6 rounded bg-chart-branding-base">
+                  <div class="flex items-center justify-center size-6 rounded bg-chart-branding-base shrink-0">
                     <EnvelopeIcon class="size-4 text-neutral-inverted-base" />
                   </div>
-                  <span class="text-heading-4 text-neutral-base">Send notification to email channels</span>
+                  <span class="text-heading-4 text-neutral-base truncate">{{ nodeNames['send-email'] }}</span>
                 </template>
                 <template v-else-if="selectedStep === 'if-else'">
-                  <div class="flex items-center justify-center size-6 rounded bg-chart-violet-dark">
+                  <div class="flex items-center justify-center size-6 rounded bg-chart-violet-dark shrink-0">
                     <ArrowsRightLeftIcon class="size-4 text-neutral-inverted-base" />
                   </div>
-                  <span class="text-heading-4 text-neutral-base">If Else</span>
+                  <span class="text-heading-4 text-neutral-base truncate">{{ nodeNames['if-else'] }}</span>
                 </template>
               </div>
               <PvButton severity="secondary" variant="text" size="small" @click="selectedStep = null">
@@ -693,16 +835,20 @@ const WorkflowDetailPage = defineComponent({
             <!-- Sidebar content — dynamic per step -->
             <div class="p-4 flex flex-col gap-md">
 
+              <!-- Node name field — always visible at the top -->
+              <FormField label="Node name">
+                <template #default="{ inputId }">
+                  <PvInputText
+                    :id="inputId"
+                    :value="nodeNames[selectedStep]"
+                    class="w-full"
+                    @input="nodeNames[selectedStep] = $event.target.value"
+                  />
+                </template>
+              </FormField>
+
               <!-- TRIGGER panel -->
               <template v-if="selectedStep === 'trigger'">
-                <FormField label="Event type" required>
-                  <template #labelicon>
-                    <InformationCircleIcon class="size-4 text-neutral-subtle" />
-                  </template>
-                  <template #default="{ inputId }">
-                    <PvInputText :id="inputId" modelValue="User suspended" class="w-full" readonly />
-                  </template>
-                </FormField>
                 <div class="flex flex-col gap-2">
                   <span class="text-body-sm-semi-bold text-neutral-base">Trigger variables</span>
                   <div class="flex flex-col gap-1 px-3 py-2 rounded-md border border-neutral-default_solid bg-neutral-surface">

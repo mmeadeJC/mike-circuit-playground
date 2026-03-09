@@ -60,13 +60,13 @@ import {
 } from '@heroicons/vue/24/outline';
 
 // @ts-expect-error Vue SFC import
-import TopBar from '../../../../components/TopBar.vue';
+import TopBar from '@/components/TopBar.vue';
 // @ts-expect-error Vue SFC import
-import DetailPageLayout from '../../../../components/layout/page-layouts/DetailPageLayout.vue';
+import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
 // @ts-expect-error Vue SFC import
-import ConfigPageLayout from '../../../../components/layout/page-layouts/ConfigPageLayout.vue';
+import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
 // @ts-expect-error Vue SFC import
-import DetailsKeyValue from '../../../../components/DetailsKeyValue.vue';
+import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
 
 import {
   DeviceManagementIcon,
@@ -1156,7 +1156,7 @@ const AdminAssetManagementPage = defineComponent({
         <template v-if="currentView === 'list'">
 
           <!-- Devices Tab -->
-          <div v-if="activeListTab === 'devices'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 relative bg-neutral-surface">
+          <div v-if="activeListTab === 'devices'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 pt-6 relative bg-neutral-surface">
               <CircuitDataTable
                 :columns="deviceColumnsWithActions"
                 :data="assets"
@@ -1198,7 +1198,7 @@ const AdminAssetManagementPage = defineComponent({
           </div>
 
           <!-- Accessories Tab -->
-          <div v-if="activeListTab === 'accessories'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 relative bg-neutral-surface">
+          <div v-if="activeListTab === 'accessories'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 pt-6 relative bg-neutral-surface">
               <CircuitDataTable
                 :columns="accessoryColumns"
                 :data="accessoryAssetsData"
@@ -1229,7 +1229,7 @@ const AdminAssetManagementPage = defineComponent({
           </div>
 
           <!-- Locations Tab -->
-          <div v-if="activeListTab === 'locations'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 relative bg-neutral-surface">
+          <div v-if="activeListTab === 'locations'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 pt-6 relative bg-neutral-surface">
               <CircuitDataTable
                 :columns="locationColumns"
                 :data="locationData"
@@ -1484,7 +1484,7 @@ const AdminAssetManagementPage = defineComponent({
 
           <!-- History Tab -->
           <div v-if="activeDetailTab === 'history'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
-            <div class="shrink-0 px-6">
+            <div class="shrink-0 px-6 pt-6">
               <DataTableToolbar
                 searchPlaceholder="Search history..."
                 :showAddButton="true"

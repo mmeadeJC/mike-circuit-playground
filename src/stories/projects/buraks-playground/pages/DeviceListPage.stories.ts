@@ -33,7 +33,7 @@ import {
   ExclamationCircleIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '../../../../components/TopBar.vue';
+import TopBar from '@/components/TopBar.vue';
 
 import {
   DeviceManagementIcon,
@@ -435,7 +435,7 @@ const DeviceListPage = defineComponent({
           </PageHeader>
 
           <div v-if="activeTab === 'devices'" class="table-container flex-[1_1_0] flex flex-col min-h-0 h-full w-full bg-neutral-surface">
-            <div class="table-toolbox shrink-0 px-6">
+            <div class="table-toolbox shrink-0 px-6 pt-6">
               <DataTableToolbar
                 searchPlaceholder="Search devices..."
                 :showFilterButton="true"

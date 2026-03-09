@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
 import { defineComponent } from 'vue';
 import { CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline';
-import DetailsKeyValue from '../../../components/DetailsKeyValue.vue';
+import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
 
 const meta: Meta<typeof DetailsKeyValue> = {
   title: 'Circuit DS/Custom Components/DetailsKeyValue',

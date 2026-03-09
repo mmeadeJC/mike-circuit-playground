@@ -43,10 +43,10 @@ import {
   PencilIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '../../../../components/TopBar.vue';
-import DetailsKeyValue from '../../../../components/DetailsKeyValue.vue';
-import DetailPageLayout from '../../../../components/layout/page-layouts/DetailPageLayout.vue';
-import ConfigPageLayout from '../../../../components/layout/page-layouts/ConfigPageLayout.vue';
+import TopBar from '@/components/TopBar.vue';
+import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
+import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
+import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
 
 import {
   DeviceManagementIcon,
@@ -776,7 +776,7 @@ const SsoAppsPage = defineComponent({
         </PageHeader>
 
         <!-- ============ LIST VIEW ============ -->
-        <div v-if="currentView === 'list'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 relative">
+        <div v-if="currentView === 'list'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 pt-6 relative">
           <CircuitDataTable
             :columns="listColumns"
             :data="ssoAppsData"
@@ -1108,7 +1108,7 @@ const SsoAppsPage = defineComponent({
           </ConfigPageLayout>
 
           <!-- ── Tab: User Groups ── -->
-          <div v-if="activeTab === 'user-groups'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 relative">
+          <div v-if="activeTab === 'user-groups'" class="flex-1 flex flex-col min-h-0 overflow-hidden px-6 pt-6 relative">
             <CircuitDataTable
               :columns="userGroupsColumns"
               :data="userGroupsData"
@@ -1172,7 +1172,7 @@ const SsoAppsPage = defineComponent({
 // ─── Storybook Meta ───
 
 const meta: Meta<typeof SsoAppsPage> = {
-  title: 'Projects/Agent 0/Pages/SSO Apps',
+  title: 'Projects/Burak - Agent0/Pages/SSO Apps',
   component: SsoAppsPage,
   parameters: {
     layout: 'fullscreen',

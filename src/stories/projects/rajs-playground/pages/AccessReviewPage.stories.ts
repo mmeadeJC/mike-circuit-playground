@@ -46,8 +46,8 @@ import {
   HandThumbDownIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '../../../../components/TopBar.vue';
-import DetailsKeyValue from '../../../../components/DetailsKeyValue.vue';
+import TopBar from '@/components/TopBar.vue';
+import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
 
 import {
   DeviceManagementIcon,
@@ -852,7 +852,7 @@ const AccessReviewPage = defineComponent({
 
             <!-- Applications Table -->
             <div class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
-              <div class="shrink-0 px-6">
+              <div class="shrink-0 px-6 pt-6">
                 <DataTableToolbar
                   searchPlaceholder="Search applications..."
                   :showAddButton="false"
@@ -1014,7 +1014,7 @@ const AccessReviewPage = defineComponent({
             </div>
 
             <!-- User review table -->
-            <div class="px-6 pb-6 bg-neutral-surface">
+            <div class="px-6 pb-6 pt-6 bg-neutral-surface">
               <div class="shrink-0 px-6">
                 <DataTableToolbar
                   searchPlaceholder="Search users..."

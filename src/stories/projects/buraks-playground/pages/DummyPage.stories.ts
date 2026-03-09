@@ -27,7 +27,7 @@ import {
   ArrowRightIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '../../../../components/TopBar.vue';
+import TopBar from '@/components/TopBar.vue';
 
 // JumpCloud custom icons
 import {

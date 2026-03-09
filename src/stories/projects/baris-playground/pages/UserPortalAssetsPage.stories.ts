@@ -48,9 +48,9 @@ import {
 } from '@jumpcloud/icons';
 
 // @ts-expect-error Vue SFC import
-import DetailsKeyValue from '../../../../components/DetailsKeyValue.vue';
+import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
 // @ts-expect-error Vue SFC import
-import DetailPageLayout from '../../../../components/layout/page-layouts/DetailPageLayout.vue';
+import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
 
 // ─── User Portal Navigation Data (flat, no nested items) ───
 
@@ -657,7 +657,7 @@ const UserPortalAssetsPage = defineComponent({
 
         <!-- ============ LIST VIEW ============ -->
         <div v-if="currentView === 'list'" class="flex-1 flex flex-col min-h-0 overflow-hidden">
-          <div class="flex-1 flex flex-col min-h-0 w-full max-w-5xl mx-auto px-6 relative">
+          <div class="flex-1 flex flex-col min-h-0 w-full max-w-5xl mx-auto px-6 pt-6 relative">
               <CircuitDataTable
                 :columns="assetColumnsWithClick"
                 :data="assets"

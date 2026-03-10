@@ -9,7 +9,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "deploy-storybook": "pnpm run build-storybook && pnpm exec gh-pages -d storybook-static --cname circuit-playground.jumpcloud.io",
-    "run-s": "pnpm run storybook"
+    "run-s": "pnpm run storybook & pnpm run build-storybook"
   },
   "dependencies": {
     "@jumpcloud/circuit": "^0.0.108",

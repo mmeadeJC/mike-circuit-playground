@@ -17,7 +17,7 @@ type Story = StoryObj<typeof LinkText>;
 export const Default: Story = {
   args: {
     label: 'Learn more',
-    href: '#',
+    href: '/docs/getting-started',
   },
 };
 

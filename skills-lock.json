@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "rams": {
+      "source": "brianlovin/claude-config",
+      "sourceType": "github",
+      "computedHash": "caf6767c23716926511bc367f21afeea310be1f7cd22084f667d68761e669b4c"
+    }
+  }
+}

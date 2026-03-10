@@ -74,14 +74,16 @@ function handleIconButtonClick(button: TopBarIconButton) {
       <Divider layout="vertical" class="my-0.5!" />
     </div>
 
-    <div
-      class="flex-1 flex items-center gap-2 h-full min-w-0 overflow-hidden rounded-sm cursor-pointer"
+    <button
+      type="button"
+      class="flex-1 flex items-center gap-2 h-full min-w-0 overflow-hidden rounded-sm cursor-pointer bg-transparent border-0 p-0 text-left"
+      :aria-label="searchPlaceholder"
       @click="emit('search-click')"
     >
       <slot name="search-icon">
-        <AiSearchIcon v-if="showSearchIcon" class="w-5 h-5 text-field-placeholder shrink-0" />
+        <AiSearchIcon v-if="showSearchIcon" class="w-5 h-5 text-field-placeholder shrink-0" aria-hidden="true" />
       </slot>
-      <span class="text-body-md text-field-placeholder truncate">
+      <span class="text-body-md text-field-placeholder truncate" aria-hidden="true">
         {{ searchPlaceholder }}
       </span>
       <Tag
@@ -89,8 +91,9 @@ function handleIconButtonClick(button: TopBarIconButton) {
         :value="shortcutLabel"
         severity="neutral"
         class="shrink-0"
+        aria-hidden="true"
       />
-    </div>
+    </button>
 
     <!-- Right: Action buttons + AI Assistant -->
     <div class="flex items-center gap-4 h-full shrink-0">

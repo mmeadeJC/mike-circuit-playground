@@ -26,7 +26,7 @@ export const Default: Story = {
     template: `
       <FormField label="Password">
         <template #default="{ inputId }">
-          <Password :id="inputId" v-model="value" toggleMask v-bind="args" />
+          <Password :inputId="inputId" v-model="value" toggleMask v-bind="args" />
         </template>
       </FormField>
     `,
@@ -44,7 +44,7 @@ export const WithPlaceholder: Story = {
     template: `
       <FormField label="Password">
         <template #default="{ inputId }">
-          <Password :id="inputId" v-model="value" placeholder="Enter password" toggleMask v-bind="args" />
+          <Password :inputId="inputId" v-model="value" placeholder="Enter password" toggleMask v-bind="args" />
         </template>
       </FormField>
     `,
@@ -62,7 +62,7 @@ export const Disabled: Story = {
     template: `
       <FormField label="Password">
         <template #default="{ inputId }">
-          <Password :id="inputId" v-model="value" placeholder="Enter password" toggleMask disabled v-bind="args" />
+          <Password :inputId="inputId" v-model="value" placeholder="Enter password" toggleMask disabled v-bind="args" />
         </template>
       </FormField>
     `,
@@ -80,7 +80,7 @@ export const Invalid: Story = {
     template: `
       <FormField label="Password" :invalid="true" invalidText="Password must be at least 8 characters">
         <template #default="{ inputId }">
-          <Password :id="inputId" v-model="value" placeholder="Enter password" toggleMask invalid v-bind="args" />
+          <Password :inputId="inputId" v-model="value" placeholder="Enter password" toggleMask invalid v-bind="args" />
         </template>
       </FormField>
     `,

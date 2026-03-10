@@ -23,7 +23,7 @@ export const Default: Story = {
       return { args, checked };
     },
     template: `
-      <ToggleSwitch v-model="checked" v-bind="args" />
+      <ToggleSwitch v-model="checked" aria-label="Toggle option" v-bind="args" />
     `,
   }),
   args: {},

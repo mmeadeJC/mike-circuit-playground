@@ -36,6 +36,7 @@ export const Default: Story = {
         :options="defaultOptions"
         optionLabel="name"
         placeholder="Select an option"
+        aria-label="Select an option"
         v-bind="args"
       />
     `,
@@ -56,10 +57,11 @@ export const WithIconSlot: Story = {
         :options="defaultOptions"
         optionLabel="name"
         placeholder="Select an option"
+        aria-label="Select an option"
         v-bind="args"
       >
         <template #icon="{ iconClass }">
-          <Cog6ToothIcon :class="iconClass" />
+          <Cog6ToothIcon :class="iconClass" aria-hidden="true" />
         </template>
       </SelectWithSlots>
     `,

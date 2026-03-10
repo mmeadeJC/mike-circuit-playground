@@ -21,8 +21,8 @@ export const LeadingIcon: Story = {
     },
     template: `
       <IconField v-bind="args">
-        <InputIcon class="pi pi-search" />
-        <InputText placeholder="Search..." />
+        <InputIcon class="pi pi-search" aria-hidden="true" />
+        <InputText placeholder="Search..." aria-label="Search" />
       </IconField>
     `,
   }),
@@ -36,8 +36,8 @@ export const TrailingIcon: Story = {
     },
     template: `
       <IconField v-bind="args" iconPosition="right">
-        <InputText placeholder="Enter value..." />
-        <InputIcon class="pi pi-spin pi-spinner" />
+        <InputText placeholder="Enter value..." aria-label="Enter value" />
+        <InputIcon class="pi pi-spin pi-spinner" aria-hidden="true" />
       </IconField>
     `,
   }),

@@ -23,7 +23,7 @@ export const Default: Story = {
       const checked = ref(false);
       return { args, checked };
     },
-    template: '<Checkbox v-bind="args" v-model="checked" :binary="true" />',
+    template: '<Checkbox v-bind="args" v-model="checked" :binary="true" aria-label="Accept terms" />',
   }),
   args: {},
 };
@@ -35,7 +35,7 @@ export const Checked: Story = {
       const checked = ref(true);
       return { args, checked };
     },
-    template: '<Checkbox v-bind="args" v-model="checked" :binary="true" />',
+    template: '<Checkbox v-bind="args" v-model="checked" :binary="true" aria-label="Accept terms" />',
   }),
   args: {},
 };
@@ -47,7 +47,7 @@ export const Disabled: Story = {
       const checked = ref(false);
       return { args, checked };
     },
-    template: '<Checkbox v-bind="args" v-model="checked" :binary="true" />',
+    template: '<Checkbox v-bind="args" v-model="checked" :binary="true" aria-label="Accept terms" />',
   }),
   args: { disabled: true },
 };

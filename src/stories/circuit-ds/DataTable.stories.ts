@@ -61,8 +61,8 @@ const allCellTypesColumns = [
     componentProps: () => ({
       type: 'Button Group',
       iconButtons: [
-        { icon: markRaw(PencilSquareIcon) },
-        { icon: markRaw(TrashIcon) },
+        { icon: markRaw(PencilSquareIcon), ariaLabel: 'Edit' },
+        { icon: markRaw(TrashIcon), ariaLabel: 'Delete' },
       ],
       maxVisibleIconButtons: 3,
     }),

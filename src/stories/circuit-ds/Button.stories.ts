@@ -93,14 +93,14 @@ export const IconOnly: Story = {
     template: `
       <Button v-bind="args">
         <template #icon>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5" aria-hidden="true">
             <path d="M10 3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 8.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM11.5 15.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z" />
           </svg>
         </template>
       </Button>
     `,
   }),
-  args: { severity: 'primary' },
+  args: { severity: 'primary', ariaLabel: 'More options' },
 };
 
 export const IconOnlySmall: Story = {
@@ -113,14 +113,14 @@ export const IconOnlySmall: Story = {
     template: `
       <Button v-bind="args">
         <template #icon>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4" aria-hidden="true">
             <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-11.25a.75.75 0 0 0-1.5 0v2.5h-2.5a.75.75 0 0 0 0 1.5h2.5v2.5a.75.75 0 0 0 1.5 0v-2.5h2.5a.75.75 0 0 0 0-1.5h-2.5v-2.5Z" clip-rule="evenodd" />
           </svg>
         </template>
       </Button>
     `,
   }),
-  args: { severity: 'primary', size: 'small' },
+  args: { severity: 'primary', size: 'small', ariaLabel: 'Add item' },
 };
 
 export const IconOnlyOutlined: Story = {
@@ -133,14 +133,14 @@ export const IconOnlyOutlined: Story = {
     template: `
       <Button v-bind="args">
         <template #icon>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5" aria-hidden="true">
             <path d="M5.433 13.917l1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z" />
           </svg>
         </template>
       </Button>
     `,
   }),
-  args: { severity: 'secondary', variant: 'outlined' },
+  args: { severity: 'secondary', variant: 'outlined', ariaLabel: 'Edit' },
 };
 
 // --- Sizes ---

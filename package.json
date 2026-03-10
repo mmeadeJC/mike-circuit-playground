@@ -1,6 +1,6 @@
 {
   "name": "@jumpcloud/circuit-playground",
-  "version": "0.0.1",
+  "version": "0.0.108",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,10 +8,11 @@
     "build": "vite build",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "deploy-storybook": "pnpm run build-storybook && pnpm exec gh-pages -d storybook-static --dest master --dotfiles --cname circuit-playground.jumpcloud.io"
+    "deploy-storybook": "pnpm run build-storybook && pnpm exec gh-pages -d storybook-static --cname circuit-playground.jumpcloud.io",
+    "run-storybook": "pnpm run storybook && pnpm run build-storybook"
   },
   "dependencies": {
-    "@jumpcloud/circuit": "^0.0.100",
+    "@jumpcloud/circuit": "^0.0.108",
     "@jumpcloud/icons": "^0.0.4",
     "chart.js": "^4.5.1",
     "primevue": "^4.4.0",

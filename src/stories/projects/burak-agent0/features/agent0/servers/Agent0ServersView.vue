@@ -1,47 +1,73 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { DataTable as CircuitDataTable, DataTableToolbar } from '@jumpcloud/circuit/components';
-import ListPageLayout from '@/components/layout/page-layouts/ListPageLayout.vue';
-import Drawer from 'primevue/drawer';
+import { DataTable as CircuitDataTable, DataTableToolbar, FormField } from '@jumpcloud/circuit/components';
+import Dialog from 'primevue/dialog';
+import MultiSelect from 'primevue/multiselect';
+import SelectButton from 'primevue/selectbutton';
 import Button from 'primevue/button';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
+import ListPageLayout from '@/components/layout/page-layouts/ListPageLayout.vue';
 import Agent0ServerDetailPanel from './Agent0ServerDetailPanel.vue';
 import type { ServerFormState } from '../shared/types';
 
 const props = defineProps<{
-  serversData: unknown[];
+  filteredServersData: unknown[];
   serverColumns: unknown[];
   selectedServers: unknown[];
   selectedServer: { name: string } | null;
-  showServerDrawer: boolean;
-  useInlinePanel: boolean;
+  showServerDialog: boolean;
   authStyleOptions: { label: string; value: string }[];
   serverForm: ServerFormState;
+  showFilterDialog: boolean;
+  draftConnectionTypes: string[];
+  draftStatus: string;
+  connectionTypeOptions: { label: string; value: string }[];
+  statusOptions: string[];
+  activeFilterChips: { id: string; key: string; operator: string; value: string }[];
+  activeFilterCount: number;
 }>();
 
 const emit = defineEmits<{
   'update:selectedServers': [unknown[]];
-  'update:showServerDrawer': [boolean];
+  'update:showServerDialog': [boolean];
   'row-click': [unknown];
+  'add-server': [];
   'close-detail': [];
   'save-detail': [];
+  search: [query: string];
+  openFilterDialog: [];
+  applyFilters: [];
+  cancelFilterDialog: [];
+  clearDraftFilters: [];
+  clearAllFilters: [];
+  removeFilterChip: [chip: { id?: string }];
+  'update:draftConnectionTypes': [value: string[]];
+  'update:draftStatus': [value: string];
 }>();
 
-const drawerVisible = computed({
-  get: () => props.showServerDrawer,
-  set: (value: boolean) => emit('update:showServerDrawer', value),
+const serverDialogVisible = computed({
+  get: () => props.showServerDialog,
+  set: (value: boolean) => emit('update:showServerDialog', value),
+});
+
+const serverDialogHeader = computed(() =>
+  props.selectedServer ? props.selectedServer.name : 'Add Server',
+);
+
+const draftFilterCount = computed(() => {
+  let count = 0;
+  if (props.draftConnectionTypes.length > 0) count++;
+  if (props.draftStatus !== 'All') count++;
+  return count;
 });
 </script>
 
 <template>
-  <div class="flex-1 flex min-h-0 overflow-hidden bg-neutral-surface">
-    <ListPageLayout class="flex-1 min-w-0 h-full! transition-all duration-300 ease-in-out">
+  <div class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface relative">
+    <ListPageLayout class="w-full! h-full!">
       <CircuitDataTable
         :columns="serverColumns"
-        :data="serversData"
-        selectionMode="multiple"
-        :selection="selectedServers"
-        @update:selection="emit('update:selectedServers', $event)"
+        :data="filteredServersData"
         @row-click="emit('row-click', $event)"
         :card="true"
         size="default"
@@ -55,57 +81,90 @@ const drawerVisible = computed({
             searchPlaceholder="Search servers..."
             :showAddButton="true"
             addButtonLabel="Add Server"
-            :showFilterButton="false"
+            :showFilterButton="true"
             :showRefreshButton="false"
             :showColumnsButton="false"
             :showDownloadButton="false"
+            :showSaveViewButton="false"
+            :activeFilters="activeFilterChips"
+            :maxVisibleFilters="5"
+            @add="emit('add-server')"
+            @search="emit('search', $event)"
+            @filter="emit('openFilterDialog')"
+            @clear-all="emit('clearAllFilters')"
+            @filter-remove="emit('removeFilterChip', $event)"
           />
         </template>
       </CircuitDataTable>
     </ListPageLayout>
 
-    <div
-      v-if="useInlinePanel"
-      class="shrink-0 border-l border-neutral-default_solid bg-neutral-base flex flex-col h-full overflow-hidden transition-[width] duration-300 ease-in-out"
-      :class="showServerDrawer && selectedServer ? 'w-[480px]' : 'w-0 border-l-0'"
+    <Dialog
+      v-model:visible="serverDialogVisible"
+      :draggable="false"
+      modal
+      :header="serverDialogHeader"
+      :style="{ width: '560px' }"
     >
-      <template v-if="selectedServer">
-        <div class="flex items-center justify-between p-4 shrink-0 min-w-[480px]">
-          <span class="text-heading-3 text-neutral-base">{{ selectedServer.name }}</span>
-          <Button severity="secondary" variant="text" size="small" @click="emit('close-detail')">
-            <template #icon><XMarkIcon class="w-5 h-5" /></template>
-          </Button>
+      <template #closeicon><XMarkIcon /></template>
+      <Agent0ServerDetailPanel
+        :serverForm="serverForm"
+        :authStyleOptions="authStyleOptions"
+        :isAddMode="!selectedServer"
+        @cancel="emit('close-detail')"
+        @save="emit('save-detail')"
+      />
+    </Dialog>
+
+    <Dialog
+      :visible="showFilterDialog"
+      :draggable="false"
+      modal
+      header="Apply filters"
+      :style="{ width: '560px' }"
+      @update:visible="!$event && emit('cancelFilterDialog')"
+    >
+      <template #closeicon><XMarkIcon /></template>
+
+      <div class="flex flex-col gap-md">
+        <FormField label="Connection Type">
+          <template #default="{ inputId }">
+            <MultiSelect
+              :id="inputId"
+              :modelValue="draftConnectionTypes"
+              :options="connectionTypeOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="All connection types"
+              :maxSelectedLabels="2"
+              class="w-full"
+              @update:modelValue="emit('update:draftConnectionTypes', $event)"
+            />
+          </template>
+        </FormField>
+
+        <FormField label="Status">
+          <template #default="{ inputId }">
+            <SelectButton
+              :id="inputId"
+              :modelValue="draftStatus"
+              :options="statusOptions"
+              :allowEmpty="false"
+              @update:modelValue="emit('update:draftStatus', $event)"
+            />
+          </template>
+        </FormField>
+      </div>
+
+      <template #footer>
+        <div class="flex items-center flex-1 min-w-0">
+          <span class="text-body-sm text-neutral-subtle">{{ draftFilterCount }} Filters applied</span>
         </div>
-        <div class="min-w-[480px] flex-1 min-h-0">
-          <Agent0ServerDetailPanel
-            :serverForm="serverForm"
-            :authStyleOptions="authStyleOptions"
-            @cancel="emit('close-detail')"
-            @save="emit('save-detail')"
-          />
+        <div class="flex gap-sm shrink-0">
+          <Button label="Cancel" severity="secondary" variant="text" @click="emit('cancelFilterDialog')" />
+          <Button label="Clear All" severity="secondary" variant="outlined" @click="emit('clearDraftFilters')" />
+          <Button label="Apply" @click="emit('applyFilters')" />
         </div>
       </template>
-    </div>
+    </Dialog>
   </div>
-
-  <Drawer
-    v-if="!useInlinePanel"
-    v-model:visible="drawerVisible"
-    :header="selectedServer?.name || 'Server Configuration'"
-    position="right"
-    size="lg"
-    modal
-  >
-    <template #closebutton="btnProps">
-      <Button severity="secondary" variant="text" size="small" @click="btnProps.closeCallback">
-        <template #icon><XMarkIcon class="w-5 h-5" /></template>
-      </Button>
-    </template>
-    <Agent0ServerDetailPanel
-      :serverForm="serverForm"
-      :authStyleOptions="authStyleOptions"
-      @cancel="emit('close-detail')"
-      @save="emit('save-detail')"
-    />
-  </Drawer>
 </template>

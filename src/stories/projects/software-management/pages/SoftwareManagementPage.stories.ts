@@ -7,8 +7,8 @@ import {
   DataTableToolbar,
   DataTableCellLink,
   DataTableCellText,
-  DataTableCellToken,
-  DataTableCellButton,
+  DataTableCellStatus,
+  DataTableCellAction,
   Dropdown,
   CollapsiblePanel,
   FormField,
@@ -855,7 +855,7 @@ const deviceCommandStatusBaseColumns = [
     header: 'Status',
     sortable: true,
     width: '160px',
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     componentProps: (sp: { data: Record<string, unknown> }) => ({
       type: 'Status',
       statusLabel: (sp.data.status as string) || '',
@@ -1250,7 +1250,7 @@ const SoftwareManagementPage = defineComponent({
         header: '',
         sortable: false,
         width: '80px',
-        component: markRaw(DataTableCellButton),
+        component: markRaw(DataTableCellAction),
         componentProps: (sp: { data: Record<string, unknown> }) => ({
           type: 'Button' as const,
           actionButtons: [

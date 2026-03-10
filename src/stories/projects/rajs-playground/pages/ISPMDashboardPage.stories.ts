@@ -5,7 +5,7 @@ import {
   CollapsiblePanel,
   DataTable as CircuitDataTable,
   DataTableCellText,
-  DataTableCellToken,
+  DataTableCellStatus,
   MessageNotification,
   PageHeader,
 } from '@jumpcloud/circuit/components';
@@ -225,7 +225,7 @@ const findingColumns = [
   { field: 'category', header: 'Category', sortable: true, component: markRaw(DataTableCellText) },
   {
     field: 'severity', header: 'Severity', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: {
       High: { label: 'High', severity: 'danger' },
       Medium: { label: 'Medium', severity: 'warn' },

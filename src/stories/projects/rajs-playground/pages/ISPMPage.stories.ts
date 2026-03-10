@@ -29,7 +29,7 @@ import {
   CollapsiblePanel,
   DataTable as CircuitDataTable,
   DataTableCellText,
-  DataTableCellToken,
+  DataTableCellStatus,
   DataTableToolbar,
   MessageNotification,
   PageHeader,
@@ -458,7 +458,7 @@ const findingColumns = [
   { field: 'category', header: 'Category', sortable: true, component: markRaw(DataTableCellText) },
   {
     field: 'severity', header: 'Severity', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: { High: { label: 'High', severity: 'danger' }, Medium: { label: 'Medium', severity: 'warn' }, Low: { label: 'Low', severity: 'success' } },
   },
   { field: 'affectedCount', header: 'Affected', sortable: true, component: markRaw(DataTableCellText) },
@@ -475,7 +475,7 @@ const resourceColumns = [
   { field: 'resourceType', header: 'Type', sortable: true, component: markRaw(DataTableCellText) },
   { field: 'totalIdentities', header: 'Identities', sortable: true, component: markRaw(DataTableCellText) },
   { field: 'staleAccess', header: 'Stale', sortable: true, component: markRaw(DataTableCellText) },
-  { field: 'riskLevel', header: 'Risk', sortable: true, component: markRaw(DataTableCellToken), tokenMapping: riskTokenMapping },
+  { field: 'riskLevel', header: 'Risk', sortable: true, component: markRaw(DataTableCellStatus), tokenMapping: riskTokenMapping },
   { field: 'lastReviewed', header: 'Last Reviewed', sortable: true, component: markRaw(DataTableCellText) },
 ];
 
@@ -483,7 +483,7 @@ const identityColumns = [
   { field: 'name', header: 'Identity', sortable: true, component: markRaw(DataTableCellText) },
   {
     field: 'type', header: 'Type', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: {
       Human: { label: 'Human', severity: 'info' },
       'Service Account': { label: 'Service Acct', severity: 'warn' },
@@ -493,7 +493,7 @@ const identityColumns = [
   { field: 'team', header: 'Team', sortable: true, component: markRaw(DataTableCellText) },
   { field: 'totalResources', header: 'Resources', sortable: true, component: markRaw(DataTableCellText) },
   { field: 'privilegedAccess', header: 'Privileged', sortable: true, component: markRaw(DataTableCellText) },
-  { field: 'riskLevel', header: 'Risk', sortable: true, component: markRaw(DataTableCellToken), tokenMapping: riskTokenMapping },
+  { field: 'riskLevel', header: 'Risk', sortable: true, component: markRaw(DataTableCellStatus), tokenMapping: riskTokenMapping },
   { field: 'lastActive', header: 'Last Active', sortable: true, component: markRaw(DataTableCellText) },
 ];
 
@@ -503,7 +503,7 @@ const groupColumns = [
   { field: 'totalResources', header: 'Resources', sortable: true, component: markRaw(DataTableCellText) },
   { field: 'privilegedResources', header: 'Privileged', sortable: true, component: markRaw(DataTableCellText) },
   { field: 'nestingDepth', header: 'Nesting Depth', sortable: true, component: markRaw(DataTableCellText) },
-  { field: 'riskLevel', header: 'Risk', sortable: true, component: markRaw(DataTableCellToken), tokenMapping: riskTokenMapping },
+  { field: 'riskLevel', header: 'Risk', sortable: true, component: markRaw(DataTableCellStatus), tokenMapping: riskTokenMapping },
 ];
 
 const campaignColumns = [
@@ -513,7 +513,7 @@ const campaignColumns = [
   { field: 'deadline', header: 'Deadline', sortable: true, component: markRaw(DataTableCellText) },
   {
     field: 'status', header: 'Status', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: {
       Draft: { label: 'Draft', severity: 'secondary' },
       Active: { label: 'Active', severity: 'info' },
@@ -527,17 +527,17 @@ const reviewItemColumns = [
   { field: 'identity', header: 'Identity', sortable: true, component: markRaw(DataTableCellText) },
   {
     field: 'identityType', header: 'Type', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: { Human: { label: 'Human', severity: 'info' }, 'Service Account': { label: 'Service Acct', severity: 'warn' } },
   },
   { field: 'resource', header: 'Resource', sortable: true, component: markRaw(DataTableCellText) },
   { field: 'resourceType', header: 'Resource Type', sortable: true, component: markRaw(DataTableCellText) },
   { field: 'accessPath', header: 'Access Path', sortable: true, component: markRaw(DataTableCellText) },
-  { field: 'riskLevel', header: 'Risk', sortable: true, component: markRaw(DataTableCellToken), tokenMapping: riskTokenMapping },
+  { field: 'riskLevel', header: 'Risk', sortable: true, component: markRaw(DataTableCellStatus), tokenMapping: riskTokenMapping },
   { field: 'lastUsed', header: 'Last Used', sortable: true, component: markRaw(DataTableCellText) },
   {
     field: 'decision', header: 'Decision', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: {
       Pending: { label: 'Pending', severity: 'warn' },
       Certify: { label: 'Certified', severity: 'success' },
@@ -551,7 +551,7 @@ const decisionLogColumns = [
   { field: 'resource', header: 'Resource', sortable: true, component: markRaw(DataTableCellText) },
   {
     field: 'decision', header: 'Decision', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: { Certify: { label: 'Certified', severity: 'success' }, Revoke: { label: 'Revoked', severity: 'danger' } },
   },
   { field: 'decidedBy', header: 'Decided By', sortable: true, component: markRaw(DataTableCellText) },

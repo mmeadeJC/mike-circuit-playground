@@ -1,24 +1,23 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
 import { markRaw } from 'vue';
-import { DataTableCellButton } from '@jumpcloud/circuit/components';
+import { DataTableCellAction } from '@jumpcloud/circuit/components';
 import { PencilSquareIcon, Square2StackIcon, TrashIcon } from '@heroicons/vue/24/outline';
 
-const meta: Meta<typeof DataTableCellButton> = {
-  title: 'Circuit DS/Components/DataTableCellButton',
-  component: DataTableCellButton,
+const meta: Meta<typeof DataTableCellAction> = {
+  title: 'Circuit DS/Components/DataTableCellAction',
+  component: DataTableCellAction,
   tags: ['autodocs'],
   argTypes: {
     type: {
       control: 'select',
       options: ['Button', 'Button Group', 'More Button', 'Button & More'],
     },
-    size: { control: 'select', options: ['default', 'small'] },
   },
 };
 
 export default meta;
 
-type Story = StoryObj<typeof DataTableCellButton>;
+type Story = StoryObj<typeof DataTableCellAction>;
 
 export const ButtonType: Story = {
   args: {
@@ -49,18 +48,5 @@ export const ButtonAndMore: Story = {
   args: {
     type: 'Button & More',
     actionButtons: [{ label: 'Action' }, { label: 'Secondary' }],
-  },
-};
-
-export const SmallSize: Story = {
-  args: {
-    type: 'Button Group',
-    iconButtons: [
-      { icon: markRaw(PencilSquareIcon) },
-      { icon: markRaw(Square2StackIcon) },
-      { icon: markRaw(TrashIcon) },
-    ],
-    maxVisibleIconButtons: 3,
-    size: 'small',
   },
 };

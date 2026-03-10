@@ -9,7 +9,7 @@ import {
 import { buildMonthlyChartOptions } from '../shared/composables';
 
 const meta: Meta<typeof Agent0DashboardView> = {
-  title: 'Projects/Burak - Agent0/Dashboard',
+  title: 'Projects/Burak - AI Connector/Dashboard',
   component: Agent0DashboardView,
   args: {
     topServerUsage,

@@ -1,5 +1,5 @@
 import { markRaw } from 'vue';
-import { DataTableCellText, DataTableCellLink, DataTableCellToken } from '@jumpcloud/circuit/components';
+import { DataTableCellText, DataTableCellLink, DataTableCellStatus } from '@jumpcloud/circuit/components';
 import Tag from 'primevue/tag';
 
 export const activityLogColumns = [
@@ -79,7 +79,7 @@ export const activityLogColumns = [
     header: 'Status',
     sortable: true,
     width: '120px',
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     componentProps: (sp: { data: Record<string, unknown> }) => ({
       type: 'Status',
       statusLabel: sp.data.status,

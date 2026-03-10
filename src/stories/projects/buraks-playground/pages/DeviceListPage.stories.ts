@@ -7,7 +7,7 @@ import {
   DataTableToolbar,
   DataTableCellLink,
   DataTableCellText,
-  DataTableCellButton,
+  DataTableCellAction,
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
@@ -302,7 +302,7 @@ const deviceColumns = [
     field: 'actions',
     header: '',
     width: '170px',
-    component: markRaw(DataTableCellButton),
+    component: markRaw(DataTableCellAction),
     componentProps: () => ({
       type: 'Button Group',
       iconButtons: [

@@ -8,8 +8,8 @@ import {
   DataTableToolbar,
   DataTableCellLink,
   DataTableCellText,
-  DataTableCellToken,
-  DataTableCellButton,
+  DataTableCellStatus,
+  DataTableCellAction,
   FormField,
   ToggleSwitch,
   CheckboxWithLabel,
@@ -614,7 +614,7 @@ const customFieldColumns = [
     field: 'required',
     header: 'Required',
     width: '100px',
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     componentProps: (sp: { data: Record<string, unknown> }) => ({
       type: 'Status',
       statusLabel: sp.data.required ? 'Yes' : 'No',
@@ -624,7 +624,7 @@ const customFieldColumns = [
     field: 'visibleInList',
     header: 'Visible in List',
     width: '120px',
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     componentProps: (sp: { data: Record<string, unknown> }) => ({
       type: 'Status',
       statusLabel: sp.data.visibleInList ? 'Yes' : 'No',
@@ -634,7 +634,7 @@ const customFieldColumns = [
     field: 'actions',
     header: '',
     width: '120px',
-    component: markRaw(DataTableCellButton),
+    component: markRaw(DataTableCellAction),
     componentProps: () => ({
       type: 'Button Group',
       iconButtons: [

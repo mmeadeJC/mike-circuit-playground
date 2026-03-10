@@ -68,7 +68,7 @@ These wrap or replace PrimeVue primitives with Circuit-specific behavior, stylin
 | Circuit Custom Component | Replaces PrimeVue | Notes |
 |---|---|---|
 | **Panels & Cards** | | |
-| `CollapsiblePanel` | `Panel` | Use for all card/panel sections. Supports `toggleable` prop for collapsible behavior. |
+| `CollapsiblePanel` | `Panel` | Use for all card/panel sections. Supports `toggleable` prop for collapsible behavior. **Always** use `#toggleicon` with `ChevronRightIcon` and `#titleicon` — see Section 3f. |
 | `CardButton` | — | Clickable card with `#leading` and `#trailing` slots. |
 | **Messages & Notifications** | | |
 | `MessageNotification` | `Message` | Use `title` and `detail` props instead of default slot. Severities: `info`, `success`, `warn`, `error`. |
@@ -184,6 +184,7 @@ These patterns come from the official Circuit DS docs. Follow them exactly.
 
 | Component | Pattern / Gotcha |
 |---|---|
+| `CollapsiblePanel` | **Always** use `#toggleicon` slot with `<ChevronRightIcon>` for the collapse/expand indicator — NEVER use the default +/− icon. Use `#titleicon` slot for a leading icon next to the header text. Use `#actions` slot for header action buttons (e.g. `CopyButton`). The chevron auto-rotates 90° when expanded via built-in CSS. See Section 3f. |
 | `Button` | Use `#icon` slot with `iconProps.class` for leading icons. `loading` prop disables and replaces content with spinner. |
 | `FormField` | Always bind `inputId` from the default slot to the input's `:id` for accessibility: `<template #default="{ inputId }">`. |
 | `DataTable` | Always use `markRaw()` for column components. Use `#toolbar` slot for `DataTableToolbar`, `#empty` and `#initialEmpty` for empty states. See Section 6 for the full mandatory list page pattern. When a `DataTableCellLink` column `onClick` and `@row-click` both call the same idempotent handler, this is **intended behavior — NOT a bug**. Both the row and the cell link should be clickable; do not add `e.stopPropagation()`. |
@@ -209,6 +210,49 @@ These patterns come from the official Circuit DS docs. Follow them exactly.
 ### 3e. Component Not Found?
 
 **If a needed component does not exist in Circuit DS (neither custom nor PT-styled), ASK the user** whether to create a new reusable component or use a one-off solution. Never silently build a duplicate.
+
+### 3f. CollapsiblePanel — Mandatory Slot Pattern
+
+> **⛔ NEVER use the default +/− toggle icon. ALWAYS provide `#toggleicon` with `ChevronRightIcon`.**
+
+Every `CollapsiblePanel` with `toggleable` MUST use `#toggleicon` and `#titleicon` slots. The built-in CSS rotates the chevron 90° when expanded.
+
+```html
+<CollapsiblePanel
+  v-model:collapsed="collapsed"
+  toggleable
+  header="Panel Header"
+>
+  <template #titleicon="iconProps">
+    <SomeIcon :class="iconProps.class" />
+  </template>
+  <template #toggleicon="iconProps">
+    <ChevronRightIcon :class="iconProps.class" />
+  </template>
+  <template #actions>
+    <!-- Optional: action buttons in the header row -->
+    <CopyButton :text="someText" size="small" />
+  </template>
+  <p>Panel content here.</p>
+</CollapsiblePanel>
+```
+
+| Slot | Required? | Usage |
+|---|---|---|
+| `#toggleicon` | **Yes** (when `toggleable`) | Always `<ChevronRightIcon :class="iconProps.class" />`. Pass `iconProps.class` for rotation. |
+| `#titleicon` | **Yes** | Leading icon next to the header text. Use any Heroicon or JumpCloud icon. Pass `iconProps.class` for sizing. |
+| `#actions` | Optional | Right-aligned action buttons in the header (e.g. `CopyButton`, `Button`). |
+
+```ts
+import { ChevronRightIcon, FolderIcon } from '@heroicons/vue/24/outline';
+import { CollapsiblePanel, CopyButton } from '@jumpcloud/circuit/components';
+```
+
+| Mistake | Correct Approach |
+|---|---|
+| Using default +/− toggle icon | Always provide `#toggleicon` with `<ChevronRightIcon>` |
+| Omitting `#titleicon` slot | Always provide a leading icon via `#titleicon` |
+| Not passing `iconProps.class` to the icon | Always bind `:class="iconProps.class"` for proper sizing and rotation |
 
 ## 4. Figma Code Connect — Finding the Right Component
 

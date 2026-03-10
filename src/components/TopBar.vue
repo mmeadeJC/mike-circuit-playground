@@ -79,8 +79,6 @@ function handleIconButtonClick(button: TopBarIconButton) {
       class="flex-1 flex items-center gap-2 h-full min-w-0 overflow-hidden rounded-sm cursor-pointer bg-transparent border-0 p-0 text-left"
       :aria-label="searchPlaceholder"
       @click="emit('search-click')"
-      @keydown.enter="emit('search-click')"
-      @keydown.space.prevent="emit('search-click')"
     >
       <slot name="search-icon">
         <AiSearchIcon v-if="showSearchIcon" class="w-5 h-5 text-field-placeholder shrink-0" aria-hidden="true" />

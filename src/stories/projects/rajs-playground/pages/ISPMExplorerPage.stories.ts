@@ -4,7 +4,7 @@ import {
   AppNavigation,
   DataTable as CircuitDataTable,
   DataTableCellText,
-  DataTableCellToken,
+  DataTableCellStatus,
   DataTableToolbar,
   PageHeader,
 } from '@jumpcloud/circuit/components';
@@ -306,7 +306,7 @@ const resourceColumns = [
   { field: 'staleAccess', header: 'Stale', sortable: true, component: markRaw(DataTableCellText) },
   {
     field: 'riskLevel', header: 'Risk', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: {
       Low: { label: 'Low', severity: 'success' },
       Medium: { label: 'Medium', severity: 'warn' },
@@ -320,7 +320,7 @@ const identityColumns = [
   { field: 'name', header: 'Identity', sortable: true, component: markRaw(DataTableCellText) },
   {
     field: 'type', header: 'Type', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: {
       Human: { label: 'Human', severity: 'info' },
       'Service Account': { label: 'Service Acct', severity: 'warn' },
@@ -332,7 +332,7 @@ const identityColumns = [
   { field: 'privilegedAccess', header: 'Privileged', sortable: true, component: markRaw(DataTableCellText) },
   {
     field: 'riskLevel', header: 'Risk', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: {
       Low: { label: 'Low', severity: 'success' },
       Medium: { label: 'Medium', severity: 'warn' },
@@ -350,7 +350,7 @@ const groupColumns = [
   { field: 'nestingDepth', header: 'Nesting', sortable: true, component: markRaw(DataTableCellText) },
   {
     field: 'riskLevel', header: 'Risk', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: {
       Low: { label: 'Low', severity: 'success' },
       Medium: { label: 'Medium', severity: 'warn' },

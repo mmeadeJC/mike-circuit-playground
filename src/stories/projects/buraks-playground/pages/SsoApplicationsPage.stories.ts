@@ -11,7 +11,7 @@ import {
   DataTableToolbar,
   DataTableCellText,
   DataTableCellLink,
-  DataTableCellToken,
+  DataTableCellStatus,
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
@@ -356,7 +356,7 @@ const ssoAppColumns = [
     header: 'Status',
     sortable: true,
     width: '120px',
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     componentProps: (sp: { data: Record<string, unknown> }) => ({
       type: 'Status',
       statusLabel: sp.data.status,

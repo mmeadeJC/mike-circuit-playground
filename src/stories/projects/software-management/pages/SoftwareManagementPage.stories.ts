@@ -7,8 +7,7 @@ import {
   DataTableToolbar,
   DataTableCellLink,
   DataTableCellText,
-  DataTableCellToken,
-  DataTableCellButton,
+  DataTableCellAction,
   Dropdown,
   CollapsiblePanel,
   FormField,
@@ -1310,7 +1309,7 @@ const SoftwareManagementPage = defineComponent({
         header: '',
         sortable: false,
         width: '80px',
-        component: markRaw(DataTableCellButton),
+        component: markRaw(DataTableCellAction),
         componentProps: (sp: { data: Record<string, unknown> }) => ({
           type: 'Button' as const,
           actionButtons: [

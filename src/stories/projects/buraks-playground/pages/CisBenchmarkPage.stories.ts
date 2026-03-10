@@ -7,7 +7,7 @@ import {
   DataTable,
   DataTableToolbar,
   DataTableCellText,
-  DataTableCellToken,
+  DataTableCellStatus,
   MessageNotification,
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';

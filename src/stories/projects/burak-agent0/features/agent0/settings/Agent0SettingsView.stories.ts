@@ -4,7 +4,7 @@ import Agent0SettingsView from './Agent0SettingsView.vue';
 import { llmProviders, defaultInstructions } from '../shared/data';
 
 const meta: Meta<typeof Agent0SettingsView> = {
-  title: 'Projects/Burak - Agent0/Settings',
+  title: 'Projects/Burak - AI Connector/Settings',
   component: Agent0SettingsView,
   parameters: {
     layout: 'fullscreen',

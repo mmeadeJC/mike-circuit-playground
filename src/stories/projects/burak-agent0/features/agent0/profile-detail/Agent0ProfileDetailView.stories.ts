@@ -12,7 +12,7 @@ import { profileServerColumns, profileUserGroupColumns } from '../shared/columns
 import { useProfileDetailBindings } from '../shared/composables';
 
 const meta: Meta<typeof Agent0ProfileDetailView> = {
-  title: 'Projects/Burak - Agent0/Profile Detail',
+  title: 'Projects/Burak - AI Connector/Profile Detail',
   component: Agent0ProfileDetailView,
   parameters: {
     layout: 'fullscreen',
@@ -40,6 +40,11 @@ export const Default: Story = {
           profileUserGroupsTableData,
           selectedProfileServers,
           selectedProfileUserGroups,
+          hasBindingChanges,
+          isSaving,
+          isSaved,
+          handleSaveBindings,
+          handleDiscardBindings,
         } = useProfileDetailBindings(editingProfile, serversData, userGroupsData, profileUserGroups);
 
         return {
@@ -57,6 +62,11 @@ export const Default: Story = {
           showBoundUserGroupsOnly,
           serversData,
           userGroupsData,
+          hasBindingChanges,
+          isSaving,
+          isSaved,
+          handleSaveBindings,
+          handleDiscardBindings,
         };
       },
       template: `
@@ -83,10 +93,15 @@ export const Default: Story = {
             :showBoundUserGroupsOnly="showBoundUserGroupsOnly"
             :serversDataLength="serversData.length"
             :userGroupsDataLength="userGroupsData.length"
+            :hasBindingChanges="hasBindingChanges"
+            :isSaving="isSaving"
+            :isSaved="isSaved"
             @update:selectedProfileServers="selectedProfileServers = $event"
             @update:selectedProfileUserGroups="selectedProfileUserGroups = $event"
             @update:showBoundServersOnly="showBoundServersOnly = $event"
             @update:showBoundUserGroupsOnly="showBoundUserGroupsOnly = $event"
+            @saveBindings="handleSaveBindings"
+            @discardBindings="handleDiscardBindings"
           />
         </div>
       `,

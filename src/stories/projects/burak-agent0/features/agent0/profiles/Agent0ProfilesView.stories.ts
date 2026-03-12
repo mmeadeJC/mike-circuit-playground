@@ -7,7 +7,7 @@ import { getProfileColumns } from '../shared/columns';
 import { useProfileFilters } from '../shared/composables';
 
 const meta: Meta<typeof Agent0ProfilesView> = {
-  title: 'Projects/Burak - AI Connector/Profiles',
+  title: 'Projects/Burak - AI Connector/Parts/Profile',
   component: Agent0ProfilesView,
   parameters: {
     layout: 'fullscreen',
@@ -18,7 +18,8 @@ export default meta;
 
 type Story = StoryObj<typeof Agent0ProfilesView>;
 
-export const Table: Story = {
+export const List: Story = {
+  name: 'List',
   render: () =>
     defineComponent({
       components: { Agent0ProfilesView },
@@ -61,15 +62,15 @@ export const Dialog: Story = {
       setup() {
         const visible = ref(true);
         const profileForm = reactive({
-          profileId: 'engineering',
-          label: 'engineering',
+          name: 'Engineering',
           serverIds: ['github', 'jira'],
+          userGroupIds: [],
         });
         return {
           visible,
           profileForm,
           serverOptions,
-          serversData,
+          userGroupOptions,
         };
       },
       template: `
@@ -78,7 +79,7 @@ export const Dialog: Story = {
           :editingProfile="{ id: 1 }"
           :profileForm="profileForm"
           :serverOptions="serverOptions"
-          :serversData="serversData"
+          :userGroupOptions="userGroupOptions"
           @update:visible="visible = $event"
         />
       `,

@@ -13,8 +13,7 @@ const emit = defineEmits<{
 <template>
   <div class="flex flex-col">
     <div
-      class="sticky top-0 z-10 bg-neutral-surface border-b border-neutral-default_solid"
-      style="top: -24px; padding-top: 24px; padding-bottom: 16px; margin-top: -24px;"
+      class="sticky -top-6 z-10 bg-neutral-surface border-b border-neutral-default_solid pt-6 pb-4 -mt-6"
     >
       <div class="flex items-center justify-between">
         <span class="text-heading-3 text-neutral-base">Recent Activity</span>

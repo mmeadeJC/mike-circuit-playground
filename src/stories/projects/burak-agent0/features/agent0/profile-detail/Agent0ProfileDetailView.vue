@@ -14,7 +14,7 @@ import DashboardTopList from '../dashboard/DashboardTopList.vue';
 import DashboardRecentActivity from '../dashboard/DashboardRecentActivity.vue';
 import { useActivityFilters } from '../shared/composables';
 import { activityLogColumns } from '../shared/columns';
-import { ChevronRightIcon, CommandLineIcon, XMarkIcon } from '@heroicons/vue/24/outline';
+import { ChartBarSquareIcon, ChevronRightIcon, CommandLineIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import type { ActivityLogEntry, ProfileDashboardStats } from '../shared/data';
 import type { Server } from '../shared/types';
 
@@ -161,6 +161,9 @@ const topUserItems = computed(() =>
           </div>
 
           <CollapsiblePanel header="Monthly Usage by Server">
+            <template #titleicon="iconProps">
+              <ChartBarSquareIcon :class="iconProps.class" />
+            </template>
             <Chart type="line" :data="profileMonthlyChartData" :options="monthlyChartOptions" />
           </CollapsiblePanel>
 

@@ -9,6 +9,7 @@ import Agent0ServersView from '../features/agent0/servers/Agent0ServersView.vue'
 import Agent0ActivityView from '../features/agent0/activity/Agent0ActivityView.vue';
 import Agent0SettingsView from '../features/agent0/settings/Agent0SettingsView.vue';
 import Agent0ServerDetailView from '../features/agent0/server-detail/Agent0ServerDetailView.vue';
+import AddServerDialog from '../features/agent0/servers/AddServerDialog.vue';
 import {
   useActivityFilters,
   useServerFilters,
@@ -28,7 +29,6 @@ import {
   llmProviders,
   defaultInstructions,
   authStyleOptions,
-  serverDetailTabs,
   alt02MainTabs,
   activityLogData,
   getServerActivityLogData,
@@ -52,6 +52,7 @@ const { monthlyChartOptions } = useChartThemeOptions();
 const selectedServer = ref<Server | null>(null);
 const selectedServers = ref<Server[]>([]);
 const showServerDialog = ref(false);
+const showAddServerDialog = ref(false);
 const serverForm = reactive({
   targetId: '',
   name: '',
@@ -100,9 +101,17 @@ const pageTitle = computed(() => {
   return currentView.value === 'settings' ? 'AI Connector Settings' : 'AI Connector';
 });
 
-const pageTabs = computed(() =>
-  currentView.value === 'server-detail' ? serverDetailTabs : alt02MainTabs,
-);
+const pageTabs = computed(() => {
+  if (currentView.value === 'server-detail') {
+    const groupCount = currentServerUserGroups.value.length;
+    return [
+      { label: 'Overview', value: 'overview' },
+      { label: `User Groups (${groupCount})`, value: 'server-user-groups' },
+      { label: 'Activity Log', value: 'server-activity' },
+    ];
+  }
+  return alt02MainTabs;
+});
 
 const currentActiveTab = computed(() =>
   currentView.value === 'server-detail' ? serverDetailTab.value : activeTab.value,
@@ -122,13 +131,12 @@ function openSettings() { currentView.value = 'settings'; }
 function backToMain() { currentView.value = 'main'; }
 
 function openAddServer() {
-  selectedServer.value = null;
   serverForm.targetId = '';
   serverForm.name = '';
   serverForm.url = '';
   serverForm.authStyle = 'OAuth';
   serverForm.authConfig = '';
-  showServerDialog.value = true;
+  showAddServerDialog.value = true;
 }
 
 function openServerDetail(server: Server) {
@@ -206,6 +214,7 @@ const alt02DashboardMonthlyChartData = monthlyChartData;
           :recentActivity="alt02DashboardRecentActivity"
           :monthlyChartData="alt02DashboardMonthlyChartData"
           :monthlyChartOptions="monthlyChartOptions"
+          governance-scope-type="servers"
           @navigate-tab="activeTab = $event"
         />
 
@@ -299,6 +308,14 @@ const alt02DashboardMonthlyChartData = monthlyChartData;
         :serverActivityData="currentServerActivityData"
       />
 
+      <AddServerDialog
+        :visible="showAddServerDialog"
+        :serverForm="serverForm"
+        :authStyleOptions="authStyleOptions"
+        @update:visible="showAddServerDialog = $event"
+        @cancel="showAddServerDialog = false"
+        @create="showAddServerDialog = false"
+      />
     </div>
   </div>
 </template>

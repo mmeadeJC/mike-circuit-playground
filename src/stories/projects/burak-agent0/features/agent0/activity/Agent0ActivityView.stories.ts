@@ -6,7 +6,7 @@ import { activityLogData } from '../shared/data';
 import { useActivityFilters } from '../shared/composables';
 
 const meta: Meta<typeof Agent0ActivityView> = {
-  title: 'Projects/Burak - AI Connector/Activity',
+  title: 'Projects/Burak - AI Connector/Parts',
   component: Agent0ActivityView,
   parameters: {
     layout: 'fullscreen',
@@ -17,7 +17,8 @@ export default meta;
 
 type Story = StoryObj<typeof Agent0ActivityView>;
 
-export const Default: Story = {
+export const RecentActivity: Story = {
+  name: 'Recent Activity',
   render: () =>
     defineComponent({
       components: { Agent0ActivityView },

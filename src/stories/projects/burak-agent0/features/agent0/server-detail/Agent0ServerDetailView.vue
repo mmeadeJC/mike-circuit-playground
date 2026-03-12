@@ -13,7 +13,7 @@ import DashboardTopList from '../dashboard/DashboardTopList.vue';
 import DashboardRecentActivity from '../dashboard/DashboardRecentActivity.vue';
 import { useActivityFilters } from '../shared/composables';
 import { activityLogColumns, profileUserGroupColumns } from '../shared/columns';
-import { ChevronRightIcon, CommandLineIcon, XMarkIcon } from '@heroicons/vue/24/outline';
+import { ChartBarSquareIcon, ChevronRightIcon, CommandLineIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import type { ActivityLogEntry, ServerDashboardStats } from '../shared/data';
 import type { Server, UserGroup } from '../shared/types';
 
@@ -110,6 +110,9 @@ const mcpConfigCollapsed = ref(true);
           </div>
 
           <CollapsiblePanel header="Monthly Usage">
+            <template #titleicon="iconProps">
+              <ChartBarSquareIcon :class="iconProps.class" />
+            </template>
             <Chart type="line" :data="serverMonthlyChartData" :options="monthlyChartOptions" />
           </CollapsiblePanel>
 

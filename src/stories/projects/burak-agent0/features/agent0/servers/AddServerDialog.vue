@@ -49,6 +49,17 @@ const selectedApp = ref<string | null>(null);
 const isCustomMode = ref(false);
 const bindUserGroup = ref(true);
 
+watch(
+  () => props.visible,
+  (open) => {
+    if (open) {
+      selectedApp.value = null;
+      isCustomMode.value = false;
+      bindUserGroup.value = true;
+    }
+  },
+);
+
 const selectedAppData = computed(() =>
   ssoApps.find((app) => app.id === selectedApp.value) ?? null,
 );
@@ -249,7 +260,7 @@ const dialogVisible = computed({
               :options="authStyleOptions"
               optionLabel="label"
               optionValue="value"
-              class="w-full"
+              class="w-full!"
             />
           </template>
         </FormField>

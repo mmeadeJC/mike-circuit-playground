@@ -12,7 +12,7 @@ import { profileServerColumns, profileUserGroupColumns } from '../shared/columns
 import { useProfileDetailBindings } from '../shared/composables';
 
 const meta: Meta<typeof Agent0ProfileDetailView> = {
-  title: 'Projects/Burak - AI Connector/Profile Detail',
+  title: 'Projects/Burak - AI Connector/Parts/Profile',
   component: Agent0ProfileDetailView,
   parameters: {
     layout: 'fullscreen',
@@ -23,7 +23,8 @@ export default meta;
 
 type Story = StoryObj<typeof Agent0ProfileDetailView>;
 
-export const Default: Story = {
+export const ProfileDetail: Story = {
+  name: 'Profile Detail',
   render: () =>
     defineComponent({
       components: { Agent0ProfileDetailView, Button },

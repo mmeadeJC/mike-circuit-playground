@@ -6,7 +6,7 @@ import { getServerColumns } from '../shared/columns';
 import { useServerFilters } from '../shared/composables';
 
 const meta: Meta<typeof Agent0ServersView> = {
-  title: 'Projects/Burak - AI Connector/Servers',
+  title: 'Projects/Burak - AI Connector/Parts/Server',
   component: Agent0ServersView,
   parameters: {
     layout: 'fullscreen',
@@ -17,14 +17,15 @@ export default meta;
 
 type Story = StoryObj<typeof Agent0ServersView>;
 
-export const Default: Story = {
+export const List: Story = {
+  name: 'List',
   render: () =>
     defineComponent({
       components: { Agent0ServersView },
       setup() {
         const selectedServers = ref([]);
         const selectedServer = ref(serversData[0]);
-        const showServerDialog = ref(true);
+        const showServerDialog = ref(false);
         const serverForm = reactive({
           targetId: serversData[0].slug,
           name: serversData[0].name,

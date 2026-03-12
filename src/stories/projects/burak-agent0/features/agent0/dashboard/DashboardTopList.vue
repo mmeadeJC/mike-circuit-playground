@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { CollapsiblePanel } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
-import { ArrowUpIcon } from '@heroicons/vue/24/outline';
+import { ArrowUpIcon, ListBulletIcon } from '@heroicons/vue/24/outline';
 
 defineProps<{
   header: string;
@@ -18,6 +18,9 @@ const emit = defineEmits<{
 
 <template>
   <CollapsiblePanel :header="header">
+    <template #titleicon="iconProps">
+      <ListBulletIcon :class="iconProps.class" />
+    </template>
     <template #actions>
       <Button label="See All" severity="secondary" variant="outlined" size="small" @click="emit('see-all')" />
     </template>

@@ -166,7 +166,7 @@ const AdminHomePageStory = defineComponent({
 });
 
 const meta: Meta<typeof AdminHomePageStory> = {
-  title: "Projects/Admin Portal/Pages/Home",
+  title: "Projects/Surbhi's Playground/Pages/Home",
   component: AdminHomePageStory,
   parameters: {
     layout: 'fullscreen',

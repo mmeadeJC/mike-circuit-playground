@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue';
+import { computed, markRaw, reactive, ref } from 'vue';
 import { AppNavigation, PageHeader, SeverityDialog } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
-import { Cog6ToothIcon } from '@heroicons/vue/24/outline';
+import { Cog6ToothIcon, SparklesIcon } from '@heroicons/vue/24/outline';
 import TopBar from '@/components/TopBar.vue';
 import Agent0DashboardView from '../features/agent0/dashboard/Agent0DashboardView.vue';
 import Agent0ServersView from '../features/agent0/servers/Agent0ServersView.vue';
@@ -13,8 +13,9 @@ import Agent0SettingsView from '../features/agent0/settings/Agent0SettingsView.v
 import Agent0ProfileDetailView from '../features/agent0/profile-detail/Agent0ProfileDetailView.vue';
 import {
   useActivityFilters,
+  useServerFilters,
+  useProfileFilters,
   useChartThemeOptions,
-  useResponsiveServerPanel,
   useProfileDetailBindings,
 } from '../features/agent0/shared/composables';
 import type { Server, Profile } from '../features/agent0/shared/types';
@@ -35,27 +36,32 @@ import {
   mainTabs,
   profileDetailTabs,
   activityLogData,
-  activityLogFilters,
   serverOptions,
+  userGroupOptions,
+  getProfileActivityLogData,
+  getProfileRecentActivity,
+  getProfileMonthlyChartData,
+  getProfileTopServerUsage,
+  profileDashboardStats,
 } from '../features/agent0/shared/data';
 import {
-  serverColumns,
+  getServerColumns,
   getProfileColumns,
   activityLogColumns,
   profileServerColumns,
   profileUserGroupColumns,
 } from '../features/agent0/shared/columns';
 
+const sparklesIcon = markRaw(SparklesIcon);
 const currentView = ref<'main' | 'settings' | 'profile-detail'>('main');
 const activeTab = ref('dashboard');
 const profileDetailTab = ref('overview');
 
-const { serversContainerRef, useInlinePanel } = useResponsiveServerPanel(1024);
 const { monthlyChartOptions } = useChartThemeOptions();
 
 const selectedServer = ref<Server | null>(null);
 const selectedServers = ref<Server[]>([]);
-const showServerDrawer = ref(false);
+const showServerDialog = ref(false);
 const serverForm = reactive({
   targetId: '',
   name: '',
@@ -67,21 +73,19 @@ const serverForm = reactive({
 const showProfileDialog = ref(false);
 const editingProfile = ref<Profile | null>(null);
 const profileForm = reactive({
-  profileId: '',
-  label: '',
+  name: '',
   serverIds: [] as string[],
+  userGroupIds: [] as string[],
 });
 
 const showDeleteDialog = ref(false);
 const deleteTargetName = ref('');
 
-const {
-  activityFilters,
-  filteredActivityData,
-  clearActivityFilters,
-  removeActivityFilter,
-  handleActivitySearch,
-} = useActivityFilters(activityLogData, activityLogFilters);
+const activityFilters = useActivityFilters(activityLogData);
+const { filteredActivityData, handleActivitySearch } = activityFilters;
+
+const serverFilters = useServerFilters(serversData);
+const profileFilters = useProfileFilters(profilesData, serversData, userGroupsData, profileUserGroups);
 
 const selectedProvider = ref('bedrock');
 const apiKey = ref('');
@@ -98,13 +102,38 @@ const {
   profileUserGroupsTableData,
   selectedProfileServers,
   selectedProfileUserGroups,
+  hasBindingChanges,
+  isSaving: isBindingSaving,
+  isSaved: isBindingSaved,
+  handleSaveBindings,
+  handleDiscardBindings,
 } = useProfileDetailBindings(editingProfile, serversData, userGroupsData, profileUserGroups);
+
+const currentProfileDashboardStats = computed(() =>
+  editingProfile.value ? profileDashboardStats[editingProfile.value.profileId] ?? null : null,
+);
+
+const currentProfileTopServerUsage = computed(() =>
+  editingProfile.value ? getProfileTopServerUsage(editingProfile.value.profileId) : [],
+);
+
+const currentProfileRecentActivity = computed(() =>
+  editingProfile.value ? getProfileRecentActivity(editingProfile.value.profileId) : [],
+);
+
+const currentProfileMonthlyChartData = computed(() =>
+  editingProfile.value ? getProfileMonthlyChartData(editingProfile.value.profileId) : { labels: [], datasets: [] },
+);
+
+const currentProfileActivityData = computed(() =>
+  editingProfile.value ? getProfileActivityLogData(editingProfile.value.profileId) : [],
+);
 
 const pageTitle = computed(() => {
   if (currentView.value === 'profile-detail' && editingProfile.value) {
     return editingProfile.value.name;
   }
-  return currentView.value === 'settings' ? 'Agent0 Settings' : 'Agent0';
+  return currentView.value === 'settings' ? 'AI Connector Settings' : 'AI Connector';
 });
 
 const pageTabs = computed(() =>
@@ -115,7 +144,8 @@ const currentActiveTab = computed(() =>
   currentView.value === 'profile-detail' ? profileDetailTab.value : activeTab.value,
 );
 
-const profileColumns = computed(() => getProfileColumns(serversData));
+const serverColumns = computed(() => getServerColumns(profilesData, userGroupsData, profileUserGroups));
+const profileColumns = computed(() => getProfileColumns(serversData, userGroupsData, profileUserGroups, profileDashboardStats));
 
 function handleTabChange(tab: string) {
   if (currentView.value === 'profile-detail') {
@@ -128,6 +158,16 @@ function handleTabChange(tab: string) {
 function openSettings() { currentView.value = 'settings'; }
 function backToMain() { currentView.value = 'main'; }
 
+function openAddServer() {
+  selectedServer.value = null;
+  serverForm.targetId = '';
+  serverForm.name = '';
+  serverForm.url = '';
+  serverForm.authStyle = 'OAuth';
+  serverForm.authConfig = '';
+  showServerDialog.value = true;
+}
+
 function openServerDetail(server: Server) {
   selectedServer.value = server;
   serverForm.targetId = server.slug;
@@ -135,11 +175,11 @@ function openServerDetail(server: Server) {
   serverForm.url = server.url;
   serverForm.authStyle = server.connectionType;
   serverForm.authConfig = server.authConfig;
-  showServerDrawer.value = true;
+  showServerDialog.value = true;
 }
 
 function backFromServerDetail() {
-  showServerDrawer.value = false;
+  showServerDialog.value = false;
   selectedServer.value = null;
 }
 
@@ -149,9 +189,9 @@ function handleServerRowClick(event: { data: Server }) {
 
 function openAddProfile() {
   editingProfile.value = null;
-  profileForm.profileId = '';
-  profileForm.label = '';
+  profileForm.name = '';
   profileForm.serverIds = [];
+  profileForm.userGroupIds = [];
   showProfileDialog.value = true;
 }
 
@@ -193,18 +233,19 @@ function openDeleteDialog(name: string) {
       <TopBar
         v-if="currentView === 'settings'"
         showBackButton
-        backButtonLabel="Agent0"
+        backButtonLabel="AI Connector"
         @back="backToMain"
       />
       <TopBar
         v-if="currentView === 'profile-detail'"
         showBackButton
-        backButtonLabel="Profiles"
+        backButtonLabel="AI Connector"
         @back="backFromProfileDetail"
       />
 
       <PageHeader
         :title="pageTitle"
+        :icon="currentView === 'main' ? sparklesIcon : undefined"
         :tabs="pageTabs"
         :activeTab="currentActiveTab"
         @update:activeTab="handleTabChange"
@@ -212,7 +253,7 @@ function openDeleteDialog(name: string) {
         <template #actions>
           <Button
             v-if="currentView === 'main'"
-            label="Agent0 Settings"
+            label="AI Connector Settings"
             severity="secondary"
             @click="openSettings"
           >
@@ -234,44 +275,89 @@ function openDeleteDialog(name: string) {
           @navigate-tab="activeTab = $event"
         />
 
-        <div
+        <Agent0ServersView
           v-if="activeTab === 'servers'"
-          ref="serversContainerRef"
-          class="flex-1 flex min-h-0 overflow-hidden bg-neutral-surface"
-        >
-          <Agent0ServersView
-            :serversData="serversData"
-            :serverColumns="serverColumns"
-            :selectedServers="selectedServers"
-            :selectedServer="selectedServer"
-            :showServerDrawer="showServerDrawer"
-            :useInlinePanel="useInlinePanel"
-            :authStyleOptions="authStyleOptions"
-            :serverForm="serverForm"
-            @update:selectedServers="selectedServers = $event"
-            @update:showServerDrawer="showServerDrawer = $event"
-            @row-click="handleServerRowClick"
-            @close-detail="backFromServerDetail"
-            @save-detail="backFromServerDetail"
-          />
-        </div>
+          :filteredServersData="serverFilters.filteredData.value"
+          :serverColumns="serverColumns"
+          :selectedServers="selectedServers"
+          :selectedServer="selectedServer"
+          :showServerDialog="showServerDialog"
+          :authStyleOptions="authStyleOptions"
+          :serverForm="serverForm"
+          :showFilterDialog="serverFilters.showFilterDialog.value"
+          :draftConnectionTypes="serverFilters.draftConnectionTypes.value"
+          :draftStatus="serverFilters.draftStatus.value"
+          :connectionTypeOptions="serverFilters.connectionTypeOptions"
+          :statusOptions="serverFilters.statusOptions"
+          :activeFilterChips="serverFilters.activeFilterChips.value"
+          :activeFilterCount="serverFilters.activeFilterCount.value"
+          @update:selectedServers="selectedServers = $event"
+          @update:showServerDialog="showServerDialog = $event"
+          @row-click="handleServerRowClick"
+          @add-server="openAddServer"
+          @close-detail="backFromServerDetail"
+          @save-detail="backFromServerDetail"
+          @search="serverFilters.handleSearch"
+          @openFilterDialog="serverFilters.openFilterDialog"
+          @applyFilters="serverFilters.applyFilters"
+          @cancelFilterDialog="serverFilters.cancelFilterDialog"
+          @clearDraftFilters="serverFilters.clearDraftFilters"
+          @clearAllFilters="serverFilters.clearAllFilters"
+          @removeFilterChip="serverFilters.removeFilterChip"
+          @update:draftConnectionTypes="serverFilters.draftConnectionTypes.value = $event"
+          @update:draftStatus="serverFilters.draftStatus.value = $event"
+        />
 
         <Agent0ProfilesView
           v-if="activeTab === 'profiles'"
-          :profilesData="profilesData"
+          :filteredProfilesData="profileFilters.filteredData.value"
           :profileColumns="profileColumns"
+          :showFilterDialog="profileFilters.showFilterDialog.value"
+          :draftServers="profileFilters.draftServers.value"
+          :draftUserGroups="profileFilters.draftUserGroups.value"
+          :serverOptions="profileFilters.serverOptions"
+          :userGroupOptions="profileFilters.userGroupOptions"
+          :activeFilterChips="profileFilters.activeFilterChips.value"
+          :activeFilterCount="profileFilters.activeFilterCount.value"
           @row-click="handleProfileRowClick"
           @add-profile="openAddProfile"
+          @search="profileFilters.handleSearch"
+          @openFilterDialog="profileFilters.openFilterDialog"
+          @applyFilters="profileFilters.applyFilters"
+          @cancelFilterDialog="profileFilters.cancelFilterDialog"
+          @clearDraftFilters="profileFilters.clearDraftFilters"
+          @clearAllFilters="profileFilters.clearAllFilters"
+          @removeFilterChip="profileFilters.removeFilterChip"
+          @update:draftServers="profileFilters.draftServers.value = $event"
+          @update:draftUserGroups="profileFilters.draftUserGroups.value = $event"
         />
 
         <Agent0ActivityView
           v-if="activeTab === 'activity'"
           :activityLogColumns="activityLogColumns"
           :filteredActivityData="filteredActivityData"
-          :activityFilters="activityFilters"
+          :showFilterDialog="activityFilters.showFilterDialog.value"
+          :draftUsers="activityFilters.draftUsers.value"
+          :draftEventTypes="activityFilters.draftEventTypes.value"
+          :draftServers="activityFilters.draftServers.value"
+          :draftStatus="activityFilters.draftStatus.value"
+          :userOptions="activityFilters.userOptions"
+          :eventTypeOptions="activityFilters.eventTypeOptions"
+          :serverOptions="activityFilters.serverOptions"
+          :statusOptions="activityFilters.statusOptions"
+          :activeFilterChips="activityFilters.activeFilterChips.value"
+          :activeFilterCount="activityFilters.activeFilterCount.value"
           @search="handleActivitySearch"
-          @clear-filters="clearActivityFilters"
-          @remove-filter="removeActivityFilter"
+          @openFilterDialog="activityFilters.openFilterDialog"
+          @applyFilters="activityFilters.applyFilters"
+          @cancelFilterDialog="activityFilters.cancelFilterDialog"
+          @clearDraftFilters="activityFilters.clearDraftFilters"
+          @clearAllFilters="activityFilters.clearAllFilters"
+          @removeFilterChip="activityFilters.removeFilterChip"
+          @update:draftUsers="activityFilters.draftUsers.value = $event"
+          @update:draftEventTypes="activityFilters.draftEventTypes.value = $event"
+          @update:draftServers="activityFilters.draftServers.value = $event"
+          @update:draftStatus="activityFilters.draftStatus.value = $event"
         />
       </template>
 
@@ -292,6 +378,7 @@ function openDeleteDialog(name: string) {
 
       <Agent0ProfileDetailView
         v-if="currentView === 'profile-detail' && editingProfile"
+        :key="editingProfile.profileId"
         :editingProfile="editingProfile"
         :profileDetailTab="profileDetailTab"
         :profileBoundServers="profileBoundServers"
@@ -306,10 +393,21 @@ function openDeleteDialog(name: string) {
         :showBoundUserGroupsOnly="showBoundUserGroupsOnly"
         :serversDataLength="serversData.length"
         :userGroupsDataLength="userGroupsData.length"
+        :profileDashboardStats="currentProfileDashboardStats"
+        :profileTopServerUsage="currentProfileTopServerUsage"
+        :profileRecentActivity="currentProfileRecentActivity"
+        :profileMonthlyChartData="currentProfileMonthlyChartData"
+        :monthlyChartOptions="monthlyChartOptions"
+        :profileActivityData="currentProfileActivityData"
+        :hasBindingChanges="hasBindingChanges"
+        :isSaving="isBindingSaving"
+        :isSaved="isBindingSaved"
         @update:selectedProfileServers="selectedProfileServers = $event"
         @update:selectedProfileUserGroups="selectedProfileUserGroups = $event"
         @update:showBoundServersOnly="showBoundServersOnly = $event"
         @update:showBoundUserGroupsOnly="showBoundUserGroupsOnly = $event"
+        @saveBindings="handleSaveBindings"
+        @discardBindings="handleDiscardBindings"
       />
 
       <Agent0ProfileDialog
@@ -317,7 +415,7 @@ function openDeleteDialog(name: string) {
         :editingProfile="editingProfile"
         :profileForm="profileForm"
         :serverOptions="serverOptions"
-        :serversData="serversData"
+        :userGroupOptions="userGroupOptions"
         @update:visible="showProfileDialog = $event"
         @save="saveProfile"
       />

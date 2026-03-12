@@ -11,6 +11,7 @@ export const profileDetailTabs = [
   { label: 'Overview', value: 'overview' },
   { label: 'Servers', value: 'profile-servers' },
   { label: 'User Groups', value: 'profile-user-groups' },
+  { label: 'Activity Log', value: 'profile-activity' },
 ];
 
 export const serversData: Server[] = [
@@ -523,3 +524,270 @@ export const serverOptions = serversData.map((s) => ({
   label: `${s.name} (${s.slug})`,
   value: s.slug,
 }));
+
+export const userGroupOptions = userGroupsData.map((g) => ({
+  label: g.name,
+  value: g.slug,
+}));
+
+const serverSlugToName = Object.fromEntries(
+  serversData.map((s) => [s.slug, s.name]),
+) as Record<string, string>;
+
+const serverNameToChartLabel: Record<string, string> = {
+  'JumpCloud Labs Admin': 'JumpCloud Labs',
+};
+
+function getChartLabel(serverName: string): string {
+  return serverNameToChartLabel[serverName] ?? serverName;
+}
+
+export function getProfileServerNames(profileId: string): string[] {
+  const profile = profilesData.find((p) => p.profileId === profileId);
+  if (!profile) return [];
+  return profile.serverIds.map((slug) => serverSlugToName[slug]).filter(Boolean);
+}
+
+export function getProfileActivityLogData(profileId: string): ActivityLogEntry[] {
+  const serverNames = getProfileServerNames(profileId);
+  return activityLogData.filter((entry) => serverNames.includes(entry.server));
+}
+
+export function getProfileRecentActivity(profileId: string) {
+  const serverNames = getProfileServerNames(profileId);
+  return recentActivity.filter((entry) => serverNames.includes(entry.server));
+}
+
+export function getProfileMonthlyChartData(profileId: string) {
+  const serverNames = getProfileServerNames(profileId);
+  const chartLabels = serverNames.map(getChartLabel);
+  return {
+    ...monthlyChartData,
+    datasets: monthlyChartData.datasets.filter((ds) => chartLabels.includes(ds.label)),
+  };
+}
+
+export function getProfileTopServerUsage(profileId: string) {
+  const serverNames = getProfileServerNames(profileId);
+  const chartLabels = serverNames.map(getChartLabel);
+  return topServerUsage.filter((s) => chartLabels.includes(s.name));
+}
+
+export interface ProfileDashboardStats {
+  activeUsers: string;
+  activeUsersChange: string;
+  activeServers: string;
+  activeServersPercent: string;
+  totalRequests: string;
+  totalRequestsChange: string;
+  avgResponseTime: string;
+  avgResponseTimeChange: string;
+  errorRate: string;
+  errorRateChange: string;
+  topUsers: { name: string; toolCalls: number }[];
+}
+
+export const serverDetailTabs = [
+  { label: 'Overview', value: 'overview' },
+  { label: 'User Groups', value: 'server-user-groups' },
+  { label: 'Activity Log', value: 'server-activity' },
+];
+
+export const alt02MainTabs = [
+  { label: 'Dashboard', value: 'dashboard' },
+  { label: 'Servers', value: 'servers' },
+  { label: 'Activity Log', value: 'activity' },
+];
+
+export function getServerActivityLogData(serverSlug: string): ActivityLogEntry[] {
+  const server = serversData.find((s) => s.slug === serverSlug);
+  if (!server) return [];
+  return activityLogData.filter((entry) => entry.server === server.name);
+}
+
+export function getServerRecentActivity(serverSlug: string) {
+  const server = serversData.find((s) => s.slug === serverSlug);
+  if (!server) return [];
+  return recentActivity.filter((entry) => entry.server === server.name);
+}
+
+export function getServerMonthlyChartData(serverSlug: string) {
+  const server = serversData.find((s) => s.slug === serverSlug);
+  if (!server) return { ...monthlyChartData, datasets: [] };
+  const serverNameToChartLabel: Record<string, string> = {
+    'JumpCloud Labs Admin': 'JumpCloud Labs',
+  };
+  const chartLabel = serverNameToChartLabel[server.name] ?? server.name;
+  return {
+    ...monthlyChartData,
+    datasets: monthlyChartData.datasets.filter((ds) => ds.label === chartLabel),
+  };
+}
+
+export function getServerUserGroups(serverSlug: string): UserGroup[] {
+  const profilesWithServer = profilesData.filter((p) => p.serverIds.includes(serverSlug));
+  const groupSlugsSet = new Set<string>();
+  for (const profile of profilesWithServer) {
+    const slugs = profileUserGroups[profile.profileId] ?? [];
+    for (const slug of slugs) groupSlugsSet.add(slug);
+  }
+  return userGroupsData.filter((g) => groupSlugsSet.has(g.slug));
+}
+
+export interface ServerDashboardStats {
+  activeUsers: string;
+  activeUsersChange: string;
+  boundUserGroups: string;
+  totalRequests: string;
+  totalRequestsChange: string;
+  avgResponseTime: string;
+  avgResponseTimeChange: string;
+  errorRate: string;
+  errorRateChange: string;
+  topUsers: { name: string; toolCalls: number }[];
+}
+
+export const serverDashboardStats: Record<string, ServerDashboardStats> = {
+  figma: {
+    activeUsers: '28',
+    activeUsersChange: '8%',
+    boundUserGroups: '3',
+    totalRequests: '2,614',
+    totalRequestsChange: '5.4%',
+    avgResponseTime: '312ms',
+    avgResponseTimeChange: '-8ms',
+    errorRate: '0.5%',
+    errorRateChange: '-0.1%',
+    topUsers: [
+      { name: 'Sarah Chen', toolCalls: 9310 },
+      { name: 'Lisa Wang', toolCalls: 3450 },
+      { name: 'Alex Kim', toolCalls: 1280 },
+    ],
+  },
+  github: {
+    activeUsers: '42',
+    activeUsersChange: '15%',
+    boundUserGroups: '4',
+    totalRequests: '3,892',
+    totalRequestsChange: '12.1%',
+    avgResponseTime: '198ms',
+    avgResponseTimeChange: '-18ms',
+    errorRate: '0.3%',
+    errorRateChange: '-0.5%',
+    topUsers: [
+      { name: 'John Doe', toolCalls: 4820 },
+      { name: 'Sarah Chen', toolCalls: 2870 },
+      { name: 'Alex Kim', toolCalls: 1940 },
+    ],
+  },
+  jclabs: {
+    activeUsers: '18',
+    activeUsersChange: '6%',
+    boundUserGroups: '4',
+    totalRequests: '1,820',
+    totalRequestsChange: '9.2%',
+    avgResponseTime: '265ms',
+    avgResponseTimeChange: '-15ms',
+    errorRate: '0.7%',
+    errorRateChange: '-0.3%',
+    topUsers: [
+      { name: 'Sarah Chen', toolCalls: 5180 },
+      { name: 'Alex Kim', toolCalls: 3200 },
+      { name: 'Lisa Wang', toolCalls: 2400 },
+    ],
+  },
+  jira: {
+    activeUsers: '35',
+    activeUsersChange: '10%',
+    boundUserGroups: '4',
+    totalRequests: '4,521',
+    totalRequestsChange: '14.5%',
+    avgResponseTime: '220ms',
+    avgResponseTimeChange: '-10ms',
+    errorRate: '0.4%',
+    errorRateChange: '-0.2%',
+    topUsers: [
+      { name: 'John Doe', toolCalls: 6840 },
+      { name: 'Sarah Chen', toolCalls: 4490 },
+      { name: 'Alex Kim', toolCalls: 3100 },
+    ],
+  },
+  salesforce: {
+    activeUsers: '15',
+    activeUsersChange: '3%',
+    boundUserGroups: '2',
+    totalRequests: '1,340',
+    totalRequestsChange: '2.8%',
+    avgResponseTime: '420ms',
+    avgResponseTimeChange: '+25ms',
+    errorRate: '4.2%',
+    errorRateChange: '+1.8%',
+    topUsers: [
+      { name: 'Mike Ross', toolCalls: 2180 },
+    ],
+  },
+  slack: {
+    activeUsers: '8',
+    activeUsersChange: '2%',
+    boundUserGroups: '2',
+    totalRequests: '310',
+    totalRequestsChange: '72%',
+    avgResponseTime: '380ms',
+    avgResponseTimeChange: '-5ms',
+    errorRate: '1.5%',
+    errorRateChange: '-0.5%',
+    topUsers: [],
+  },
+};
+
+export const profileDashboardStats: Record<string, ProfileDashboardStats> = {
+  engineering: {
+    activeUsers: '48',
+    activeUsersChange: '15%',
+    activeServers: '2 / 2',
+    activeServersPercent: '100%',
+    totalRequests: '8,413',
+    totalRequestsChange: '12.1%',
+    avgResponseTime: '198ms',
+    avgResponseTimeChange: '-18ms',
+    errorRate: '0.3%',
+    errorRateChange: '-0.5%',
+    topUsers: [
+      { name: 'John Doe', toolCalls: 4820 },
+      { name: 'Sarah Chen', toolCalls: 2870 },
+      { name: 'Alex Kim', toolCalls: 1940 },
+    ],
+  },
+  design: {
+    activeUsers: '28',
+    activeUsersChange: '8%',
+    activeServers: '1 / 2',
+    activeServersPercent: '50%',
+    totalRequests: '2,924',
+    totalRequestsChange: '5.4%',
+    avgResponseTime: '312ms',
+    avgResponseTimeChange: '-8ms',
+    errorRate: '1.2%',
+    errorRateChange: '+0.1%',
+    topUsers: [
+      { name: 'Sarah Chen', toolCalls: 9310 },
+      { name: 'Lisa Wang', toolCalls: 3450 },
+      { name: 'Alex Kim', toolCalls: 1280 },
+    ],
+  },
+  sales: {
+    activeUsers: '15',
+    activeUsersChange: '3%',
+    activeServers: '0 / 1',
+    activeServersPercent: '0%',
+    totalRequests: '1,340',
+    totalRequestsChange: '2.8%',
+    avgResponseTime: '420ms',
+    avgResponseTimeChange: '+25ms',
+    errorRate: '4.2%',
+    errorRateChange: '+1.8%',
+    topUsers: [
+      { name: 'Mike Ross', toolCalls: 2180 },
+    ],
+  },
+};

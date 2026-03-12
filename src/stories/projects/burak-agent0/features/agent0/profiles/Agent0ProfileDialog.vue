@@ -4,15 +4,13 @@ import { FormField } from '@jumpcloud/circuit/components';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import MultiSelect from 'primevue/multiselect';
-import Divider from 'primevue/divider';
-import Tag from 'primevue/tag';
 import Button from 'primevue/button';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
 
 interface ProfileFormState {
-  profileId: string;
-  label: string;
+  name: string;
   serverIds: string[];
+  userGroupIds: string[];
 }
 
 const props = defineProps<{
@@ -20,7 +18,7 @@ const props = defineProps<{
   editingProfile: { id: number } | null;
   profileForm: ProfileFormState;
   serverOptions: { label: string; value: string }[];
-  serversData: { slug: string; name: string }[];
+  userGroupOptions: { label: string; value: string }[];
 }>();
 
 const emit = defineEmits<{
@@ -32,6 +30,8 @@ const dialogVisible = computed({
   get: () => props.visible,
   set: (value: boolean) => emit('update:visible', value),
 });
+
+const isNameValid = computed(() => props.profileForm.name.trim().length > 0);
 </script>
 
 <template>
@@ -44,28 +44,17 @@ const dialogVisible = computed({
   >
     <template #closeicon><XMarkIcon /></template>
     <div class="flex flex-col gap-4">
-      <FormField label="Profile ID" helpText="Unique identifier for this profile">
+      <FormField label="Profile Name" :required="true">
         <template #default="{ inputId }">
           <InputText
             :id="inputId"
-            v-model="profileForm.profileId"
+            v-model="profileForm.name"
             class="w-full"
-            :disabled="!!editingProfile"
-            placeholder="e.g. engineering"
+            placeholder="e.g. Engineering"
           />
         </template>
       </FormField>
-      <FormField label="Label" helpText="URL-friendly name (used in /mcp/{orgID}/{label} routes)">
-        <template #default="{ inputId }">
-          <InputText
-            :id="inputId"
-            v-model="profileForm.label"
-            class="w-full"
-            placeholder="e.g. engineering"
-          />
-        </template>
-      </FormField>
-      <FormField label="Target IDs">
+      <FormField label="Servers">
         <template #default="{ inputId }">
           <MultiSelect
             :id="inputId"
@@ -79,25 +68,26 @@ const dialogVisible = computed({
           />
         </template>
       </FormField>
-
-      <Divider />
-      <div>
-        <span class="text-body-sm-semi-bold text-neutral-subtle block mb-2">Available Targets:</span>
-        <div class="flex flex-wrap gap-2">
-          <Tag
-            v-for="server in serversData"
-            :key="server.slug"
-            :value="server.name + ' (' + server.slug + ')'"
-            severity="neutral"
+      <FormField label="User Groups">
+        <template #default="{ inputId }">
+          <MultiSelect
+            :id="inputId"
+            v-model="profileForm.userGroupIds"
+            :options="userGroupOptions"
+            optionLabel="label"
+            optionValue="value"
+            display="chip"
+            class="w-full"
+            placeholder="Select user groups..."
           />
-        </div>
-      </div>
+        </template>
+      </FormField>
     </div>
     <template #footer>
       <div class="flex items-center w-full"></div>
       <div class="flex gap-sm">
         <Button label="Cancel" severity="secondary" variant="text" @click="emit('update:visible', false)" />
-        <Button :label="editingProfile ? 'Update' : 'Create'" @click="emit('save')" />
+        <Button :label="editingProfile ? 'Update' : 'Create'" :disabled="!isNameValid" @click="emit('save')" />
       </div>
     </template>
   </Dialog>

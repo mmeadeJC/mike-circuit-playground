@@ -7,3 +7,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Circuit DS uses box-shadow (shadow-field-focus) for focus indicators,
+   so suppress the browser's default focus outline to avoid double rings. */
+*:focus {
+  outline: none;
+}

@@ -7,8 +7,7 @@ import {
   DataTableToolbar,
   DataTableCellLink,
   DataTableCellText,
-  DataTableCellToken,
-  DataTableCellButton,
+  DataTableCellAction,
   Dropdown,
   CollapsiblePanel,
   FormField,
@@ -433,9 +432,70 @@ const catalogAppColumns = [
   },
 ];
 
-// ─── Column Definitions ───
+// ─── Status Cell Components (clickable, open detail with Status tab) ───
 
-const softwareColumns = [
+const WindowsStatusCell = markRaw(
+  defineComponent({
+    name: 'WindowsStatusCell',
+    props: {
+      data: { type: Object, default: () => ({}) },
+      onOpenToStatus: { type: Function as () => (app: SoftwareApp | AppleSoftwareApp) => void },
+    },
+    setup(props) {
+      return () => {
+        const data = props.data as Record<string, unknown>;
+        const id = data?.id;
+        const href = id != null ? `#/software-management/${id}/status` : '#';
+        return h(
+          LinkText,
+          {
+            label: 'View Status',
+            href,
+            onClick: (e: MouseEvent) => {
+              e.preventDefault();
+              e.stopPropagation();
+              props.onOpenToStatus?.(data as SoftwareApp);
+            },
+          }
+        );
+      };
+    },
+  })
+);
+
+const AppleStatusCell = markRaw(
+  defineComponent({
+    name: 'AppleStatusCell',
+    props: {
+      data: { type: Object, default: () => ({}) },
+      onOpenToStatus: { type: Function as () => (app: SoftwareApp | AppleSoftwareApp) => void },
+    },
+    setup(props) {
+      return () => {
+        const data = props.data as Record<string, unknown>;
+        const status = data?.status ?? 'View Status';
+        const id = data?.id;
+        const href = id != null ? `#/software-management/${id}/status` : '#';
+        return h(
+          LinkText,
+          {
+            label: status as string,
+            href,
+            onClick: (e: MouseEvent) => {
+              e.preventDefault();
+              e.stopPropagation();
+              props.onOpenToStatus?.(data as AppleSoftwareApp);
+            },
+          }
+        );
+      };
+    },
+  })
+);
+
+// ─── Base Column Definitions (status column added in setup with handler) ───
+
+const softwareColumnsBase = [
   {
     field: 'name',
     header: 'Name',
@@ -476,40 +536,9 @@ const softwareColumns = [
       label: sp.data.versionLastUpdated,
     }),
   },
-  {
-    field: 'status',
-    header: 'Status',
-    sortable: false,
-    width: '140px',
-    component: markRaw(DataTableCellLink),
-    componentProps: () => ({
-      label: 'View Status',
-      href: '#',
-    }),
-  },
 ];
 
-// ─── Apple Status Cell (link) ───
-
-const AppleStatusCell = markRaw(
-  defineComponent({
-    name: 'AppleStatusCell',
-    props: { data: { type: Object, default: () => ({}) } },
-    setup(props) {
-      return () => {
-        const status = props.data?.status ?? 'View Status';
-        return h(DataTableCellLink, {
-          label: status,
-          href: '#',
-        });
-      };
-    },
-  })
-);
-
-// ─── Apple Column Definitions ───
-
-const appleColumns = [
+const appleColumnsBase = [
   {
     field: 'name',
     header: 'Name',
@@ -558,16 +587,6 @@ const appleColumns = [
     component: markRaw(DataTableCellText),
     componentProps: (sp: { data: Record<string, unknown> }) => ({
       label: sp.data.versionLastUpdated,
-    }),
-  },
-  {
-    field: 'status',
-    header: 'Status',
-    sortable: false,
-    width: '180px',
-    component: AppleStatusCell,
-    componentProps: (sp: { data: Record<string, unknown> }) => ({
-      data: sp.data,
     }),
   },
 ];
@@ -838,6 +857,47 @@ const STATUS_FILTER_OPTIONS = [
   { label: 'Update Failure', value: 'update-failure' },
 ];
 
+const FAILURE_FILTER_STATUSES = new Set([
+  'install-failure',
+  'license-failure',
+  'uninstall-failure',
+  'update-failure',
+  'mdm-unenrolled',
+]);
+const SUCCESS_FILTER_STATUSES = new Set([
+  'install-success',
+  'uninstall-success',
+  'update-success',
+]);
+const PENDING_FILTER_STATUSES = new Set([
+  'install-pending',
+  'uninstall-pending',
+  'update-pending',
+]);
+
+function getStatusSeverity(filterStatus: string): 'danger' | 'success' | 'accent-yellow' {
+  if (FAILURE_FILTER_STATUSES.has(filterStatus)) return 'danger';
+  if (SUCCESS_FILTER_STATUSES.has(filterStatus)) return 'success';
+  if (PENDING_FILTER_STATUSES.has(filterStatus)) return 'accent-yellow';
+  return 'accent-yellow'; // default for unknown (yellow for pending)
+}
+
+const StatusBadgeCell = markRaw(
+  defineComponent({
+    name: 'StatusBadgeCell',
+    props: { data: { type: Object, default: () => ({}) } },
+    setup(props) {
+      return () => {
+        const data = props.data as Record<string, unknown>;
+        const status = (data?.status as string) || '';
+        const filterStatus = (data?.filterStatus as string) || '';
+        const severity = getStatusSeverity(filterStatus);
+        return h(Tag, { value: status, severity, class: '!normal-case' });
+      };
+    },
+  })
+);
+
 const deviceCommandStatusBaseColumns = [
   {
     field: 'deviceName',
@@ -855,10 +915,9 @@ const deviceCommandStatusBaseColumns = [
     header: 'Status',
     sortable: true,
     width: '160px',
-    component: markRaw(DataTableCellToken),
+    component: StatusBadgeCell,
     componentProps: (sp: { data: Record<string, unknown> }) => ({
-      type: 'Status',
-      statusLabel: (sp.data.status as string) || '',
+      data: sp.data,
     }),
   },
   {
@@ -1250,7 +1309,7 @@ const SoftwareManagementPage = defineComponent({
         header: '',
         sortable: false,
         width: '80px',
-        component: markRaw(DataTableCellButton),
+        component: markRaw(DataTableCellAction),
         componentProps: (sp: { data: Record<string, unknown> }) => ({
           type: 'Button' as const,
           actionButtons: [
@@ -1318,6 +1377,41 @@ const SoftwareManagementPage = defineComponent({
       activeDetailTab.value = 'details';
       captureInitialDetailState();
     }
+
+    function openAppToStatus(app: SoftwareApp | AppleSoftwareApp) {
+      openAppDetail(app);
+      activeDetailTab.value = 'status';
+    }
+
+    const softwareColumns = computed(() => [
+      ...softwareColumnsBase,
+      {
+        field: 'status',
+        header: 'Status',
+        sortable: false,
+        width: '140px',
+        component: WindowsStatusCell,
+        componentProps: (sp: { data: Record<string, unknown> }) => ({
+          data: sp.data,
+          onOpenToStatus: openAppToStatus,
+        }),
+      },
+    ]);
+
+    const appleColumns = computed(() => [
+      ...appleColumnsBase,
+      {
+        field: 'status',
+        header: 'Status',
+        sortable: false,
+        width: '180px',
+        component: AppleStatusCell,
+        componentProps: (sp: { data: Record<string, unknown> }) => ({
+          data: sp.data,
+          onOpenToStatus: openAppToStatus,
+        }),
+      },
+    ]);
 
     function backToList() {
       currentView.value = 'list';

@@ -10,7 +10,7 @@ import {
   DataTableToolbar,
   DataTableCellText,
   DataTableCellLink,
-  DataTableCellToken,
+  DataTableCellStatus,
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
@@ -218,7 +218,7 @@ const assetsData = [
 const assetsColumns = [
   { field: 'name', header: 'Name', sortable: true, width: '300px', component: markRaw(DataTableCellLink), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.name, href: '#' }) },
   { field: 'type', header: 'Type', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.type }) },
-  { field: 'status', header: 'Status', component: markRaw(DataTableCellToken), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.status }) },
+  { field: 'status', header: 'Status', component: markRaw(DataTableCellStatus), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.status }) },
 ];
 
 const directoryActivityData = [
@@ -269,7 +269,7 @@ const devicesData = [
 ];
 
 const devicesColumns = [
-  { field: 'status', header: 'Status', component: markRaw(DataTableCellToken), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.status }) },
+  { field: 'status', header: 'Status', component: markRaw(DataTableCellStatus), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.status }) },
   { field: 'deviceName', header: 'Device Name', sortable: true, width: '240px', component: markRaw(DataTableCellLink), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.deviceName, href: '#' }) },
   { field: 'os', header: 'OS', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.os }) },
   { field: 'passwordSync', header: 'Password Sync', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.passwordSync || '—' }) },
@@ -291,7 +291,7 @@ const directoriesColumns = [
   { field: 'type', header: 'Type', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.type }) },
   { field: 'syncStatus', header: 'Sync Status', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.syncStatus || '—' }) },
   { field: 'name', header: 'Name', sortable: true, width: '280px', component: markRaw(DataTableCellLink), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.name, description: sp.data.nameDescription, href: '#' }) },
-  { field: 'tokenStatus', header: 'Token Status', component: markRaw(DataTableCellToken), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.tokenStatus || '—' }) },
+  { field: 'tokenStatus', header: 'Token Status', component: markRaw(DataTableCellStatus), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.tokenStatus || '—' }) },
   { field: 'accessConfigurations', header: 'Access Configurations', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.accessConfigurations || '—' }) },
 ];
 

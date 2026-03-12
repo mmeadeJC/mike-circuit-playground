@@ -1,9 +1,31 @@
 import { markRaw } from 'vue';
-import { DataTableCellText, DataTableCellLink, DataTableCellButton, DataTableCellToken } from '@jumpcloud/circuit/components';
-import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline';
-import type { Server } from '../types';
+import { DataTableCellText, DataTableCellLink, DataTableCellStatus } from '@jumpcloud/circuit/components';
+import type { Server, UserGroup } from '../types';
+import type { ProfileDashboardStats } from '../data/mockData';
 
-export function getProfileColumns(serversRef: Server[]) {
+function formatUserGroupNames(
+  profileId: string,
+  userGroupsRef: UserGroup[],
+  profileUserGroupsMap: Record<string, string[]>,
+): string {
+  const slugs = profileUserGroupsMap[profileId] ?? [];
+  if (slugs.length === 0) return '—';
+
+  const names = slugs
+    .map((slug) => userGroupsRef.find((g) => g.slug === slug)?.name)
+    .filter(Boolean) as string[];
+
+  if (names.length === 0) return '—';
+  if (names.length <= 2) return names.join(', ');
+  return `${names[0]}, ${names[1]}, +${names.length - 2}`;
+}
+
+export function getProfileColumns(
+  serversRef: Server[],
+  userGroupsRef: UserGroup[],
+  profileUserGroupsMap: Record<string, string[]>,
+  dashboardStatsMap: Record<string, ProfileDashboardStats>,
+) {
   return [
     {
       field: 'name',
@@ -12,7 +34,6 @@ export function getProfileColumns(serversRef: Server[]) {
       component: markRaw(DataTableCellLink),
       componentProps: (sp: { data: Record<string, unknown> }) => ({
         label: sp.data.name,
-        description: sp.data.profileId,
         href: '#',
       }),
     },
@@ -22,11 +43,34 @@ export function getProfileColumns(serversRef: Server[]) {
       component: markRaw(DataTableCellText),
       componentProps: (sp: { data: Record<string, unknown> }) => {
         const ids = sp.data.serverIds as string[];
-        if (ids.length === 1) {
-          const server = serversRef.find((s) => s.slug === ids[0]);
-          return { label: server ? server.name : ids[0] };
-        }
-        return { label: `${ids.length} servers` };
+        const names = ids
+          .map((slug) => serversRef.find((s) => s.slug === slug)?.name)
+          .filter(Boolean) as string[];
+        if (names.length === 0) return { label: '—' };
+        if (names.length <= 2) return { label: names.join(', ') };
+        return { label: `${names[0]}, ${names[1]}, +${names.length - 2}` };
+      },
+    },
+    {
+      field: 'userGroups',
+      header: 'User Groups',
+      component: markRaw(DataTableCellText),
+      componentProps: (sp: { data: Record<string, unknown> }) => ({
+        label: formatUserGroupNames(
+          sp.data.profileId as string,
+          userGroupsRef,
+          profileUserGroupsMap,
+        ),
+      }),
+    },
+    {
+      field: 'totalRequests',
+      header: 'Total Requests (24h)',
+      width: '180px',
+      component: markRaw(DataTableCellText),
+      componentProps: (sp: { data: Record<string, unknown> }) => {
+        const stats = dashboardStatsMap[sp.data.profileId as string];
+        return { label: stats?.totalRequests ?? '—' };
       },
     },
     {
@@ -37,19 +81,6 @@ export function getProfileColumns(serversRef: Server[]) {
       component: markRaw(DataTableCellText),
       componentProps: (sp: { data: Record<string, unknown> }) => ({
         label: sp.data.createdAt,
-      }),
-    },
-    {
-      field: 'actions',
-      header: '',
-      width: '100px',
-      component: markRaw(DataTableCellButton),
-      componentProps: () => ({
-        type: 'Button Group' as const,
-        iconButtons: [
-          { icon: markRaw(PencilSquareIcon) },
-          { icon: markRaw(TrashIcon) },
-        ],
       }),
     },
   ];
@@ -78,7 +109,7 @@ export const profileServerColumns = [
     header: 'Connection Type',
     sortable: true,
     width: '160px',
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     componentProps: (sp: { data: Record<string, unknown> }) => ({
       label: sp.data.connectionType,
       severity: sp.data.connectionTypeSeverity,

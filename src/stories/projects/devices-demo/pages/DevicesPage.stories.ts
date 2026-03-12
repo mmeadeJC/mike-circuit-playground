@@ -12,7 +12,7 @@ import {
   DataTableToolbar,
   DataTableCellText,
   DataTableCellLink,
-  DataTableCellToken,
+  DataTableCellStatus,
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
@@ -397,9 +397,9 @@ const interfaceDetailsColumns = [
 ];
 
 const usersColumns = [
-  { field: 'userState', header: 'User State', sortable: true, component: markRaw(DataTableCellToken), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.userState }) },
+  { field: 'userState', header: 'User State', sortable: true, component: markRaw(DataTableCellStatus), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.userState }) },
   { field: 'name', header: 'Name', sortable: true, width: '200px', component: markRaw(DataTableCellLink), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.name, description: sp.data.username, href: '#' }) },
-  { field: 'passwordStatus', header: 'Password Status', sortable: true, component: markRaw(DataTableCellToken), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.passwordStatus }) },
+  { field: 'passwordStatus', header: 'Password Status', sortable: true, component: markRaw(DataTableCellStatus), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.passwordStatus }) },
   { field: 'passwordSync', header: 'Password Sync', sortable: true, component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.passwordSync }) },
   { field: 'mfaTotp', header: 'MFA:TOTP', sortable: true, component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.mfaTotp }) },
   { field: 'permissions', header: 'Permissions', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.permissions }) },

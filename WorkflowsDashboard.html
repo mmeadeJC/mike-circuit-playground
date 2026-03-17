@@ -352,7 +352,7 @@
         setSelected(next);
       };
 
-      const allSelected = workflows.length > 0 && selected.size === workflows.length;
+      const allSelected = workflows.length > 0 && workflows.every(w => selected.has(w.id));
 
       return (
         <div className="overflow-auto flex-1">
@@ -503,14 +503,6 @@
                     </div>
 
                     <button className="p-1.5 text-gray-500 hover:bg-gray-100 rounded-md transition-colors" title="Export"><DownloadIcon className="w-4 h-4" /></button>
-
-                    {/* Dev-only: toggle empty state */}
-                    <button
-                      onClick={() => setIsEmpty(v => !v)}
-                      className="ml-1 px-2.5 py-1 text-xs border border-dashed border-gray-300 text-gray-400 rounded-md hover:bg-gray-50 transition-colors"
-                    >
-                      {isEmpty ? '← Show data' : 'Empty state →'}
-                    </button>
                   </div>
 
                   {isEmpty ? (

@@ -4,8 +4,8 @@ import {
   DataTable,
   DataTableCellText,
   DataTableCellLink,
-  DataTableCellToken,
-  DataTableCellButton,
+  DataTableCellStatus,
+  DataTableCellAction,
 } from '@jumpcloud/circuit/components';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline';
 
@@ -52,17 +52,17 @@ const allCellTypesColumns = [
   { field: 'name', header: 'Name', sortable: true, component: markRaw(DataTableCellLink), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.name, href: '#' }) },
   { field: 'category', header: 'Category', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.category }) },
   { field: 'quantity', header: 'Qty', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.quantity }) },
-  { field: 'status', header: 'Status', component: markRaw(DataTableCellToken), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.status }) },
-  { field: 'tags', header: 'Tags', component: markRaw(DataTableCellToken), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Tags', tags: sp.data.tags, maxVisibleTags: 3 }) },
+  { field: 'status', header: 'Status', component: markRaw(DataTableCellStatus), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.status }) },
+  { field: 'tags', header: 'Tags', component: markRaw(DataTableCellStatus), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Tags', tags: sp.data.tags, maxVisibleTags: 3 }) },
   {
     field: 'actions',
     header: 'Actions',
-    component: markRaw(DataTableCellButton),
+    component: markRaw(DataTableCellAction),
     componentProps: () => ({
       type: 'Button Group',
       iconButtons: [
-        { icon: markRaw(PencilSquareIcon) },
-        { icon: markRaw(TrashIcon) },
+        { icon: markRaw(PencilSquareIcon), ariaLabel: 'Edit' },
+        { icon: markRaw(TrashIcon), ariaLabel: 'Delete' },
       ],
       maxVisibleIconButtons: 3,
     }),

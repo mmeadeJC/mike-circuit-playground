@@ -19,6 +19,7 @@ export const WithImage: Story = {
   args: {
     image: 'https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png',
     shape: 'circle',
+    alt: 'Amy Elsner profile photo',
   },
 };
 

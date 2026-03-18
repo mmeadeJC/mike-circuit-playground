@@ -1,0 +1,42 @@
+---
+description: DataTableToolbar slot naming conventions — maps common terms like "filter slot" to actual slot names
+globs: src/stories/projects/**/pages/*.stories.ts
+alwaysApply: false
+---
+# DataTableToolbar — Slot Naming Convention
+
+When someone refers to the **"filter slot"** on `DataTableToolbar`, they mean the **`#saved-views`** slot. This is the area in the **left group** of the toolbar, positioned **right after the Filter button** (and after search/quick filters).
+
+Use this slot to place custom inline content such as record counts, labels, or any additional information next to the Filter button.
+
+## Toolbar Layout Reference
+
+```
+[Left group]                                                    [Right group]
+[+ Add] [🔍 Search] [Quick Filters] [#saved-views] [Filter]    [↻ Refresh] [Columns] [⬇ Export]
+```
+
+## Available Slots
+
+| Slot Name | Position | Use For |
+|---|---|---|
+| `#saved-views` | Left group — after search/quick filters, before Filter button | **"Filter slot"** — custom inline content like record counts, labels, view selectors, checkboxes |
+| `#column-config` | Right group — between Refresh and Export buttons | Custom column config content |
+| `#export` | Right group — rightmost position | Custom export/download content |
+| `#below-toolbar` | Below the entire toolbar row | Content that spans the full toolbar width |
+
+## Example — Adding a Record Count Next to Filter
+
+```html
+<DataTableToolbar
+  addButtonLabel="Add SSO App"
+  searchPlaceholder="Search"
+  :showAddButton="true"
+  :showRefreshButton="true"
+  :showDownloadButton="true"
+>
+  <template #saved-views>
+    <span class="text-body-md text-neutral-subtle">75 Applications</span>
+  </template>
+</DataTableToolbar>
+```

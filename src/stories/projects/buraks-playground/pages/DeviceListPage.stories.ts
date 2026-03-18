@@ -7,7 +7,7 @@ import {
   DataTableToolbar,
   DataTableCellLink,
   DataTableCellText,
-  DataTableCellButton,
+  DataTableCellAction,
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
@@ -24,6 +24,7 @@ import {
   UsersIcon,
   CommandLineIcon,
   ClipboardDocumentListIcon,
+  ClipboardDocumentCheckIcon,
   ArrowRightStartOnRectangleIcon,
   ArrowTopRightOnSquareIcon,
   LockClosedIcon,
@@ -32,7 +33,7 @@ import {
   ExclamationCircleIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '../../../../components/TopBar.vue';
+import TopBar from '@/components/TopBar.vue';
 
 import {
   DeviceManagementIcon,
@@ -42,6 +43,7 @@ import {
   SsoIcon,
   SaasManagementIcon,
   PasswordManagerIcon,
+  WorkflowIcon,
   AppleIcon,
   WindowsIcon,
   UbuntuIcon,
@@ -57,16 +59,21 @@ const menuItems = [
     leftIcon: markRaw(HomeIcon),
   },
   {
+    label: 'Alerts',
+    leftIcon: markRaw(BellIcon),
+    count: 25,
+  },
+  {
     label: 'User Management',
     leftIcon: markRaw(UserGroupIcon),
     items: [
       { label: 'Users', leftIcon: markRaw(UserIcon) },
       { label: 'User Groups', leftIcon: markRaw(UsersIcon) },
       { separator: true },
-      { label: 'Active Directory' },
+      { label: 'Active Directories' },
       { label: 'Cloud Directories' },
       { label: 'HR Directories' },
-      { label: 'Identity Provider' },
+      { label: 'Identity Providers' },
     ],
   },
   {
@@ -79,32 +86,39 @@ const menuItems = [
       { label: 'Asset Management', leftIcon: markRaw(ClipboardDocumentListIcon), isNew: true },
       { separator: true },
       { label: 'Policy Management' },
+      { label: 'Patch Management' },
       { label: 'Policy Groups' },
-      { label: 'Software Deployment' },
+      { label: 'Software Management' },
       { label: 'MDM' },
     ],
   },
   {
     label: 'Access',
     leftIcon: markRaw(AccessIcon),
-    count: 1,
     items: [
       { label: 'SSO Applications', leftIcon: markRaw(SsoIcon) },
-      { label: 'Access Reports', isNew: true },
-      { label: 'SaaS Management', leftIcon: markRaw(SaasManagementIcon) },
-      { label: 'Password Management', leftIcon: markRaw(PasswordManagerIcon) },
+      { label: 'Access Requests', leftIcon: markRaw(ClipboardDocumentCheckIcon) },
+      { label: 'AI & SaaS Management', leftIcon: markRaw(SaasManagementIcon) },
+      { label: 'Vault', leftIcon: markRaw(PasswordManagerIcon), isNew: true },
+      { separator: true },
       { label: 'LDAP' },
       { label: 'RADIUS' },
     ],
+  },
+  {
+    label: 'Workflows',
+    leftIcon: markRaw(WorkflowIcon),
   },
   {
     label: 'Security',
     leftIcon: markRaw(ShieldCheckIcon),
     items: [
       { label: 'Conditional Access Policies' },
-      { label: 'Conditional List' },
+      { label: 'Conditional Lists' },
+      { label: 'Certificate Authority', isNew: true },
       { label: 'MFA Configurations' },
       { label: 'Device Trust' },
+      { label: 'Password Policies' },
     ],
   },
   {
@@ -118,15 +132,6 @@ const menuItems = [
   {
     label: 'Settings',
     leftIcon: markRaw(Cog6ToothIcon),
-    items: [
-      { label: 'Reports' },
-    ],
-  },
-  {
-    label: 'Alert',
-    leftIcon: markRaw(BellIcon),
-    count: 23,
-    isNew: true,
   },
 ];
 
@@ -297,7 +302,7 @@ const deviceColumns = [
     field: 'actions',
     header: '',
     width: '170px',
-    component: markRaw(DataTableCellButton),
+    component: markRaw(DataTableCellAction),
     componentProps: () => ({
       type: 'Button Group',
       iconButtons: [
@@ -406,6 +411,7 @@ const DeviceListPage = defineComponent({
         :profileMenuItems="profileMenuItems"
         activeItem="device management"
         :collapsible="true"
+        :topNavToggle="true"
       />
       <div class="main flex-[1_1_0] flex flex-col min-w-0 w-full h-full self-stretch">
         <TopBar />
@@ -429,7 +435,7 @@ const DeviceListPage = defineComponent({
           </PageHeader>
 
           <div v-if="activeTab === 'devices'" class="table-container flex-[1_1_0] flex flex-col min-h-0 h-full w-full bg-neutral-surface">
-            <div class="table-toolbox shrink-0 px-6">
+            <div class="table-toolbox shrink-0 px-6 pt-6">
               <DataTableToolbar
                 searchPlaceholder="Search devices..."
                 :showFilterButton="true"

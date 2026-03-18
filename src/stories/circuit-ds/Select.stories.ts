@@ -48,6 +48,7 @@ export const Default: Story = {
         :options="args.options"
         optionLabel="name"
         placeholder="Select an option"
+        aria-label="Select an option"
         class="w-full max-w-[200px]"
         v-bind="args"
       />
@@ -70,6 +71,7 @@ export const SmallSize: Story = {
         optionLabel="name"
         placeholder="Small select"
         size="small"
+        aria-label="Small select"
         class="w-full max-w-[200px]"
         v-bind="args"
       />
@@ -92,6 +94,7 @@ export const WithFilter: Story = {
         optionLabel="name"
         placeholder="Search options..."
         filter
+        aria-label="Search options"
         class="w-full max-w-[200px]"
         v-bind="args"
       />
@@ -115,6 +118,7 @@ export const GroupedOptions: Story = {
         optionGroupChildren="items"
         optionLabel="name"
         placeholder="Select from groups"
+        aria-label="Select from groups"
         class="w-full max-w-[200px]"
         v-bind="args"
       />
@@ -137,6 +141,7 @@ export const Disabled: Story = {
         optionLabel="name"
         placeholder="Disabled select"
         disabled
+        aria-label="Disabled select"
         class="w-full max-w-[200px]"
         v-bind="args"
       />

@@ -21,7 +21,7 @@ export const Default: Story = {
     },
     template: '<Textarea v-bind="args" v-model="value" class="w-full max-w-[300px]" />',
   }),
-  args: { placeholder: 'Enter text...', rows: 4 },
+  args: { placeholder: 'Enter text...', rows: 4, ariaLabel: 'Text area' },
 };
 
 export const SmallSize: Story = {
@@ -33,7 +33,7 @@ export const SmallSize: Story = {
     },
     template: '<Textarea v-bind="args" v-model="value" size="small" class="w-full max-w-[300px]" />',
   }),
-  args: { placeholder: 'Small textarea', rows: 3 },
+  args: { placeholder: 'Small textarea', rows: 3, ariaLabel: 'Small text area' },
 };
 
 export const Disabled: Story = {
@@ -45,7 +45,7 @@ export const Disabled: Story = {
     },
     template: '<Textarea v-bind="args" v-model="value" class="w-full max-w-[300px]" />',
   }),
-  args: { disabled: true, rows: 4 },
+  args: { disabled: true, rows: 4, ariaLabel: 'Disabled text area' },
 };
 
 export const Invalid: Story = {
@@ -57,5 +57,5 @@ export const Invalid: Story = {
     },
     template: '<Textarea v-bind="args" v-model="value" class="w-full max-w-[300px]" />',
   }),
-  args: { invalid: true, rows: 4 },
+  args: { invalid: true, rows: 4, ariaLabel: 'Invalid text area' },
 };

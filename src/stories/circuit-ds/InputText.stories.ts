@@ -24,7 +24,7 @@ export const Default: Story = {
     },
     template: '<InputText v-bind="args" v-model="value" class="w-full max-w-[200px]" />',
   }),
-  args: { placeholder: 'Enter text...' },
+  args: { placeholder: 'Enter text...', ariaLabel: 'Text input' },
 };
 
 export const SmallSize: Story = {
@@ -36,7 +36,7 @@ export const SmallSize: Story = {
     },
     template: '<InputText v-bind="args" v-model="value" size="small" class="w-full max-w-[200px]" />',
   }),
-  args: { placeholder: 'Small input' },
+  args: { placeholder: 'Small input', ariaLabel: 'Small text input' },
 };
 
 export const Disabled: Story = {
@@ -48,7 +48,7 @@ export const Disabled: Story = {
     },
     template: '<InputText v-bind="args" v-model="value" class="w-full max-w-[200px]" />',
   }),
-  args: { disabled: true },
+  args: { disabled: true, ariaLabel: 'Disabled text input' },
 };
 
 export const Invalid: Story = {
@@ -60,7 +60,7 @@ export const Invalid: Story = {
     },
     template: '<InputText v-bind="args" v-model="value" class="w-full max-w-[200px]" />',
   }),
-  args: { invalid: true },
+  args: { invalid: true, ariaLabel: 'Invalid text input' },
 };
 
 export const WithIconField: Story = {
@@ -73,9 +73,9 @@ export const WithIconField: Story = {
     template: `
       <IconField class="w-full max-w-[200px]">
         <InputIcon>
-          <MagnifyingGlassIcon class="size-4" />
+          <MagnifyingGlassIcon class="size-4" aria-hidden="true" />
         </InputIcon>
-        <InputText v-bind="args" v-model="value" placeholder="Search..." />
+        <InputText v-bind="args" v-model="value" placeholder="Search..." aria-label="Search" />
       </IconField>
     `,
   }),

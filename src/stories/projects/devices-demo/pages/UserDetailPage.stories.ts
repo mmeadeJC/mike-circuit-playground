@@ -10,7 +10,7 @@ import {
   DataTableToolbar,
   DataTableCellText,
   DataTableCellLink,
-  DataTableCellToken,
+  DataTableCellStatus,
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
@@ -32,6 +32,7 @@ import {
   UsersIcon,
   CommandLineIcon,
   ClipboardDocumentListIcon,
+  ClipboardDocumentCheckIcon,
   ArrowRightStartOnRectangleIcon,
   ArrowTopRightOnSquareIcon,
   ChevronDownIcon,
@@ -45,10 +46,10 @@ import {
 } from '@heroicons/vue/24/outline';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/solid';
 
-import TopBar from '../../../../components/TopBar.vue';
-import DetailsKeyValue from '../../../../components/DetailsKeyValue.vue';
-import DetailPageLayout from '../../../../components/layout/page-layouts/DetailPageLayout.vue';
-import ConfigPageLayout from '../../../../components/layout/page-layouts/ConfigPageLayout.vue';
+import TopBar from '@/components/TopBar.vue';
+import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
+import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
+import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
 
 import {
   DeviceManagementIcon,
@@ -58,13 +59,25 @@ import {
   SsoIcon,
   SaasManagementIcon,
   PasswordManagerIcon,
+  WorkflowIcon,
 } from '@jumpcloud/icons';
 
 // ─── Navigation Data ───
 
 const menuItems = [
-  { label: 'Get Started', leftIcon: markRaw(RocketLaunchIcon) },
-  { label: 'Home', leftIcon: markRaw(HomeIcon) },
+  {
+    label: 'Get Started',
+    leftIcon: markRaw(RocketLaunchIcon),
+  },
+  {
+    label: 'Home',
+    leftIcon: markRaw(HomeIcon),
+  },
+  {
+    label: 'Alerts',
+    leftIcon: markRaw(BellIcon),
+    count: 25,
+  },
   {
     label: 'User Management',
     leftIcon: markRaw(UserGroupIcon),
@@ -72,10 +85,10 @@ const menuItems = [
       { label: 'Users', leftIcon: markRaw(UserIcon) },
       { label: 'User Groups', leftIcon: markRaw(UsersIcon) },
       { separator: true },
-      { label: 'Active Directory' },
+      { label: 'Active Directories' },
       { label: 'Cloud Directories' },
       { label: 'HR Directories' },
-      { label: 'Identity Provider' },
+      { label: 'Identity Providers' },
     ],
   },
   {
@@ -88,32 +101,39 @@ const menuItems = [
       { label: 'Asset Management', leftIcon: markRaw(ClipboardDocumentListIcon), isNew: true },
       { separator: true },
       { label: 'Policy Management' },
+      { label: 'Patch Management' },
       { label: 'Policy Groups' },
-      { label: 'Software Deployment' },
+      { label: 'Software Management' },
       { label: 'MDM' },
     ],
   },
   {
     label: 'Access',
     leftIcon: markRaw(AccessIcon),
-    count: 1,
     items: [
       { label: 'SSO Applications', leftIcon: markRaw(SsoIcon) },
-      { label: 'Access Reports', isNew: true },
-      { label: 'SaaS Management', leftIcon: markRaw(SaasManagementIcon) },
-      { label: 'Password Management', leftIcon: markRaw(PasswordManagerIcon) },
+      { label: 'Access Requests', leftIcon: markRaw(ClipboardDocumentCheckIcon) },
+      { label: 'AI & SaaS Management', leftIcon: markRaw(SaasManagementIcon) },
+      { label: 'Vault', leftIcon: markRaw(PasswordManagerIcon), isNew: true },
+      { separator: true },
       { label: 'LDAP' },
       { label: 'RADIUS' },
     ],
+  },
+  {
+    label: 'Workflows',
+    leftIcon: markRaw(WorkflowIcon),
   },
   {
     label: 'Security',
     leftIcon: markRaw(ShieldCheckIcon),
     items: [
       { label: 'Conditional Access Policies' },
-      { label: 'Conditional List' },
+      { label: 'Conditional Lists' },
+      { label: 'Certificate Authority', isNew: true },
       { label: 'MFA Configurations' },
       { label: 'Device Trust' },
+      { label: 'Password Policies' },
     ],
   },
   {
@@ -127,9 +147,7 @@ const menuItems = [
   {
     label: 'Settings',
     leftIcon: markRaw(Cog6ToothIcon),
-    items: [{ label: 'Reports' }],
   },
-  { label: 'Alert', leftIcon: markRaw(BellIcon), count: 23, isNew: true },
 ];
 
 const profileMenuItems = [
@@ -200,7 +218,7 @@ const assetsData = [
 const assetsColumns = [
   { field: 'name', header: 'Name', sortable: true, width: '300px', component: markRaw(DataTableCellLink), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.name, href: '#' }) },
   { field: 'type', header: 'Type', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.type }) },
-  { field: 'status', header: 'Status', component: markRaw(DataTableCellToken), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.status }) },
+  { field: 'status', header: 'Status', component: markRaw(DataTableCellStatus), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.status }) },
 ];
 
 const directoryActivityData = [
@@ -251,7 +269,7 @@ const devicesData = [
 ];
 
 const devicesColumns = [
-  { field: 'status', header: 'Status', component: markRaw(DataTableCellToken), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.status }) },
+  { field: 'status', header: 'Status', component: markRaw(DataTableCellStatus), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.status }) },
   { field: 'deviceName', header: 'Device Name', sortable: true, width: '240px', component: markRaw(DataTableCellLink), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.deviceName, href: '#' }) },
   { field: 'os', header: 'OS', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.os }) },
   { field: 'passwordSync', header: 'Password Sync', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.passwordSync || '—' }) },
@@ -273,7 +291,7 @@ const directoriesColumns = [
   { field: 'type', header: 'Type', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.type }) },
   { field: 'syncStatus', header: 'Sync Status', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.syncStatus || '—' }) },
   { field: 'name', header: 'Name', sortable: true, width: '280px', component: markRaw(DataTableCellLink), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.name, description: sp.data.nameDescription, href: '#' }) },
-  { field: 'tokenStatus', header: 'Token Status', component: markRaw(DataTableCellToken), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.tokenStatus || '—' }) },
+  { field: 'tokenStatus', header: 'Token Status', component: markRaw(DataTableCellStatus), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.tokenStatus || '—' }) },
   { field: 'accessConfigurations', header: 'Access Configurations', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.accessConfigurations || '—' }) },
 ];
 
@@ -490,6 +508,7 @@ const UserDetailPage = defineComponent({
         :profileMenuItems="profileMenuItems"
         activeItem="user management"
         :collapsible="true"
+        :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         <TopBar />

@@ -1217,7 +1217,7 @@ const WorkflowDetailPage = defineComponent({
 });
 
 const meta: Meta<typeof WorkflowDetailPage> = {
-  title: 'Projects/Workflow UI/Pages/Workflow Detail',
+  title: 'Projects/Bala Playground/Pages/Workflow Detail',
   component: WorkflowDetailPage,
   parameters: {
     layout: 'fullscreen',

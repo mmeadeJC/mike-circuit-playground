@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
-import { ref, markRaw, defineComponent, h } from 'vue';
+import { ref, computed, markRaw, defineComponent, h } from 'vue';
 import {
   AppNavigation,
   PageHeader,
@@ -53,12 +53,14 @@ import {
 
 // ── TypeScript interfaces ────────────────────────────────────────────────────
 type WorkflowRunStatus = 'running' | 'execution_error' | 'failed' | 'completed';
+type TriggerType = 'event' | 'manual' | 'schedule';
 
 interface WorkflowRun {
   id: string;
   runId: string;
   timestamp: string;
   status: WorkflowRunStatus;
+  triggerType?: TriggerType;
 }
 
 interface ExecutionStepVariable {
@@ -80,6 +82,7 @@ interface ExecutionDetail {
   runId: string;
   timestamp: string;
   status: WorkflowRunStatus;
+  triggerType?: TriggerType;
   inputJson: string;
   steps: ExecutionStep[];
   errorDetails?: string;
@@ -143,11 +146,17 @@ const profileMenuItems = [
 
 // ── Mock workflow runs data ──────────────────────────────────────────────────
 const workflowRuns: WorkflowRun[] = [
-  { id: '1', runId: 'run-001', timestamp: '2024-01-01 09:00', status: 'completed' },
-  { id: '2', runId: 'run-002', timestamp: '2024-01-01 08:45', status: 'running' },
-  { id: '3', runId: 'run-003', timestamp: '2024-01-01 08:30', status: 'execution_error' },
-  { id: '4', runId: 'run-004', timestamp: '2024-01-01 08:15', status: 'failed' },
-  { id: '5', runId: 'run-005', timestamp: '2024-01-01 08:00', status: 'completed' },
+  { id: '1', runId: 'run-001', timestamp: '2024-01-01 09:00', status: 'completed', triggerType: 'event' },
+  { id: '2', runId: 'run-002', timestamp: '2024-01-01 08:45', status: 'running', triggerType: 'event' },
+  { id: '3', runId: 'run-003', timestamp: '2024-01-01 08:30', status: 'execution_error', triggerType: 'event' },
+  { id: '4', runId: 'run-004', timestamp: '2024-01-01 08:15', status: 'failed', triggerType: 'event' },
+  { id: '5', runId: 'run-005', timestamp: '2024-01-01 08:00', status: 'completed', triggerType: 'manual' },
+  { id: '6', runId: 'run-auth', timestamp: '2024-01-01 07:45', status: 'failed', triggerType: 'manual' },
+  { id: '7', runId: 'run-validation', timestamp: '2024-01-01 07:30', status: 'execution_error', triggerType: 'manual' },
+  { id: '8', runId: 'run-rate', timestamp: '2024-01-01 07:15', status: 'failed', triggerType: 'schedule' },
+  { id: '9', runId: 'run-event-payload', timestamp: '2024-01-01 07:00', status: 'failed', triggerType: 'event' },
+  { id: '10', runId: 'run-manual-input', timestamp: '2024-01-01 06:45', status: 'execution_error', triggerType: 'manual' },
+  { id: '11', runId: 'run-schedule-conflict', timestamp: '2024-01-01 06:30', status: 'failed', triggerType: 'schedule' },
 ];
 
 // ── Mock execution detail (selected run) ──────────────────────────────────────
@@ -224,6 +233,7 @@ const defaultExecutionDetail: ExecutionDetail = {
 const failedExecutionDetail: ExecutionDetail = {
   ...defaultExecutionDetail,
   runId: 'run-004',
+  triggerType: 'event',
   status: 'failed',
   errorDetails: 'Error: Failed to connect to device management API. Status code: 503. Retry after 60 seconds.',
   steps: [
@@ -236,9 +246,140 @@ const failedExecutionDetail: ExecutionDetail = {
   ],
 };
 
+const executionErrorDetail: ExecutionDetail = {
+  ...defaultExecutionDetail,
+  runId: 'run-003',
+  triggerType: 'event',
+  status: 'execution_error',
+  errorDetails: 'Step "Add device to group" failed: User ID not found. The resource may have been deleted.',
+  steps: [
+    { id: '1', label: 'User suspended', status: 'completed' },
+    { id: '2', label: 'Flow', status: 'completed' },
+    { id: '3', label: 'Get Systems', status: 'completed' },
+    { id: '4', label: 'Add device to group', status: 'error', errorMessage: 'User ID not found. The resource may have been deleted.' },
+    { id: '5', label: 'Remove device', status: 'waiting' },
+    { id: '6', label: 'Send notification', status: 'waiting' },
+  ],
+};
+
+const authErrorDetail: ExecutionDetail = {
+  ...defaultExecutionDetail,
+  runId: 'run-auth',
+  triggerType: 'manual',
+  status: 'failed',
+  errorDetails: 'Authentication failed: Invalid or expired API key. Please refresh your credentials in Settings.',
+  steps: [
+    { id: '1', label: 'User suspended', status: 'completed' },
+    { id: '2', label: 'Flow', status: 'completed' },
+    { id: '3', label: 'Get Systems', status: 'error', errorMessage: '401 Unauthorized. Invalid or expired API key.' },
+    { id: '4', label: 'Loop', status: 'waiting' },
+    { id: '5', label: 'Remove device', status: 'waiting' },
+    { id: '6', label: 'Send notification', status: 'waiting' },
+  ],
+};
+
+const validationErrorDetail: ExecutionDetail = {
+  ...defaultExecutionDetail,
+  runId: 'run-validation',
+  triggerType: 'manual',
+  status: 'execution_error',
+  errorDetails: 'Validation failed: Required field "system_id" is missing or invalid in the request body.',
+  steps: [
+    { id: '1', label: 'User suspended', status: 'completed' },
+    { id: '2', label: 'Flow', status: 'completed' },
+    { id: '3', label: 'Device Lock', status: 'error', errorMessage: 'Required field "system_id" is missing or invalid.' },
+    { id: '4', label: 'Loop', status: 'waiting' },
+    { id: '5', label: 'Remove device', status: 'waiting' },
+    { id: '6', label: 'Send notification', status: 'waiting' },
+  ],
+};
+
+const rateLimitErrorDetail: ExecutionDetail = {
+  ...defaultExecutionDetail,
+  runId: 'run-rate',
+  triggerType: 'schedule',
+  status: 'failed',
+  errorDetails: 'Rate limit exceeded: Too many requests. Please wait 60 seconds before retrying.',
+  steps: [
+    { id: '1', label: 'User suspended', status: 'completed' },
+    { id: '2', label: 'Flow', status: 'completed' },
+    { id: '3', label: 'Get Systems', status: 'error', errorMessage: '429 Too Many Requests. Retry-After: 60' },
+    { id: '4', label: 'Loop', status: 'waiting' },
+    { id: '5', label: 'Remove device', status: 'waiting' },
+    { id: '6', label: 'Send notification', status: 'waiting' },
+  ],
+};
+
+/** Event trigger error: Invalid/malformed event payload from event source */
+const eventPayloadErrorDetail: ExecutionDetail = {
+  ...defaultExecutionDetail,
+  runId: 'run-event-payload',
+  triggerType: 'event',
+  status: 'failed',
+  errorDetails: 'Event delivery failed: Event payload validation error. Missing required field "resource.id" in user_suspended event.',
+  inputJson: JSON.stringify({ event_type: 'user_suspended', actor: { id: 'usr_001' } }, null, 2),
+  steps: [
+    { id: '1', label: 'User suspended', status: 'error', errorMessage: 'Invalid event payload: resource.id is required.' },
+    { id: '2', label: 'Flow', status: 'waiting' },
+    { id: '3', label: 'Get Systems', status: 'waiting' },
+    { id: '4', label: 'Loop', status: 'waiting' },
+    { id: '5', label: 'Remove device', status: 'waiting' },
+    { id: '6', label: 'Send notification', status: 'waiting' },
+  ],
+};
+
+/** Manual trigger error: User provided invalid device ID when manually running */
+const manualInputErrorDetail: ExecutionDetail = {
+  ...defaultExecutionDetail,
+  runId: 'run-manual-input',
+  triggerType: 'manual',
+  status: 'execution_error',
+  errorDetails: 'Manual run failed: The provided device ID "invalid-id" was not found in the organization.',
+  inputJson: JSON.stringify({ manual_run: true, device_id: 'invalid-id', initiated_by: 'admin@example.com' }, null, 2),
+  steps: [
+    { id: '1', label: 'Manual input', status: 'completed' },
+    { id: '2', label: 'Flow', status: 'completed' },
+    { id: '3', label: 'Get Systems', status: 'error', errorMessage: 'Device "invalid-id" not found in organization.' },
+    { id: '4', label: 'Loop', status: 'waiting' },
+    { id: '5', label: 'Remove device', status: 'waiting' },
+    { id: '6', label: 'Send notification', status: 'waiting' },
+  ],
+};
+
+/** Schedule trigger error: Previous run still in progress, scheduled run skipped */
+const scheduleConflictErrorDetail: ExecutionDetail = {
+  ...defaultExecutionDetail,
+  runId: 'run-schedule-conflict',
+  triggerType: 'schedule',
+  status: 'failed',
+  errorDetails: 'Scheduled run failed: Execution skipped. Previous run (run-001) is still in progress. Consider increasing the schedule interval.',
+  inputJson: JSON.stringify({ scheduled_run: true, cron: '0 * * * *', triggered_at: '2024-01-01T06:30:00Z' }, null, 2),
+  steps: [
+    { id: '1', label: 'Schedule trigger', status: 'completed', content: 'Scheduled run initiated at 06:30 UTC.' },
+    { id: '2', label: 'Flow', status: 'error', errorMessage: 'Concurrent execution not allowed. Previous run still running.' },
+    { id: '3', label: 'Get Systems', status: 'waiting' },
+    { id: '4', label: 'Loop', status: 'waiting' },
+    { id: '5', label: 'Remove device', status: 'waiting' },
+    { id: '6', label: 'Send notification', status: 'waiting' },
+  ],
+};
+
 function getExecutionDetailForRun(runId: string): ExecutionDetail {
   if (runId === 'run-004') return failedExecutionDetail;
-  return { ...defaultExecutionDetail, runId, timestamp: workflowRuns.find(r => r.runId === runId)?.timestamp ?? defaultExecutionDetail.timestamp };
+  if (runId === 'run-003') return executionErrorDetail;
+  if (runId === 'run-auth') return authErrorDetail;
+  if (runId === 'run-validation') return validationErrorDetail;
+  if (runId === 'run-rate') return rateLimitErrorDetail;
+  if (runId === 'run-event-payload') return eventPayloadErrorDetail;
+  if (runId === 'run-manual-input') return manualInputErrorDetail;
+  if (runId === 'run-schedule-conflict') return scheduleConflictErrorDetail;
+  const run = workflowRuns.find(r => r.runId === runId);
+  return {
+    ...defaultExecutionDetail,
+    runId,
+    timestamp: run?.timestamp ?? defaultExecutionDetail.timestamp,
+    triggerType: run?.triggerType,
+  };
 }
 
 // ── Custom cell: Workflow Run (runId + timestamp) ──────────────────────────────
@@ -300,6 +441,10 @@ const columns = [
 // ── Component ─────────────────────────────────────────────────────────────────
 const WorkflowExecutionHistory = defineComponent({
   name: 'WorkflowExecutionHistory',
+  props: {
+    /** When set, pre-selects this run (e.g. run-004 for failed). Useful for demos. */
+    initialRunId: { type: String, default: '' },
+  },
   components: {
     AppNavigation,
     PageHeader,
@@ -323,9 +468,12 @@ const WorkflowExecutionHistory = defineComponent({
     ChevronRightIcon,
     ClipboardDocumentListIcon,
   },
-  setup() {
-    const selectedRun = ref<WorkflowRun | null>(workflowRuns[0]);
-    const executionDetail = ref<ExecutionDetail>(defaultExecutionDetail);
+  setup(props) {
+    const initialRun = (props.initialRunId && props.initialRunId.trim())
+      ? (workflowRuns.find(r => r.runId === props.initialRunId) ?? workflowRuns[0])
+      : workflowRuns[0];
+    const selectedRun = ref<WorkflowRun | null>(initialRun);
+    const executionDetail = ref<ExecutionDetail>(getExecutionDetailForRun(initialRun.runId));
     const inputJsonTab = ref('text');
     const expandedSteps = ref<Record<string, boolean>>({});
 
@@ -343,12 +491,24 @@ const WorkflowExecutionHistory = defineComponent({
     function copyError() {
       if (executionDetail.value?.errorDetails) {
         navigator.clipboard.writeText(executionDetail.value.errorDetails);
+        return;
       }
       const errStep = executionDetail.value?.steps.find(s => s.status === 'error');
       if (errStep?.errorMessage) {
         navigator.clipboard.writeText(errStep.errorMessage);
       }
     }
+
+    /** Main error message for right panel — shown when execution failed or has execution_error */
+    const rightPanelErrorMessage = computed(() => {
+      const detail = executionDetail.value;
+      if (!detail) return null;
+      const isFailed = detail.status === 'failed' || detail.status === 'execution_error';
+      if (!isFailed) return null;
+      if (detail.errorDetails) return detail.errorDetails;
+      const errStep = detail.steps.find(s => s.status === 'error');
+      return errStep?.errorMessage ?? null;
+    });
 
     return {
       menuItems,
@@ -362,6 +522,7 @@ const WorkflowExecutionHistory = defineComponent({
       columns,
       onRowSelect,
       copyError,
+      rightPanelErrorMessage,
     };
   },
   template: `
@@ -381,21 +542,23 @@ const WorkflowExecutionHistory = defineComponent({
           shortcutLabel="⌘/Ctrl + K"
         />
 
-        <!-- Sticky header: breadcrumbs ───────────────────────────────────────── -->
-        <div class="shrink-0 px-6 py-3 border-b border-neutral-default_solid bg-neutral-base">
-          <nav class="flex items-center gap-xs text-body-sm flex-wrap">
-            <template v-for="(crumb, idx) in breadcrumbs" :key="idx">
-              <ChevronRightIcon v-if="idx > 0" class="size-4 text-neutral-ghost shrink-0" aria-hidden="true" />
-              <LinkText
-                v-if="crumb.href"
-                :href="crumb.href"
-                class="text-neutral-subtle hover:text-neutral-base"
-              >
-                {{ crumb.label }}
-              </LinkText>
-              <span v-else class="text-neutral-base font-medium">{{ crumb.label }}</span>
-            </template>
-          </nav>
+        <!-- Sticky header: breadcrumbs only (error shown in right panel) ───────── -->
+        <div class="shrink-0 border-b border-neutral-default_solid bg-neutral-base">
+          <div class="px-6 py-3">
+            <nav class="flex items-center gap-xs text-body-sm flex-wrap">
+              <template v-for="(crumb, idx) in breadcrumbs" :key="idx">
+                <ChevronRightIcon v-if="idx > 0" class="size-4 text-neutral-ghost shrink-0" aria-hidden="true" />
+                <LinkText
+                  v-if="crumb.href"
+                  :href="crumb.href"
+                  class="text-neutral-subtle hover:text-neutral-base"
+                >
+                  {{ crumb.label }}
+                </LinkText>
+                <span v-else class="text-neutral-base font-medium">{{ crumb.label }}</span>
+              </template>
+            </nav>
+          </div>
         </div>
 
         <!-- Dual-pane content ────────────────────────────────────────────────── -->
@@ -432,6 +595,18 @@ const WorkflowExecutionHistory = defineComponent({
                   :severity="executionDetail.status === 'running' ? 'info' : executionDetail.status === 'execution_error' ? 'warn' : executionDetail.status === 'failed' ? 'danger' : 'success'"
                   class="text-body-md font-medium"
                 />
+              </div>
+
+              <!-- Execution failed message (right panel, not header) ─────────────── -->
+              <div v-if="rightPanelErrorMessage" class="flex flex-col gap-sm">
+                <MessageNotification
+                  severity="error"
+                  title="Execution failed"
+                  :detail="rightPanelErrorMessage"
+                />
+                <PvButton label="Copy Error" severity="secondary" variant="outlined" size="small" @click="copyError">
+                  <template #icon><ClipboardDocumentListIcon class="size-4" /></template>
+                </PvButton>
               </div>
 
               <PvDivider class="my-0" />
@@ -539,18 +714,6 @@ const WorkflowExecutionHistory = defineComponent({
                   </div>
                 </div>
               </div>
-
-              <!-- Error state: global error log ─────────────────────────────────── -->
-              <div v-if="executionDetail.status === 'failed' && executionDetail.errorDetails" class="flex flex-col gap-sm">
-                <MessageNotification
-                  severity="error"
-                  title="Execution failed"
-                  :detail="executionDetail.errorDetails"
-                />
-                <PvButton label="Copy Error" severity="secondary" variant="outlined" @click="copyError">
-                  <template #icon><ClipboardDocumentListIcon class="size-4" /></template>
-                </PvButton>
-              </div>
             </div>
           </div>
         </div>
@@ -560,12 +723,31 @@ const WorkflowExecutionHistory = defineComponent({
 });
 
 const meta: Meta<typeof WorkflowExecutionHistory> = {
-  title: 'Projects/Workflow UI/Pages/Workflow Execution History',
+  title: 'Projects/Bala Playground/Pages/Workflow Execution History',
   component: WorkflowExecutionHistory,
   parameters: { layout: 'fullscreen' },
+  argTypes: {
+    initialRunId: {
+      control: 'select',
+      options: ['', 'run-001', 'run-003', 'run-004', 'run-auth', 'run-validation', 'run-rate', 'run-event-payload', 'run-manual-input', 'run-schedule-conflict'],
+      description: 'Pre-select a run (use run-004, run-event-payload, etc. to see error in right panel)',
+    },
+  },
 };
 
 export default meta;
 type Story = StoryObj<typeof WorkflowExecutionHistory>;
 
 export const Default: Story = {};
+
+/** Starts with a failed run selected to show the error notification in the right panel. */
+export const WithFailedExecution: Story = {
+  args: { initialRunId: 'run-004' },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Demonstrates the error notification displayed in the right panel when a failed or execution_error run is selected.',
+      },
+    },
+  },
+};

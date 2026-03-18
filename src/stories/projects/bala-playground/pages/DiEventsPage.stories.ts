@@ -769,7 +769,7 @@ const DiEventsPage = defineComponent({
 });
 
 const meta: Meta<typeof DiEventsPage> = {
-  title: 'Projects/Workflow UI/Pages/DI Events',
+  title: 'Projects/Bala Playground/Pages/DI Events',
   component: DiEventsPage,
   parameters: {
     layout: 'fullscreen',

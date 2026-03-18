@@ -901,7 +901,7 @@ const WorkflowNodesAsCardsPage = defineComponent({
 });
 
 const meta: Meta<typeof WorkflowNodesAsCardsPage> = {
-  title: 'Projects/Workflow UI/Pages/Workflow Nodes As Cards',
+  title: 'Projects/Bala Playground/Pages/Workflow Nodes As Cards',
   component: WorkflowNodesAsCardsPage,
   parameters: {
     layout: 'fullscreen',

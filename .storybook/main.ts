@@ -19,6 +19,13 @@ const config: StorybookConfig = {
     config.base = './';
 
     const projectRoot = resolve(__dirname, '..');
+
+    // Stub chart.js/auto so PrimeVue Chart doesn't break the build when chart.js isn't installed
+    config.resolve = config.resolve ?? {};
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'chart.js/auto': resolve(__dirname, 'chart-stub.js'),
+    };
     const env = loadEnv('', projectRoot, '');
 
     config.define = {

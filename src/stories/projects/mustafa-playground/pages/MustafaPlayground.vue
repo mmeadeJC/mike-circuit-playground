@@ -35,7 +35,7 @@ const sourceSeverity = computed(() => isLive.value ? 'success' : 'info');
       <div class="flex-1 overflow-y-auto p-lg">
         <div v-if="loading" class="text-body-md text-neutral-subtle">Loading devices...</div>
         <div v-else-if="error" class="text-body-md text-danger-base">{{ error }}</div>
-        <div v-else class="grid grid-cols-2 gap-md max-w-6xl">
+        <div v-else class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-md">
           <DeviceCard v-for="d in devices" :key="d.serial" :device="d" />
         </div>
       </div>

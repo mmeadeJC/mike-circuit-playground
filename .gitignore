@@ -7,3 +7,6 @@ storybook-static
 .env
 .env.*
 api-reference/
+dist-demos/
+src/public-demos/.generated/
+.wrangler/

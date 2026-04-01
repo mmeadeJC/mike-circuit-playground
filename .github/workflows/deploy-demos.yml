@@ -1,0 +1,71 @@
+name: Deploy Demos
+
+on:
+  workflow_dispatch:
+    inputs:
+      demo_id:
+        description: 'Demo ID to deploy (leave empty for all demos)'
+        required: false
+        type: string
+      ref:
+        description: 'R2 ref tag (default: "latest")'
+        required: false
+        default: 'latest'
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Determine which demos to build
+        id: demos
+        run: |
+          if [ -n "${{ inputs.demo_id }}" ]; then
+            echo "ids=${{ inputs.demo_id }}" >> "$GITHUB_OUTPUT"
+          else
+            IDS=$(grep "id:" src/public-demos/demos.config.ts | sed "s/.*id: '//;s/'.*//")
+            echo "ids=$IDS" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build demos
+        run: |
+          for id in ${{ steps.demos.outputs.ids }}; do
+            echo "▸ Building $id"
+            DEMO_ID="$id" npx vite build --config vite.config.demos.ts 2>&1 | tail -1
+            mv "dist-demos/$id/demos.html" "dist-demos/$id/index.html"
+          done
+
+      - name: Upload to R2 and register in KV
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          KV_NAMESPACE_ID: ${{ secrets.KV_NAMESPACE_ID }}
+        run: |
+          npm install -g wrangler
+          REF="${{ inputs.ref }}"
+          for id in ${{ steps.demos.outputs.ids }}; do
+            echo "▸ Uploading $id → circuit-playground/$id/$REF/"
+            find "dist-demos/$id" -type f | while read -r file; do
+              relative="${file#dist-demos/$id/}"
+              key="circuit-playground/$id/$REF/$relative"
+              wrangler r2 object put "jc-customer-demos/$key" --file "$file" --remote 2>&1 | tail -1
+            done
+
+            echo "▸ Registering demo:$id in KV"
+            wrangler kv key put --namespace-id "$KV_NAMESPACE_ID" --remote \
+              "demo:$id" "{\"r2Prefix\":\"circuit-playground/$id\",\"password\":\"demo\"}"
+          done
+          echo "Done."

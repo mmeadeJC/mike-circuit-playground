@@ -8,6 +8,16 @@
  */
 export const demos = [
   {
+    id: 'hello-world',
+    name: 'Hello World',
+    component: '@/stories/projects/hello-world/HelloWorld.vue',
+  },
+  {
+    id: 'mustafa-playground',
+    name: "Mustafa's Playground",
+    component: '@/stories/projects/mustafa-playground/pages/MustafaPlayground.vue',
+  },
+  {
     id: 'agent0-composable',
     name: 'Agent Zero — Composable',
     component: '@/stories/projects/burak-agent0/pages/Agent0ComposablePage.vue',
@@ -16,10 +26,5 @@ export const demos = [
     id: 'agent0-alt02',
     name: 'Agent Zero — Alternative 02',
     component: '@/stories/projects/burak-agent0/pages/Agent0Alt02Page.vue',
-  },
-  {
-    id: 'hello-world',
-    name: 'Hello World',
-    component: '@/stories/projects/hello-world/HelloWorld.vue',
   },
 ];

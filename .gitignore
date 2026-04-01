@@ -8,5 +8,7 @@ storybook-static
 .env.*
 api-reference/
 dist-demos/
-src/public-demos/.generated/
+.generated-demos/
+.demo-*.html
 .wrangler/
+public/fonts/

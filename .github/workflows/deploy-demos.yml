@@ -97,11 +97,3 @@ jobs:
               "demo:$id" "{\"r2Prefix\":\"circuit-playground/$id\",\"password\":\"demo\"}"
           done
           echo "Done. Ref: $REF"
-
-      - name: Build and deploy Storybook
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          pnpm run build-storybook
-          pnpm exec gh-pages -d storybook-static --cname circuit-playground.jumpcloud.io

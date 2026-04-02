@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, markRaw, reactive, ref } from 'vue';
-import { AppNavigation, PageHeader } from '@jumpcloud/circuit/components';
-import { SparklesIcon } from '@heroicons/vue/24/outline';
+import { markRaw, reactive, ref } from 'vue';
+import { AppNavigation, PageHeader, ToastNotification } from '@jumpcloud/circuit/components';
+import { CpuChipIcon } from '@heroicons/vue/24/outline';
 import TopBar from '@/components/TopBar.vue';
 import Agent0ServersView from '../features/agent0/servers/Agent0ServersView.vue';
 import Agent0ActivityView from '../features/agent0/activity/Agent0ActivityView.vue';
@@ -16,19 +16,20 @@ import {
   menuItems,
   profileMenuItems,
   serversData,
-  userGroupsData,
-  profileUserGroups,
   authStyleOptions,
   phase01AuthStyleOptions,
   phase01MainTabs,
   activityLogData,
 } from '../features/agent0/shared/data';
+import { activityLogColumns } from '../features/agent0/shared/columns';
 import {
-  getServerColumns,
-  activityLogColumns,
-} from '../features/agent0/shared/columns';
+  pushServerCreatedToast,
+  pushServerDeletedToast,
+  pushServerSavedToast,
+} from '../features/agent0/shared/serverCreateToasts';
+import { useToast } from 'primevue/usetoast';
 
-const sparklesIcon = markRaw(SparklesIcon);
+const cpuChipIcon = markRaw(CpuChipIcon);
 const activeTab = ref('servers');
 
 /** Stub for Agent0ServersView legacy detail dialog (unused in Phase 01) */
@@ -50,6 +51,8 @@ const phase01ServerForm = reactive<Phase01ServerFormState>({
   url: '',
   authStyle: 'OAuth',
   apiDocumentationUrl: '',
+  oauthClientId: '',
+  oauthScope: '',
 });
 
 const showPhase01Dialog = ref(false);
@@ -61,16 +64,15 @@ const { filteredActivityData, handleActivitySearch } = activityFilters;
 
 const serverFilters = useServerFilters(serversData);
 
-const serverColumns = computed(() => getServerColumns([], userGroupsData, profileUserGroups));
+const toast = useToast();
 
 function handleTabChange(tab: string) {
   activeTab.value = tab;
 }
 
-/** Map table connection type to Phase 01 auth control (SSE and unknown → OAuth) */
+/** Map table connection type to Phase 01 auth control */
 function normalizePhase01AuthStyle(connectionType: string): string {
   if (connectionType === 'API Token') return 'API Token';
-  if (connectionType === 'OAuth') return 'OAuth';
   return 'OAuth';
 }
 
@@ -82,6 +84,8 @@ function openAddServer() {
   phase01ServerForm.url = '';
   phase01ServerForm.authStyle = 'OAuth';
   phase01ServerForm.apiDocumentationUrl = '';
+  phase01ServerForm.oauthClientId = '';
+  phase01ServerForm.oauthScope = '';
   showPhase01Dialog.value = true;
 }
 
@@ -93,6 +97,8 @@ function openEditServer(server: Server) {
   phase01ServerForm.authStyle = normalizePhase01AuthStyle(server.connectionType);
   phase01ServerForm.prefix = prefixFromServerSlug(server.slug);
   phase01ServerForm.apiDocumentationUrl = '';
+  phase01ServerForm.oauthClientId = '';
+  phase01ServerForm.oauthScope = '';
   showPhase01Dialog.value = true;
 }
 
@@ -105,9 +111,20 @@ function closePhase01Dialog() {
   editingServerForDialog.value = null;
 }
 
-const phase01EditHeaderTitle = computed(() =>
-  editingServerForDialog.value?.name ?? 'Edit server',
-);
+function handlePhase01Create() {
+  closePhase01Dialog();
+  pushServerCreatedToast((m) => toast.add(m));
+}
+
+function handlePhase01Save() {
+  closePhase01Dialog();
+  pushServerSavedToast((m) => toast.add(m));
+}
+
+function handleDeleteServer() {
+  pushServerDeletedToast((m) => toast.add(m));
+}
+
 </script>
 
 <template>
@@ -115,7 +132,7 @@ const phase01EditHeaderTitle = computed(() =>
     <AppNavigation
       :menuItems="menuItems"
       :profileMenuItems="profileMenuItems"
-      activeItem="settings"
+      activeItem="ai connector"
       :collapsible="true"
       :topNavToggle="true"
     />
@@ -124,7 +141,7 @@ const phase01EditHeaderTitle = computed(() =>
 
       <PageHeader
         title="AI Connector"
-        :icon="sparklesIcon"
+        :icon="cpuChipIcon"
         :tabs="phase01MainTabs"
         :activeTab="activeTab"
         @update:activeTab="handleTabChange"
@@ -133,34 +150,19 @@ const phase01EditHeaderTitle = computed(() =>
       <Agent0ServersView
           v-if="activeTab === 'servers'"
           :filteredServersData="serverFilters.filteredData.value"
-          :serverColumns="serverColumns"
           :selectedServers="selectedServers"
           :selectedServer="selectedServer"
           :showServerDialog="showServerDialog"
           :authStyleOptions="authStyleOptions"
           :serverForm="serversViewFormStub"
-          :showFilterDialog="serverFilters.showFilterDialog.value"
-          :draftConnectionTypes="serverFilters.draftConnectionTypes.value"
-          :draftStatus="serverFilters.draftStatus.value"
-          :connectionTypeOptions="serverFilters.connectionTypeOptions"
-          :statusOptions="serverFilters.statusOptions"
-          :activeFilterChips="serverFilters.activeFilterChips.value"
-          :activeFilterCount="serverFilters.activeFilterCount.value"
           @update:selectedServers="selectedServers = $event"
           @update:showServerDialog="showServerDialog = $event"
           @row-click="handleServerRowClick"
           @add-server="openAddServer"
           @close-detail="showServerDialog = false"
           @save-detail="showServerDialog = false"
+          @delete-server="handleDeleteServer"
           @search="serverFilters.handleSearch"
-          @openFilterDialog="serverFilters.openFilterDialog"
-          @applyFilters="serverFilters.applyFilters"
-          @cancelFilterDialog="serverFilters.cancelFilterDialog"
-          @clearDraftFilters="serverFilters.clearDraftFilters"
-          @clearAllFilters="serverFilters.clearAllFilters"
-          @removeFilterChip="serverFilters.removeFilterChip"
-          @update:draftConnectionTypes="serverFilters.draftConnectionTypes.value = $event"
-          @update:draftStatus="serverFilters.draftStatus.value = $event"
         />
 
       <Agent0ActivityView
@@ -194,15 +196,16 @@ const phase01EditHeaderTitle = computed(() =>
       <ServerDialogPhase01
         v-model:visible="showPhase01Dialog"
         :mode="phase01DialogMode"
-        :edit-header-title="phase01EditHeaderTitle"
         :editing-server-slug="editingServerForDialog?.slug"
         :editing-server-name="editingServerForDialog?.name"
         :server-form="phase01ServerForm"
         :auth-style-options="phase01AuthStyleOptions"
         @cancel="closePhase01Dialog"
-        @create="closePhase01Dialog"
-        @save="closePhase01Dialog"
+        @create="handlePhase01Create"
+        @save="handlePhase01Save"
       />
+
+      <ToastNotification />
     </div>
   </div>
 </template>

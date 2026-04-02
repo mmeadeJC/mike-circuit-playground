@@ -35,18 +35,22 @@ import {
   WorkflowIcon,
 } from '@jumpcloud/icons';
 
-export interface DemoNavProps {
+export interface AdminDemoNavProps {
   activeItem?: string;
   userName?: string;
   userEmail?: string;
   userInitials?: string;
+  collapsible?: boolean;
+  topNavToggle?: boolean;
 }
 
-const props = withDefaults(defineProps<DemoNavProps>(), {
+const props = withDefaults(defineProps<AdminDemoNavProps>(), {
   activeItem: 'home',
   userName: 'Demo User',
   userEmail: 'demo@jumpcloud.com',
   userInitials: 'DU',
+  collapsible: true,
+  topNavToggle: true,
 });
 
 const emit = defineEmits<{
@@ -221,8 +225,8 @@ const profileMenuItems = [
     :menu-items="menuItems"
     :profile-menu-items="profileMenuItems"
     :active-item="activeItem"
-    collapsible
-    top-nav-toggle
+    :collapsible="collapsible"
+    :top-nav-toggle="topNavToggle"
     @click="onNavClick"
   />
 

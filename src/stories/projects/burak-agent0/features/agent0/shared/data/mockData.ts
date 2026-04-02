@@ -55,9 +55,9 @@ export const serversData: Server[] = [
     id: 4,
     name: 'Atlassian',
     slug: 'jira',
-    url: 'https://mcp.atlassian.com/v1/sse',
-    connectionType: 'SSE',
-    connectionTypeSeverity: 'accent-moss',
+    url: 'https://mcp.atlassian.com/v1/mcp',
+    connectionType: 'OAuth',
+    connectionTypeSeverity: 'accent-aster',
     status: 'Connected',
     statusConnected: true,
     createdAt: '2/10/2026',
@@ -269,10 +269,9 @@ export const defaultInstructions: AgentInstruction[] = [
 export const authStyleOptions = [
   { label: 'OAuth', value: 'OAuth' },
   { label: 'API Token', value: 'API Token' },
-  { label: 'SSE', value: 'SSE' },
 ];
 
-/** Phase 01 server dialog — segmented auth control (no SSE) */
+/** Phase 01 server dialog — segmented auth control */
 export const phase01AuthStyleOptions = [
   { label: 'OAuth', value: 'OAuth' },
   { label: 'API Token', value: 'API Token' },

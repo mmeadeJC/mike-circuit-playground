@@ -5,7 +5,7 @@ import { phase01AuthStyleOptions } from '../shared/data';
 import type { Phase01ServerFormState } from '../shared/types';
 
 const meta: Meta<typeof ServerDialogPhase01> = {
-  title: 'Projects/Burak - AI Connector/Parts/Server',
+  title: 'Projects/Burak - AI Connector/Phase 01 Parts/Server',
   component: ServerDialogPhase01,
   parameters: {
     layout: 'fullscreen',
@@ -29,6 +29,8 @@ export const EditServerGithub: Story = {
           url: 'https://api.githubcopilot.com/mcp/',
           authStyle: 'API Token',
           apiDocumentationUrl: '',
+          oauthClientId: '',
+          oauthScope: '',
         });
         return {
           visible,
@@ -41,7 +43,6 @@ export const EditServerGithub: Story = {
           <ServerDialogPhase01
             v-model:visible="visible"
             mode="edit"
-            edit-header-title="Github"
             editing-server-slug="github"
             editing-server-name="Github"
             :server-form="serverForm"

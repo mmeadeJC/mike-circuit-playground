@@ -2,7 +2,7 @@
 import { computed, markRaw, reactive, ref } from 'vue';
 import { AppNavigation, PageHeader } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
-import { Cog6ToothIcon, SparklesIcon } from '@heroicons/vue/24/outline';
+import { Cog6ToothIcon, CpuChipIcon } from '@heroicons/vue/24/outline';
 import TopBar from '@/components/TopBar.vue';
 import Agent0DashboardView from '../features/agent0/dashboard/Agent0DashboardViewAlt02.vue';
 import Agent0ServersView from '../features/agent0/servers/Agent0ServersView.vue';
@@ -20,8 +20,6 @@ import {
   menuItems,
   profileMenuItems,
   serversData,
-  userGroupsData,
-  profileUserGroups,
   recentActivity,
   topServerUsage,
   monthlyChartData,
@@ -37,12 +35,9 @@ import {
   getServerUserGroups,
   serverDashboardStats,
 } from '../features/agent0/shared/data';
-import {
-  getServerColumns,
-  activityLogColumns,
-} from '../features/agent0/shared/columns';
+import { activityLogColumns } from '../features/agent0/shared/columns';
 
-const sparklesIcon = markRaw(SparklesIcon);
+const cpuChipIcon = markRaw(CpuChipIcon);
 const currentView = ref<'main' | 'settings' | 'server-detail'>('main');
 const activeTab = ref('dashboard');
 const serverDetailTab = ref('overview');
@@ -117,8 +112,6 @@ const currentActiveTab = computed(() =>
   currentView.value === 'server-detail' ? serverDetailTab.value : activeTab.value,
 );
 
-const serverColumns = computed(() => getServerColumns([], userGroupsData, profileUserGroups));
-
 function handleTabChange(tab: string) {
   if (currentView.value === 'server-detail') {
     serverDetailTab.value = tab;
@@ -166,7 +159,7 @@ const alt02DashboardMonthlyChartData = monthlyChartData;
     <AppNavigation
       :menuItems="menuItems"
       :profileMenuItems="profileMenuItems"
-      activeItem="settings"
+      activeItem="ai connector"
       :collapsible="true"
       :topNavToggle="true"
     />
@@ -187,7 +180,7 @@ const alt02DashboardMonthlyChartData = monthlyChartData;
 
       <PageHeader
         :title="pageTitle"
-        :icon="currentView === 'main' ? sparklesIcon : undefined"
+        :icon="currentView === 'main' ? cpuChipIcon : undefined"
         :tabs="pageTabs"
         :activeTab="currentActiveTab"
         @update:activeTab="handleTabChange"
@@ -221,19 +214,11 @@ const alt02DashboardMonthlyChartData = monthlyChartData;
         <Agent0ServersView
           v-if="activeTab === 'servers'"
           :filteredServersData="serverFilters.filteredData.value"
-          :serverColumns="serverColumns"
           :selectedServers="selectedServers"
           :selectedServer="selectedServer"
           :showServerDialog="showServerDialog"
           :authStyleOptions="authStyleOptions"
           :serverForm="serverForm"
-          :showFilterDialog="serverFilters.showFilterDialog.value"
-          :draftConnectionTypes="serverFilters.draftConnectionTypes.value"
-          :draftStatus="serverFilters.draftStatus.value"
-          :connectionTypeOptions="serverFilters.connectionTypeOptions"
-          :statusOptions="serverFilters.statusOptions"
-          :activeFilterChips="serverFilters.activeFilterChips.value"
-          :activeFilterCount="serverFilters.activeFilterCount.value"
           @update:selectedServers="selectedServers = $event"
           @update:showServerDialog="showServerDialog = $event"
           @row-click="handleServerRowClick"
@@ -241,14 +226,6 @@ const alt02DashboardMonthlyChartData = monthlyChartData;
           @close-detail="showServerDialog = false"
           @save-detail="showServerDialog = false"
           @search="serverFilters.handleSearch"
-          @openFilterDialog="serverFilters.openFilterDialog"
-          @applyFilters="serverFilters.applyFilters"
-          @cancelFilterDialog="serverFilters.cancelFilterDialog"
-          @clearDraftFilters="serverFilters.clearDraftFilters"
-          @clearAllFilters="serverFilters.clearAllFilters"
-          @removeFilterChip="serverFilters.removeFilterChip"
-          @update:draftConnectionTypes="serverFilters.draftConnectionTypes.value = $event"
-          @update:draftStatus="serverFilters.draftStatus.value = $event"
         />
 
         <Agent0ActivityView

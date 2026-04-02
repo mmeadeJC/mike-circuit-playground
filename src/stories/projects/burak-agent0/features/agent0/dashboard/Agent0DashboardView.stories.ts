@@ -20,7 +20,7 @@ const sharedArgs = {
 };
 
 const meta: Meta<typeof Agent0DashboardView> = {
-  title: 'Projects/Burak - AI Connector/Parts/Dashboard',
+  title: 'Projects/Burak - AI Connector/Concept Parts/Dashboard',
   component: Agent0DashboardView,
   args: sharedArgs,
   parameters: {

@@ -1,43 +1,47 @@
 import { markRaw } from 'vue';
-import { DataTableCellText, DataTableCellLink, DataTableCellAction } from '@jumpcloud/circuit/components';
-import Tag from 'primevue/tag';
+import {
+  DataTableCellText,
+  DataTableCellLink,
+  DataTableCellAction,
+  DataTableCellStatus,
+} from '@jumpcloud/circuit/components';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline';
-import type { Profile, UserGroup } from '../types';
 
-function formatServerUserGroupNames(
-  serverSlug: string,
-  profilesRef: Profile[],
-  userGroupsRef: UserGroup[],
-  profileUserGroupsMap: Record<string, string[]>,
-): string {
-  const profilesWithServer = profilesRef.filter((p) => p.serverIds.includes(serverSlug));
-  const groupSlugsSet = new Set<string>();
-  for (const profile of profilesWithServer) {
-    const slugs = profileUserGroupsMap[profile.profileId] ?? [];
-    for (const slug of slugs) groupSlugsSet.add(slug);
+/** Severities accepted by DataTableCellStatus (mock data may use legacy Tag names). */
+const DATA_TABLE_STATUS_SEVERITIES = [
+  'primary',
+  'secondary',
+  'success',
+  'danger',
+  'warning',
+  'info',
+  'contrast',
+  'accent-purple',
+  'accent-aster',
+  'accent-coral',
+  'accent-yellow',
+] as const;
+
+type DataTableStatusSeverity = (typeof DATA_TABLE_SEVERITIES)[number];
+
+function toDataTableStatusSeverity(raw: string): DataTableStatusSeverity {
+  if (DATA_TABLE_STATUS_SEVERITIES.includes(raw as DataTableStatusSeverity)) {
+    return raw as DataTableStatusSeverity;
   }
-  if (groupSlugsSet.size === 0) return '—';
-
-  const names = [...groupSlugsSet]
-    .map((slug) => userGroupsRef.find((g) => g.slug === slug)?.name)
-    .filter(Boolean) as string[];
-
-  if (names.length === 0) return '—';
-  if (names.length <= 2) return names.join(', ');
-  return `${names[0]}, ${names[1]}, +${names.length - 2}`;
+  return 'secondary';
 }
 
-export function getServerColumns(
-  profilesRef: Profile[],
-  userGroupsRef: UserGroup[],
-  profileUserGroupsMap: Record<string, string[]>,
-) {
+export interface ServerColumnHandlers {
+  onEditServer?: (row: Record<string, unknown>) => void;
+  onDeleteServer?: (row: Record<string, unknown>) => void;
+}
+
+export function getServerColumns(handlers?: ServerColumnHandlers) {
   return [
     {
       field: 'name',
       header: 'Server Name',
       sortable: true,
-      width: '180px',
       component: markRaw(DataTableCellLink),
       componentProps: (sp: { data: Record<string, unknown> }) => ({
         label: sp.data.name,
@@ -57,34 +61,11 @@ export function getServerColumns(
       field: 'connectionType',
       header: 'Connection Type',
       width: '150px',
-      component: markRaw(Tag),
+      component: markRaw(DataTableCellStatus),
       componentProps: (sp: { data: Record<string, unknown> }) => ({
-        value: sp.data.connectionType,
-        severity: sp.data.connectionTypeSeverity,
-      }),
-    },
-    {
-      field: 'status',
-      header: 'Status',
-      sortable: true,
-      width: '180px',
-      component: markRaw(Tag),
-      componentProps: (sp: { data: Record<string, unknown> }) => ({
-        value: sp.data.status,
-        severity: sp.data.statusConnected ? 'success' : 'danger',
-      }),
-    },
-    {
-      field: 'userGroups',
-      header: 'User Groups',
-      component: markRaw(DataTableCellText),
-      componentProps: (sp: { data: Record<string, unknown> }) => ({
-        label: formatServerUserGroupNames(
-          sp.data.slug as string,
-          profilesRef,
-          userGroupsRef,
-          profileUserGroupsMap,
-        ),
+        label: String(sp.data.connectionType ?? ''),
+        severity: toDataTableStatusSeverity(String(sp.data.connectionTypeSeverity ?? 'secondary')),
+        shouldShowDefaultIcon: false,
       }),
     },
     {
@@ -102,11 +83,17 @@ export function getServerColumns(
       header: '',
       width: '100px',
       component: markRaw(DataTableCellAction),
-      componentProps: () => ({
+      componentProps: (sp: { data: Record<string, unknown> }) => ({
         type: 'Button Group' as const,
         iconButtons: [
-          { icon: markRaw(PencilSquareIcon) },
-          { icon: markRaw(TrashIcon) },
+          {
+            icon: markRaw(PencilSquareIcon),
+            onClick: () => handlers?.onEditServer?.(sp.data),
+          },
+          {
+            icon: markRaw(TrashIcon),
+            onClick: () => handlers?.onDeleteServer?.(sp.data),
+          },
         ],
       }),
     },

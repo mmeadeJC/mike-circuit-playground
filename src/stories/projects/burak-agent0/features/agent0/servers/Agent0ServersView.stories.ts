@@ -1,12 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
 import { defineComponent, reactive, ref } from 'vue';
 import Agent0ServersView from './Agent0ServersView.vue';
-import { serversData, profilesData, userGroupsData, profileUserGroups, authStyleOptions } from '../shared/data';
-import { getServerColumns } from '../shared/columns';
+import { serversData, authStyleOptions } from '../shared/data';
 import { useServerFilters } from '../shared/composables';
 
 const meta: Meta<typeof Agent0ServersView> = {
-  title: 'Projects/Burak - AI Connector/Parts/Server',
+  title: 'Projects/Burak - AI Connector/Phase 01 Parts/Server',
   component: Agent0ServersView,
   parameters: {
     layout: 'fullscreen',
@@ -34,43 +33,31 @@ export const List: Story = {
           authConfig: serversData[0].authConfig,
         });
         const filters = useServerFilters(serversData);
+        function onDeleteServer(row: Record<string, unknown>) {
+          console.info('[Story] delete-server', row);
+        }
         return {
           selectedServers,
           selectedServer,
           showServerDialog,
           serverForm,
-          serverColumns: getServerColumns(profilesData, userGroupsData, profileUserGroups),
           authStyleOptions,
+          onDeleteServer,
           ...filters,
         };
       },
       template: `
         <Agent0ServersView
           :filteredServersData="filteredData"
-          :serverColumns="serverColumns"
           :selectedServers="selectedServers"
           :selectedServer="selectedServer"
           :showServerDialog="showServerDialog"
           :authStyleOptions="authStyleOptions"
           :serverForm="serverForm"
-          :showFilterDialog="showFilterDialog"
-          :draftConnectionTypes="draftConnectionTypes"
-          :draftStatus="draftStatus"
-          :connectionTypeOptions="connectionTypeOptions"
-          :statusOptions="statusOptions"
-          :activeFilterChips="activeFilterChips"
-          :activeFilterCount="activeFilterCount"
           @update:selectedServers="selectedServers = $event"
           @update:showServerDialog="showServerDialog = $event"
+          @delete-server="onDeleteServer"
           @search="handleSearch"
-          @openFilterDialog="openFilterDialog"
-          @applyFilters="applyFilters"
-          @cancelFilterDialog="cancelFilterDialog"
-          @clearDraftFilters="clearDraftFilters"
-          @clearAllFilters="clearAllFilters"
-          @removeFilterChip="removeFilterChip"
-          @update:draftConnectionTypes="draftConnectionTypes = $event"
-          @update:draftStatus="draftStatus = $event"
         />
       `,
     }),

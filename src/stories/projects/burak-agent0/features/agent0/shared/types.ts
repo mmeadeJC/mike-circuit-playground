@@ -71,6 +71,10 @@ export interface Phase01ServerFormState {
   authStyle: string;
   /** Optional; shown when auth uses API token/key — link for user portal setup help */
   apiDocumentationUrl: string;
+  /** OAuth advanced — Client ID */
+  oauthClientId: string;
+  /** OAuth advanced — scope string */
+  oauthScope: string;
 }
 
 export interface ActivityFilter {

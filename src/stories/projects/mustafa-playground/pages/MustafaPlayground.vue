@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import { PageHeader } from '@jumpcloud/circuit/components';
 import Tag from 'primevue/tag';
 import TopBar from '@/components/TopBar.vue';
-import DemoNav from '@/components/DemoNav.vue';
+import AdminDemoNav from '@/components/Nav/AdminDemoNav.vue';
 import DeviceCard from '../components/DeviceCard.vue';
 import { useDemoSettings } from '@/composables/useDemoSettings';
 import { useDevices } from '@/composables/useDevices';
@@ -17,7 +17,7 @@ const sourceSeverity = computed(() => isLive.value ? 'success' : 'info');
 
 <template>
   <div class="flex h-screen overflow-hidden">
-    <DemoNav
+    <AdminDemoNav
       active-item="devices"
       user-name="Mustafa Akin"
       user-email="mustafa@jumpcloud.com"

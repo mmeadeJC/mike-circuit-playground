@@ -2,7 +2,7 @@
 import { computed, markRaw, reactive, ref } from 'vue';
 import { AppNavigation, PageHeader, SeverityDialog } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
-import { Cog6ToothIcon, SparklesIcon } from '@heroicons/vue/24/outline';
+import { Cog6ToothIcon, CpuChipIcon } from '@heroicons/vue/24/outline';
 import TopBar from '@/components/TopBar.vue';
 import Agent0DashboardView from '../features/agent0/dashboard/Agent0DashboardView.vue';
 import Agent0ServersView from '../features/agent0/servers/Agent0ServersView.vue';
@@ -45,14 +45,13 @@ import {
   profileDashboardStats,
 } from '../features/agent0/shared/data';
 import {
-  getServerColumns,
   getProfileColumns,
   activityLogColumns,
   profileServerColumns,
   profileUserGroupColumns,
 } from '../features/agent0/shared/columns';
 
-const sparklesIcon = markRaw(SparklesIcon);
+const cpuChipIcon = markRaw(CpuChipIcon);
 const currentView = ref<'main' | 'settings' | 'profile-detail'>('main');
 const activeTab = ref('dashboard');
 const profileDetailTab = ref('overview');
@@ -144,7 +143,6 @@ const currentActiveTab = computed(() =>
   currentView.value === 'profile-detail' ? profileDetailTab.value : activeTab.value,
 );
 
-const serverColumns = computed(() => getServerColumns(profilesData, userGroupsData, profileUserGroups));
 const profileColumns = computed(() => getProfileColumns(serversData, userGroupsData, profileUserGroups, profileDashboardStats));
 
 function handleTabChange(tab: string) {
@@ -224,7 +222,7 @@ function openDeleteDialog(name: string) {
     <AppNavigation
       :menuItems="menuItems"
       :profileMenuItems="profileMenuItems"
-      activeItem="settings"
+      activeItem="ai connector"
       :collapsible="true"
       :topNavToggle="true"
     />
@@ -245,7 +243,7 @@ function openDeleteDialog(name: string) {
 
       <PageHeader
         :title="pageTitle"
-        :icon="currentView === 'main' ? sparklesIcon : undefined"
+        :icon="currentView === 'main' ? cpuChipIcon : undefined"
         :tabs="pageTabs"
         :activeTab="currentActiveTab"
         @update:activeTab="handleTabChange"
@@ -278,19 +276,11 @@ function openDeleteDialog(name: string) {
         <Agent0ServersView
           v-if="activeTab === 'servers'"
           :filteredServersData="serverFilters.filteredData.value"
-          :serverColumns="serverColumns"
           :selectedServers="selectedServers"
           :selectedServer="selectedServer"
           :showServerDialog="showServerDialog"
           :authStyleOptions="authStyleOptions"
           :serverForm="serverForm"
-          :showFilterDialog="serverFilters.showFilterDialog.value"
-          :draftConnectionTypes="serverFilters.draftConnectionTypes.value"
-          :draftStatus="serverFilters.draftStatus.value"
-          :connectionTypeOptions="serverFilters.connectionTypeOptions"
-          :statusOptions="serverFilters.statusOptions"
-          :activeFilterChips="serverFilters.activeFilterChips.value"
-          :activeFilterCount="serverFilters.activeFilterCount.value"
           @update:selectedServers="selectedServers = $event"
           @update:showServerDialog="showServerDialog = $event"
           @row-click="handleServerRowClick"
@@ -298,14 +288,6 @@ function openDeleteDialog(name: string) {
           @close-detail="backFromServerDetail"
           @save-detail="backFromServerDetail"
           @search="serverFilters.handleSearch"
-          @openFilterDialog="serverFilters.openFilterDialog"
-          @applyFilters="serverFilters.applyFilters"
-          @cancelFilterDialog="serverFilters.cancelFilterDialog"
-          @clearDraftFilters="serverFilters.clearDraftFilters"
-          @clearAllFilters="serverFilters.clearAllFilters"
-          @removeFilterChip="serverFilters.removeFilterChip"
-          @update:draftConnectionTypes="serverFilters.draftConnectionTypes.value = $event"
-          @update:draftStatus="serverFilters.draftStatus.value = $event"
         />
 
         <Agent0ProfilesView

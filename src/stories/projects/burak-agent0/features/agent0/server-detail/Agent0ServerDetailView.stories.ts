@@ -13,7 +13,7 @@ import {
 import { useChartThemeOptions } from '../shared/composables';
 
 const meta: Meta<typeof Agent0ServerDetailView> = {
-  title: 'Projects/Burak - AI Connector/Parts/Server',
+  title: 'Projects/Burak - AI Connector/Concept Parts/Server',
   component: Agent0ServerDetailView,
   parameters: {
     layout: 'fullscreen',

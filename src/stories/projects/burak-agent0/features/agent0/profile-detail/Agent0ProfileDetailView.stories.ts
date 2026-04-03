@@ -12,7 +12,7 @@ import { profileServerColumns, profileUserGroupColumns } from '../shared/columns
 import { useProfileDetailBindings } from '../shared/composables';
 
 const meta: Meta<typeof Agent0ProfileDetailView> = {
-  title: 'Projects/Burak - AI Connector/Parts/Profile',
+  title: 'Projects/Burak - AI Connector/Concept Parts/Profile',
   component: Agent0ProfileDetailView,
   parameters: {
     layout: 'fullscreen',

@@ -10,6 +10,11 @@ import Textarea from 'primevue/textarea';
 import { XMarkIcon, CommandLineIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 import type { ServerFormState } from '../shared/types';
 
+const addServerEmptyIllustrationSrc = new URL(
+  './assets/add-server-empty-illustration.png',
+  import.meta.url,
+).href;
+
 interface SsoApp {
   id: string;
   name: string;
@@ -187,7 +192,14 @@ const dialogVisible = computed({
       <template v-if="!selectedAppData && !isCustomMode">
         <Divider />
 
-        <div class="bg-neutral-surface_deep rounded-sm p-md flex items-center justify-center h-[460px]">
+        <div class="flex h-auto flex-col items-center gap-sm py-10">
+          <img
+            :src="addServerEmptyIllustrationSrc"
+            alt=""
+            width="64"
+            height="64"
+            class="size-16 shrink-0"
+          />
           <span class="text-body-md text-neutral-subtle">Select an app to get started</span>
         </div>
       </template>
@@ -216,7 +228,7 @@ const dialogVisible = computed({
         </FormField>
         <FormField label="URL" :required="true">
           <template #default="{ inputId }">
-            <InputText :id="inputId" v-model="serverForm.url" class="w-full" placeholder="e.g. https://mcp.example.com/sse" />
+            <InputText :id="inputId" v-model="serverForm.url" class="w-full" placeholder="e.g. https://mcp.example.com/mcp" />
           </template>
         </FormField>
         <FormField label="Auth Config (JSON)" :required="true" helpText="JSON object with authentication configuration">

@@ -13,7 +13,7 @@ withDefaults(defineProps<PageSectionProps>(), {
 </script>
 
 <template>
-  <section class="flex gap-4 items-start pb-3 pt-6">
+  <section class="flex gap-4 items-start">
     <div class="flex-1 flex flex-col gap-1 items-start min-w-0 py-1">
       <h2 class="text-heading-2 text-neutral-base truncate w-full">
         {{ title }}

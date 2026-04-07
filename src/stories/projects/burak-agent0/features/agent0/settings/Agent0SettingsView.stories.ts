@@ -4,7 +4,7 @@ import Agent0SettingsView from './Agent0SettingsView.vue';
 import { llmProviders, defaultInstructions } from '../shared/data';
 
 const meta: Meta<typeof Agent0SettingsView> = {
-  title: 'Projects/Burak - Agent0/Settings',
+  title: 'Projects/Burak - AI Connector/Concept Parts',
   component: Agent0SettingsView,
   parameters: {
     layout: 'fullscreen',
@@ -15,7 +15,8 @@ export default meta;
 
 type Story = StoryObj<typeof Agent0SettingsView>;
 
-export const Default: Story = {
+export const Settings: Story = {
+  name: 'Settings',
   render: () =>
     defineComponent({
       components: { Agent0SettingsView },

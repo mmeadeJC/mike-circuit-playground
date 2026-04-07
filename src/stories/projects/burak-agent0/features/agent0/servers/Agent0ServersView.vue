@@ -1,47 +1,80 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { DataTable as CircuitDataTable, DataTableToolbar } from '@jumpcloud/circuit/components';
-import ListPageLayout from '@/components/layout/page-layouts/ListPageLayout.vue';
-import Drawer from 'primevue/drawer';
-import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
+import ListPageLayout from '@/components/layout/page-layouts/ListPageLayout.vue';
 import Agent0ServerDetailPanel from './Agent0ServerDetailPanel.vue';
+import ServerDeleteConfirmDialog from './ServerDeleteConfirmDialog.vue';
+import { getServerColumns } from '../shared/columns';
 import type { ServerFormState } from '../shared/types';
 
 const props = defineProps<{
-  serversData: unknown[];
-  serverColumns: unknown[];
+  filteredServersData: unknown[];
   selectedServers: unknown[];
   selectedServer: { name: string } | null;
-  showServerDrawer: boolean;
-  useInlinePanel: boolean;
+  showServerDialog: boolean;
   authStyleOptions: { label: string; value: string }[];
   serverForm: ServerFormState;
 }>();
 
 const emit = defineEmits<{
   'update:selectedServers': [unknown[]];
-  'update:showServerDrawer': [boolean];
+  'update:showServerDialog': [boolean];
   'row-click': [unknown];
+  'add-server': [];
   'close-detail': [];
   'save-detail': [];
+  'delete-server': [row: Record<string, unknown>];
+  search: [query: string];
 }>();
 
-const drawerVisible = computed({
-  get: () => props.showServerDrawer,
-  set: (value: boolean) => emit('update:showServerDrawer', value),
+const serverDialogVisible = computed({
+  get: () => props.showServerDialog,
+  set: (value: boolean) => emit('update:showServerDialog', value),
 });
+
+const serverDialogHeader = computed(() =>
+  props.selectedServer ? props.selectedServer.name : 'Add Server',
+);
+
+const showDeleteConfirm = ref(false);
+const serverPendingDelete = ref<Record<string, unknown> | null>(null);
+
+const serverColumns = computed(() =>
+  getServerColumns({
+    onEditServer: (row) => emit('row-click', { data: row }),
+    onDeleteServer: (row) => {
+      serverPendingDelete.value = row;
+      showDeleteConfirm.value = true;
+    },
+  }),
+);
+
+const pendingDeleteServerName = computed(() => {
+  const row = serverPendingDelete.value;
+  const name = row?.name;
+  return typeof name === 'string' ? name : undefined;
+});
+
+function confirmDeleteServer() {
+  if (serverPendingDelete.value) {
+    emit('delete-server', serverPendingDelete.value);
+  }
+  serverPendingDelete.value = null;
+}
+
+function cancelDeleteServer() {
+  serverPendingDelete.value = null;
+}
 </script>
 
 <template>
-  <div class="flex-1 flex min-h-0 overflow-hidden bg-neutral-surface">
-    <ListPageLayout class="flex-1 min-w-0 h-full! transition-all duration-300 ease-in-out">
+  <div class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface relative">
+    <ListPageLayout class="w-full! h-full!">
       <CircuitDataTable
         :columns="serverColumns"
-        :data="serversData"
-        selectionMode="multiple"
-        :selection="selectedServers"
-        @update:selection="emit('update:selectedServers', $event)"
+        :data="filteredServersData"
         @row-click="emit('row-click', $event)"
         :card="true"
         size="default"
@@ -59,53 +92,36 @@ const drawerVisible = computed({
             :showRefreshButton="false"
             :showColumnsButton="false"
             :showDownloadButton="false"
+            :showSaveViewButton="false"
+            @add="emit('add-server')"
+            @search="emit('search', $event)"
           />
         </template>
       </CircuitDataTable>
     </ListPageLayout>
 
-    <div
-      v-if="useInlinePanel"
-      class="shrink-0 border-l border-neutral-default_solid bg-neutral-base flex flex-col h-full overflow-hidden transition-[width] duration-300 ease-in-out"
-      :class="showServerDrawer && selectedServer ? 'w-[480px]' : 'w-0 border-l-0'"
+    <Dialog
+      v-model:visible="serverDialogVisible"
+      :draggable="false"
+      modal
+      :header="serverDialogHeader"
+      :style="{ width: '560px' }"
     >
-      <template v-if="selectedServer">
-        <div class="flex items-center justify-between p-4 shrink-0 min-w-[480px]">
-          <span class="text-heading-3 text-neutral-base">{{ selectedServer.name }}</span>
-          <Button severity="secondary" variant="text" size="small" @click="emit('close-detail')">
-            <template #icon><XMarkIcon class="w-5 h-5" /></template>
-          </Button>
-        </div>
-        <div class="min-w-[480px] flex-1 min-h-0">
-          <Agent0ServerDetailPanel
-            :serverForm="serverForm"
-            :authStyleOptions="authStyleOptions"
-            @cancel="emit('close-detail')"
-            @save="emit('save-detail')"
-          />
-        </div>
-      </template>
-    </div>
-  </div>
+      <template #closeicon><XMarkIcon /></template>
+      <Agent0ServerDetailPanel
+        :serverForm="serverForm"
+        :authStyleOptions="authStyleOptions"
+        :isAddMode="!selectedServer"
+        @cancel="emit('close-detail')"
+        @save="emit('save-detail')"
+      />
+    </Dialog>
 
-  <Drawer
-    v-if="!useInlinePanel"
-    v-model:visible="drawerVisible"
-    :header="selectedServer?.name || 'Server Configuration'"
-    position="right"
-    size="lg"
-    modal
-  >
-    <template #closebutton="btnProps">
-      <Button severity="secondary" variant="text" size="small" @click="btnProps.closeCallback">
-        <template #icon><XMarkIcon class="w-5 h-5" /></template>
-      </Button>
-    </template>
-    <Agent0ServerDetailPanel
-      :serverForm="serverForm"
-      :authStyleOptions="authStyleOptions"
-      @cancel="emit('close-detail')"
-      @save="emit('save-detail')"
+    <ServerDeleteConfirmDialog
+      v-model:visible="showDeleteConfirm"
+      :server-name="pendingDeleteServerName"
+      @confirm="confirmDeleteServer"
+      @cancel="cancelDeleteServer"
     />
-  </Drawer>
+  </div>
 </template>

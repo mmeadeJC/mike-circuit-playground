@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { Component } from 'vue';
 import { CollapsiblePanel } from '@jumpcloud/circuit/components';
-import { ArrowUpIcon } from '@heroicons/vue/24/outline';
+import { ArrowUpIcon, ChartBarIcon } from '@heroicons/vue/24/outline';
 
 defineProps<{
   header: string;
@@ -10,15 +11,19 @@ defineProps<{
   changeValue?: string;
   changeLabel?: string;
   showArrow?: boolean;
+  icon?: Component;
 }>();
 </script>
 
 <template>
   <CollapsiblePanel :header="header">
+    <template #titleicon="iconProps">
+      <component :is="icon ?? ChartBarIcon" :class="iconProps.class" />
+    </template>
     <div class="flex flex-col gap-2">
-      <div class="flex items-center gap-[7px]">
+      <div class="flex items-center gap-sm">
         <span
-          class="text-[32px] font-semibold leading-8 tracking-[-0.5px]"
+          class="text-heading-0"
           :class="valueClass || 'text-neutral-base'"
         >{{ value }}</span>
         <span v-if="subtitle" class="text-heading-3 text-neutral-base self-end">{{ subtitle }}</span>

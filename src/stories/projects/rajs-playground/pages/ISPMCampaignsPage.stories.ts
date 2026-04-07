@@ -5,7 +5,7 @@ import {
   AppNavigation,
   DataTable as CircuitDataTable,
   DataTableCellText,
-  DataTableCellToken,
+  DataTableCellStatus,
   DataTableToolbar,
   MessageNotification,
   PageHeader,
@@ -247,7 +247,7 @@ const campaignColumns = [
   { field: 'deadline', header: 'Deadline', sortable: true, component: markRaw(DataTableCellText) },
   {
     field: 'status', header: 'Status', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: {
       Draft: { label: 'Draft', severity: 'secondary' },
       Active: { label: 'Active', severity: 'info' },
@@ -261,7 +261,7 @@ const reviewItemColumns = [
   { field: 'identity', header: 'Identity', sortable: true, component: markRaw(DataTableCellText) },
   {
     field: 'identityType', header: 'Type', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: {
       Human: { label: 'Human', severity: 'info' },
       'Service Account': { label: 'Service Acct', severity: 'warn' },
@@ -272,7 +272,7 @@ const reviewItemColumns = [
   { field: 'accessPath', header: 'Access Path', sortable: true, component: markRaw(DataTableCellText) },
   {
     field: 'riskLevel', header: 'Risk', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: {
       Low: { label: 'Low', severity: 'success' },
       Medium: { label: 'Medium', severity: 'warn' },
@@ -282,7 +282,7 @@ const reviewItemColumns = [
   { field: 'lastUsed', header: 'Last Used', sortable: true, component: markRaw(DataTableCellText) },
   {
     field: 'decision', header: 'Decision', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: {
       Pending: { label: 'Pending', severity: 'warn' },
       Certify: { label: 'Certified', severity: 'success' },
@@ -296,7 +296,7 @@ const decisionLogColumns = [
   { field: 'resource', header: 'Resource', sortable: true, component: markRaw(DataTableCellText) },
   {
     field: 'decision', header: 'Decision', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: {
       Certify: { label: 'Certified', severity: 'success' },
       Revoke: { label: 'Revoked', severity: 'danger' },

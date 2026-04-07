@@ -7,9 +7,9 @@ import {
   DataTable as CircuitDataTable,
   DataTableToolbar,
   DataTableCellText,
-  DataTableCellButton,
+  DataTableCellAction,
   DataTableCellLink,
-  DataTableCellToken,
+  DataTableCellStatus,
   RadioButtonWithLabel,
   CheckboxWithLabel,
   FormField,
@@ -216,7 +216,7 @@ const templateColumns = [
   { field: 'name', header: 'Name', sortable: true, component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.name, description: sp.data.nameDesc }) },
   { field: 'type', header: 'Type', sortable: true, width: '100px', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.type }) },
   { field: 'description', header: 'Description', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.description }) },
-  { field: 'actions', header: '', width: '120px', component: markRaw(DataTableCellButton), componentProps: () => ({ type: 'Button', actionButtons: [{ label: 'Configure', icon: markRaw(Cog6ToothIcon) }] }) },
+  { field: 'actions', header: '', width: '120px', component: markRaw(DataTableCellAction), componentProps: () => ({ type: 'Button', actionButtons: [{ label: 'Configure', icon: markRaw(Cog6ToothIcon) }] }) },
 ];
 
 const wizardSteps = [
@@ -241,7 +241,7 @@ const bindingUsersData = [
 ];
 
 const bindingUsersColumns = [
-  { field: 'userState', header: 'User State', sortable: true, component: markRaw(DataTableCellToken), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.userState }) },
+  { field: 'userState', header: 'User State', sortable: true, component: markRaw(DataTableCellStatus), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.userState }) },
   { field: 'name', header: 'Name', sortable: true, component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.name, description: sp.data.username }) },
   { field: 'email', header: 'Email', sortable: true, component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.email }) },
 ];
@@ -288,7 +288,7 @@ const devicesData = [
 ];
 
 const devicesColumns = [
-  { field: 'status', header: 'Status', width: '80px', component: markRaw(DataTableCellToken), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.status }) },
+  { field: 'status', header: 'Status', width: '80px', component: markRaw(DataTableCellStatus), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.status }) },
   { field: 'deviceName', header: 'Device Name', sortable: true, component: markRaw(DataTableCellLink), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.deviceName, href: '#' }) },
   { field: 'os', header: 'OS', sortable: true, component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.os }) },
 ];

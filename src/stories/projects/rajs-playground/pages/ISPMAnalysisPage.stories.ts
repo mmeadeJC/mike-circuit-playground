@@ -5,7 +5,7 @@ import {
   CollapsiblePanel,
   DataTable as CircuitDataTable,
   DataTableCellText,
-  DataTableCellToken,
+  DataTableCellStatus,
   DataTableToolbar,
   MessageNotification,
   PageHeader,
@@ -254,7 +254,7 @@ const resourceColumns = [
   { field: 'staleAssignments', header: 'Stale', sortable: true, component: markRaw(DataTableCellText) },
   {
     field: 'riskLevel', header: 'Risk', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: {
       Low: { label: 'Low', severity: 'success' },
       Medium: { label: 'Medium', severity: 'warn' },
@@ -263,7 +263,7 @@ const resourceColumns = [
   },
   {
     field: 'reviewState', header: 'Review', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: {
       Scheduled: { label: 'Scheduled', severity: 'info' },
       'In Progress': { label: 'In Progress', severity: 'warn' },
@@ -281,7 +281,7 @@ const personColumns = [
   { field: 'privilegedAccess', header: 'Privileged', sortable: true, component: markRaw(DataTableCellText) },
   {
     field: 'riskLevel', header: 'Risk', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: {
       Low: { label: 'Low', severity: 'success' },
       Medium: { label: 'Medium', severity: 'warn' },
@@ -290,7 +290,7 @@ const personColumns = [
   },
   {
     field: 'managerDecision', header: 'Decision', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: {
       Approved: { label: 'Approved', severity: 'success' },
       'Needs Review': { label: 'Needs Review', severity: 'warn' },
@@ -306,7 +306,7 @@ const groupColumns = [
   { field: 'privilegedResources', header: 'Privileged', sortable: true, component: markRaw(DataTableCellText) },
   {
     field: 'complianceState', header: 'Compliance', sortable: true,
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: {
       Healthy: { label: 'Healthy', severity: 'success' },
       Watchlist: { label: 'Watchlist', severity: 'warn' },
@@ -322,7 +322,7 @@ const detailRelationshipColumns = [
   { field: 'lastUsed', header: 'Last Used', component: markRaw(DataTableCellText) },
   {
     field: 'recommendation', header: 'Recommendation',
-    component: markRaw(DataTableCellToken),
+    component: markRaw(DataTableCellStatus),
     tokenMapping: {
       Keep: { label: 'Keep', severity: 'success' },
       Review: { label: 'Review', severity: 'warn' },

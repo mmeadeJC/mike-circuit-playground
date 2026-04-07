@@ -2,16 +2,23 @@
 import { markRaw, reactive, ref } from 'vue';
 import { AppNavigation, PageHeader, ToastNotification } from '@jumpcloud/circuit/components';
 import { CpuChipIcon } from '@heroicons/vue/24/outline';
-import TopBar from '@/components/TopBar.vue';
-import Agent0ServersView from '../features/agent0/servers/Agent0ServersView.vue';
-import Agent0ActivityView from '../features/agent0/activity/Agent0ActivityView.vue';
-import ServerDialogPhase01 from '../features/agent0/servers/ServerDialogPhase01.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
+import Agent0ServersView from '../../../features/agent0/servers/Agent0ServersView.vue';
+import Agent0AllowedAiClientsView from '../../../features/agent0/allowed-ai-clients/Agent0AllowedAiClientsView.vue';
+import Agent0ActivityView from '../../../features/agent0/activity/Agent0ActivityView.vue';
+import ServerDialogPhase01 from '../../../features/agent0/servers/ServerDialogPhase01.vue';
 import {
   useActivityFilters,
+  useAllowedAiClientFilters,
   useServerFilters,
-} from '../features/agent0/shared/composables';
-import { prefixFromServerSlug } from '../features/agent0/shared/prefixFromName';
-import type { Phase01ServerFormState, Server, ServerFormState } from '../features/agent0/shared/types';
+} from '../../../features/agent0/shared/composables';
+import { prefixFromServerSlug } from '../../../features/agent0/shared/prefixFromName';
+import type {
+  AllowedAiClientSubmitPayload,
+  Phase01ServerFormState,
+  Server,
+  ServerFormState,
+} from '../../../features/agent0/shared/types';
 import {
   menuItems,
   profileMenuItems,
@@ -20,13 +27,19 @@ import {
   phase01AuthStyleOptions,
   phase01MainTabs,
   activityLogData,
-} from '../features/agent0/shared/data';
-import { activityLogColumns } from '../features/agent0/shared/columns';
+  allowedAiClientsData,
+} from '../../../features/agent0/shared/data';
+import { activityLogColumns } from '../../../features/agent0/shared/columns';
+import {
+  pushAllowedAiClientAddedToast,
+  pushAllowedAiClientRemovedToast,
+  pushAllowedAiClientUpdatedToast,
+} from '../../../features/agent0/shared/allowedAiClientToasts';
 import {
   pushServerCreatedToast,
   pushServerDeletedToast,
   pushServerSavedToast,
-} from '../features/agent0/shared/serverCreateToasts';
+} from '../../../features/agent0/shared/serverCreateToasts';
 import { useToast } from 'primevue/usetoast';
 
 const cpuChipIcon = markRaw(CpuChipIcon);
@@ -63,6 +76,9 @@ const activityFilters = useActivityFilters(activityLogData);
 const { filteredActivityData, handleActivitySearch } = activityFilters;
 
 const serverFilters = useServerFilters(serversData);
+
+const allowedAiClients = ref([...allowedAiClientsData]);
+const allowedAiClientFilters = useAllowedAiClientFilters(allowedAiClients);
 
 const toast = useToast();
 
@@ -125,6 +141,47 @@ function handleDeleteServer() {
   pushServerDeletedToast((m) => toast.add(m));
 }
 
+function nextAllowedAiClientId() {
+  const ids = allowedAiClients.value.map((e) => e.id);
+  return ids.length === 0 ? 1 : Math.max(...ids) + 1;
+}
+
+function handleAllowedAiClientAdd(payload: AllowedAiClientSubmitPayload) {
+  allowedAiClients.value = [
+    ...allowedAiClients.value,
+    {
+      id: nextAllowedAiClientId(),
+      kind: payload.kind,
+      origin: payload.origin,
+      note: payload.note,
+      createdAt: new Date().toISOString(),
+      snapshot: payload.snapshot,
+    },
+  ];
+  pushAllowedAiClientAddedToast((m) => toast.add(m));
+}
+
+function handleAllowedAiClientUpdate(payload: AllowedAiClientSubmitPayload) {
+  if (payload.id == null) return;
+  allowedAiClients.value = allowedAiClients.value.map((e) =>
+    e.id === payload.id
+      ? {
+          ...e,
+          kind: payload.kind,
+          origin: payload.origin,
+          note: payload.note,
+          snapshot: payload.snapshot,
+        }
+      : e,
+  );
+  pushAllowedAiClientUpdatedToast((m) => toast.add(m));
+}
+
+function handleAllowedAiClientDelete(ids: number[]) {
+  allowedAiClients.value = allowedAiClients.value.filter((e) => !ids.includes(e.id));
+  pushAllowedAiClientRemovedToast((m) => toast.add(m));
+}
+
 </script>
 
 <template>
@@ -137,7 +194,7 @@ function handleDeleteServer() {
       :topNavToggle="true"
     />
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-      <TopBar />
+      <AdminTopBar />
 
       <PageHeader
         title="AI Connector"
@@ -164,6 +221,27 @@ function handleDeleteServer() {
           @delete-server="handleDeleteServer"
           @search="serverFilters.handleSearch"
         />
+
+      <Agent0AllowedAiClientsView
+        v-if="activeTab === 'allowed-ai-clients'"
+        :filtered-entries="allowedAiClientFilters.filteredAllowedAiClientsData.value"
+        :show-filter-dialog="allowedAiClientFilters.showFilterDialog.value"
+        :draft-kinds="allowedAiClientFilters.draftKinds.value"
+        :kind-options="allowedAiClientFilters.kindOptions"
+        :active-filter-chips="allowedAiClientFilters.activeFilterChips.value"
+        :draft-filter-count="allowedAiClientFilters.draftFilterCount.value"
+        @search="allowedAiClientFilters.handleSearch"
+        @open-filter-dialog="allowedAiClientFilters.openFilterDialog"
+        @apply-filters="allowedAiClientFilters.applyFilters"
+        @cancel-filter-dialog="allowedAiClientFilters.cancelFilterDialog"
+        @clear-draft-filters="allowedAiClientFilters.clearDraftFilters"
+        @clear-all-filters="allowedAiClientFilters.clearAllFilters"
+        @remove-filter-chip="allowedAiClientFilters.removeFilterChip"
+        @update:draft-kinds="allowedAiClientFilters.draftKinds.value = $event"
+        @add-entry="handleAllowedAiClientAdd"
+        @update-entry="handleAllowedAiClientUpdate"
+        @delete-entries="handleAllowedAiClientDelete"
+      />
 
       <Agent0ActivityView
         v-if="activeTab === 'activity'"

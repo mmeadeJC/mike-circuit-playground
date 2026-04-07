@@ -8,7 +8,7 @@ import { pushServerCreatedToast } from '../../shared/serverCreateToasts';
 import type { Phase01ServerFormState } from '../../shared/types';
 
 const meta: Meta<typeof ServerDialogPhase01> = {
-  title: 'Projects/Burak - AI Connector/Phase 01 Parts/Server/Add Server',
+  title: 'AI Connector - Burak/Admin Portal/Phase 01 Parts/Server/Add Server',
   component: ServerDialogPhase01,
   parameters: {
     layout: 'fullscreen',

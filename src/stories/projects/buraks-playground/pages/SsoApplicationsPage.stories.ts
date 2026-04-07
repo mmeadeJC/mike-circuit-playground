@@ -49,7 +49,7 @@ import {
   LinkIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
 import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
 import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
@@ -557,7 +557,7 @@ const SsoApplicationsPage = defineComponent({
     PvSelect: Select,
     PvDivider: Divider,
     PvMenu: Menu,
-    TopBar,
+    AdminTopBar,
     DetailsKeyValue,
     DetailPageLayout,
     ConfigPageLayout,
@@ -742,7 +742,7 @@ const SsoApplicationsPage = defineComponent({
         </div>
 
         <!-- TopBar (list view only) -->
-        <TopBar v-if="currentView === 'list'" />
+        <AdminTopBar v-if="currentView === 'list'" />
 
         <PageHeader
           :title="pageTitle"

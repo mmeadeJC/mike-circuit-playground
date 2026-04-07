@@ -6,7 +6,7 @@ import { activityLogData } from '../shared/data';
 import { useActivityFilters } from '../shared/composables';
 
 const meta: Meta<typeof Agent0ActivityView> = {
-  title: 'Projects/Burak - AI Connector/Phase 01 Parts/Recent Activity',
+  title: 'AI Connector - Burak/Admin Portal/Phase 01 Parts/Recent Activity',
   component: Agent0ActivityView,
   parameters: {
     layout: 'fullscreen',

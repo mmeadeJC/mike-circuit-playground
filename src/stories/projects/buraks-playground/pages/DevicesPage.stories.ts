@@ -37,7 +37,7 @@ import {
   MagnifyingGlassIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
 import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
 
@@ -451,7 +451,7 @@ const DevicesPage = defineComponent({
     CheckboxWithLabel,
     CircuitDataTable,
     DataTableToolbar,
-    TopBar,
+    AdminTopBar,
     DetailsKeyValue,
     DetailPageLayout,
     ExportDropdown,
@@ -546,7 +546,7 @@ const DevicesPage = defineComponent({
         :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <TopBar />
+        <AdminTopBar />
 
         <PageHeader
           title="AdmWin10Pro"

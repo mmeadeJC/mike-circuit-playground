@@ -26,7 +26,7 @@ import {
   GlobeAltIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '../../../../components/TopBar.vue';
+import AdminTopBar from '../../../../components/AdminTopBar.vue';
 
 import {
   DeviceManagementIcon,
@@ -135,7 +135,7 @@ const SaasManagementDashboard = defineComponent({
     CollapsiblePanel,
     PvButton: Button,
     PvTag: Tag,
-    TopBar,
+    AdminTopBar,
     ArrowUpIcon,
     ArrowDownIcon,
     ShieldExclamationIcon,
@@ -192,7 +192,7 @@ const SaasManagementDashboard = defineComponent({
         :collapsible="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-        <TopBar />
+        <AdminTopBar />
 
         <PageHeader title="SaaS Management" :icon="SaasManagementIcon" class="shrink-0">
           <template #actions>

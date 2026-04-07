@@ -3,19 +3,19 @@ import { computed, markRaw, reactive, ref } from 'vue';
 import { AppNavigation, PageHeader } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import { Cog6ToothIcon, CpuChipIcon } from '@heroicons/vue/24/outline';
-import TopBar from '@/components/TopBar.vue';
-import Agent0DashboardView from '../features/agent0/dashboard/Agent0DashboardViewAlt02.vue';
-import Agent0ServersView from '../features/agent0/servers/Agent0ServersView.vue';
-import Agent0ActivityView from '../features/agent0/activity/Agent0ActivityView.vue';
-import Agent0SettingsView from '../features/agent0/settings/Agent0SettingsView.vue';
-import Agent0ServerDetailView from '../features/agent0/server-detail/Agent0ServerDetailView.vue';
-import AddServerDialog from '../features/agent0/servers/AddServerDialog.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
+import Agent0DashboardView from '../../../features/agent0/dashboard/Agent0DashboardViewAlt02.vue';
+import Agent0ServersView from '../../../features/agent0/servers/Agent0ServersView.vue';
+import Agent0ActivityView from '../../../features/agent0/activity/Agent0ActivityView.vue';
+import Agent0SettingsView from '../../../features/agent0/settings/Agent0SettingsView.vue';
+import Agent0ServerDetailView from '../../../features/agent0/server-detail/Agent0ServerDetailView.vue';
+import AddServerDialog from '../../../features/agent0/servers/AddServerDialog.vue';
 import {
   useActivityFilters,
   useServerFilters,
   useChartThemeOptions,
-} from '../features/agent0/shared/composables';
-import type { Server } from '../features/agent0/shared/types';
+} from '../../../features/agent0/shared/composables';
+import type { Server } from '../../../features/agent0/shared/types';
 import {
   menuItems,
   profileMenuItems,
@@ -34,8 +34,8 @@ import {
   getServerMonthlyChartData,
   getServerUserGroups,
   serverDashboardStats,
-} from '../features/agent0/shared/data';
-import { activityLogColumns } from '../features/agent0/shared/columns';
+} from '../../../features/agent0/shared/data';
+import { activityLogColumns } from '../../../features/agent0/shared/columns';
 
 const cpuChipIcon = markRaw(CpuChipIcon);
 const currentView = ref<'main' | 'settings' | 'server-detail'>('main');
@@ -164,14 +164,14 @@ const alt02DashboardMonthlyChartData = monthlyChartData;
       :topNavToggle="true"
     />
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-      <TopBar v-if="currentView === 'main'" />
-      <TopBar
+      <AdminTopBar v-if="currentView === 'main'" />
+      <AdminTopBar
         v-if="currentView === 'settings'"
         showBackButton
         backButtonLabel="AI Connector"
         @back="backToMain"
       />
-      <TopBar
+      <AdminTopBar
         v-if="currentView === 'server-detail'"
         showBackButton
         backButtonLabel="AI Connector"

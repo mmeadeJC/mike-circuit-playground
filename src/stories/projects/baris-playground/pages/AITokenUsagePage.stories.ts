@@ -44,7 +44,7 @@ import {
 } from '@jumpcloud/icons';
 
 // @ts-expect-error Vue SFC import
-import TopBar from '../../../../components/TopBar.vue';
+import AdminTopBar from '../../../../components/AdminTopBar.vue';
 
 const ClaudePageIcon = defineComponent({
   name: 'ClaudePageIcon',
@@ -542,7 +542,7 @@ const AITokenUsagePage = defineComponent({
     PvButton: Button,
     PvTag: Tag,
     PvSelectButton: SelectButton,
-    TopBar,
+    AdminTopBar,
     ArrowTrendingUpIcon,
     ChevronDownIcon,
   },
@@ -682,7 +682,7 @@ const AITokenUsagePage = defineComponent({
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-        <TopBar showBackButton backButtonLabel="Back" />
+        <AdminTopBar showBackButton backButtonLabel="Back" />
 
         <PageHeader
           title=""

@@ -1,4 +1,12 @@
-export type { Server, Profile, UserGroup, ActivityLogEntry, AgentInstruction, LlmProvider } from '../types';
+export type {
+  Server,
+  Profile,
+  UserGroup,
+  ActivityLogEntry,
+  AgentInstruction,
+  LlmProvider,
+  AllowedAiClient,
+} from '../types';
 
 export const mainTabs = [
   { label: 'Dashboard', value: 'dashboard' },
@@ -606,7 +614,85 @@ export const alt02MainTabs = [
 
 export const phase01MainTabs = [
   { label: 'Servers', value: 'servers' },
+  { label: 'Allowed AI Clients', value: 'allowed-ai-clients' },
   { label: 'Activity Log', value: 'activity' },
+];
+
+export const allowedAiClientsData: AllowedAiClient[] = [
+  {
+    id: 1,
+    kind: 'single_domain',
+    origin: 'https://ai.company.com',
+    note: 'Prod assistant',
+    createdAt: '2026-03-01T09:44:00',
+    snapshot: {
+      mode: 'single_domain',
+      protocol: 'https',
+      singleHost: 'ai.company.com',
+      singlePort: '',
+      patternValue: '',
+      localPreset: 'localhost',
+      localCustom: '',
+      customProtocolName: '',
+      customDomainValue: '',
+      note: 'Prod assistant',
+    },
+  },
+  {
+    id: 2,
+    kind: 'pattern',
+    origin: 'https://{dev,staging,prod}.company.com/**',
+    createdAt: '2026-02-28T15:03:00',
+    snapshot: {
+      mode: 'pattern',
+      protocol: 'https',
+      singleHost: '',
+      singlePort: '',
+      patternValue: '{dev,staging,prod}.company.com/**',
+      localPreset: 'localhost',
+      localCustom: '',
+      customProtocolName: '',
+      customDomainValue: '',
+      note: '',
+    },
+  },
+  {
+    id: 3,
+    kind: 'local_dev',
+    origin: 'http://localhost:*/**',
+    createdAt: '2026-02-20T03:00:00',
+    snapshot: {
+      mode: 'local_dev',
+      protocol: 'http',
+      singleHost: '',
+      singlePort: '',
+      patternValue: '',
+      localPreset: 'localhost',
+      localCustom: '',
+      customProtocolName: '',
+      customDomainValue: '',
+      note: '',
+    },
+  },
+  {
+    id: 4,
+    kind: 'custom_protocol',
+    origin: 'vscode://file/workspace',
+    note: 'IDE bridge',
+    createdAt: '2026-02-15T18:14:00',
+    snapshot: {
+      mode: 'custom_protocol',
+      protocol: 'https',
+      singleHost: '',
+      singlePort: '',
+      patternValue: '',
+      localPreset: 'localhost',
+      localCustom: '',
+      customProtocolName: 'vscode',
+      customDomainValue: 'file/workspace',
+      note: 'IDE bridge',
+    },
+  },
 ];
 
 export function getServerActivityLogData(serverSlug: string): ActivityLogEntry[] {

@@ -50,7 +50,7 @@ import {
   WorkflowIcon,
 } from '@jumpcloud/icons';
 
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
 import ListPageLayout from '@/components/layout/page-layouts/ListPageLayout.vue';
 
@@ -368,7 +368,7 @@ const ISPMExplorerPage = defineComponent({
     CircuitDataTable,
     DataTableToolbar,
     PageHeader,
-    TopBar,
+    AdminTopBar,
     DetailsKeyValue,
     ListPageLayout,
     PvButton: Button,
@@ -492,7 +492,7 @@ const ISPMExplorerPage = defineComponent({
         :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-        <TopBar />
+        <AdminTopBar />
         <PageHeader
           title="Access Explorer"
           subtitleText="Browse and understand who has access to what"

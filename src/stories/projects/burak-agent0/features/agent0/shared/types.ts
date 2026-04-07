@@ -83,3 +83,39 @@ export interface ActivityFilter {
   operator: string;
   value: string;
 }
+
+export type AllowedAiClientOriginKind = 'single_domain' | 'pattern' | 'local_dev' | 'custom_protocol';
+
+/** Persisted form shape so edit can reopen the add dialog prefilled (demo). */
+export interface AllowedAiClientDialogSnapshot {
+  mode: AllowedAiClientOriginKind;
+  protocol: 'http' | 'https';
+  singleHost: string;
+  singlePort: string;
+  patternValue: string;
+  /** Preset key for local dev: localhost preset, 127 preset, or custom */
+  localPreset: 'localhost' | '127' | 'custom';
+  localCustom: string;
+  customProtocolName: string;
+  customDomainValue: string;
+  note: string;
+}
+
+/** One allowed AI client row (origin / pattern + metadata). */
+export interface AllowedAiClient {
+  id: number;
+  kind: AllowedAiClientOriginKind;
+  origin: string;
+  note?: string;
+  /** ISO 8601 (preferred) or legacy `M/D/YYYY`; shown as `Mar 1, 2026 @ 09:44am` in the table. */
+  createdAt: string;
+  snapshot: AllowedAiClientDialogSnapshot;
+}
+
+export interface AllowedAiClientSubmitPayload {
+  id?: number;
+  kind: AllowedAiClientOriginKind;
+  origin: string;
+  note?: string;
+  snapshot: AllowedAiClientDialogSnapshot;
+}

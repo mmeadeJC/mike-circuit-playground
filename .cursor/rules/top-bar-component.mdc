@@ -1,135 +1,139 @@
 ---
-description: Use the TopBar component from src/components/TopBar.vue when implementing a top bar from Figma designs
+description: Use AdminTopBar or UserTopBar from src/components when implementing top bars from Figma designs
 globs: src/**/*.vue, src/**/*.stories.ts
 alwaysApply: false
 ---
 
-# TopBar Component
+# Top bar components
 
-When a Figma design includes a top bar (navigation bar at the top of the page), always use the existing `TopBar` component located at `src/components/TopBar.vue`. **Never** recreate a top bar from scratch.
+Playground provides two top bars. **Never** recreate an admin or user portal top bar from scratch when one of these matches the design.
 
-## Import
+| Component | File | Use when |
+|---|---|---|
+| **AdminTopBar** | `src/components/AdminTopBar.vue` | Admin console: search, shortcut tag, icon actions, AI assistant |
+| **UserTopBar** | `src/components/UserTopBar.vue` | User portal: thin bar with external links (e.g. Launch Admin Portal, Learn more) |
+
+## AdminTopBar
+
+### Import
 
 ```typescript
-import TopBar from '@/components/TopBar.vue';
-// or relative path
-import TopBar from '../../components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 ```
 
-## Default Behavior
+### Default behavior
 
-The TopBar renders out of the box with:
 - **AI Search icon** (`AiSearchIcon` from `@jumpcloud/icons`)
 - **Search placeholder**: `"Search User, Devices, Apps, etc..."`
 - **Shortcut tag**: `"⌘/Ctrl + K"`
-- **4 icon buttons** (Customer Support, Lifebuoy, Flag, Checklist)
-- **AI Assistant gradient button** (`AiAgentButton` from Circuit DS)
+- **Four icon buttons** (Customer Support, Lifebuoy, Flag, Checklist)
+- **AI Assistant** (`AiAgentButton` from Circuit DS)
 
 ```html
-<!-- Simplest usage — all defaults -->
-<TopBar />
+<AdminTopBar />
 ```
 
-## Usage by Page Type
+### Usage by page type
 
-| Page Type | TopBar Variant | Example |
+| Page type | Variant | Example |
 |---|---|---|
-| **Main/root pages** (list views, dashboards) | Default — no back button | `<TopBar />` |
-| **Nested/detail pages** (entity detail, sub-pages) | With back button — navigates to the previous page | `<TopBar showBackButton backButtonLabel="Devices" @back="router.back()" />` |
+| Main/root pages | Default — no back button | `<AdminTopBar />` |
+| Nested/detail pages | With back button | `<AdminTopBar showBackButton backButtonLabel="Devices" @back="router.back()" />` |
 
 **Rules:**
-- The back button MUST always navigate the user to the previous page. Use `router.back()` or equivalent navigation to go back. Never use the back button for other actions.
-- The `backButtonLabel` should be set to the previous page's title (e.g. `"Devices"`, `"Users"`, `"Applications"`) for clear navigation context. Only fall back to the generic `"Back"` if the previous page title is unknown.
 
-## Props
+- The back button MUST navigate to the previous page (`router.back()` or equivalent). Never use it for unrelated actions.
+- `backButtonLabel` should match the previous page title when known; otherwise `"Back"`.
+
+### Props (AdminTopBar)
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `searchPlaceholder` | `string` | `'Search User, Devices, Apps, etc...'` | Placeholder text in the search area |
-| `shortcutLabel` | `string` | `'⌘/Ctrl + K'` | Keyboard shortcut shown as a Tag |
-| `showSearchIcon` | `boolean` | `true` | Toggle the AI search icon |
-| `iconButtons` | `TopBarIconButton[]` | 4 default buttons | Custom icon buttons on the right |
-| `showBackButton` | `boolean` | `false` | Show a back button with divider for nested/detail pages |
-| `backButtonLabel` | `string` | `'Back'` | Label text for the back button |
+| `searchPlaceholder` | `string` | `'Search User, Devices, Apps, etc...'` | Placeholder in the search area |
+| `shortcutLabel` | `string` | `'⌘/Ctrl + K'` | Shortcut shown as a Tag |
+| `showSearchIcon` | `boolean` | `true` | Toggle AI search icon |
+| `iconButtons` | `AdminTopBarIconButton[]` | 4 defaults | Custom icon buttons |
+| `showBackButton` | `boolean` | `false` | Back button + divider |
+| `backButtonLabel` | `string` | `'Back'` | Back button label |
 
-### TopBarIconButton interface
+### AdminTopBarIconButton
 
 ```typescript
-interface TopBarIconButton {
-  icon: Component;   // Vue component (Heroicon or JumpCloud icon)
-  label: string;     // Accessible label / identifier
+interface AdminTopBarIconButton {
+  icon: Component;
+  label: string;
   onClick?: () => void;
 }
 ```
 
-## Events
+### Events (AdminTopBar)
 
 | Event | Payload | Description |
 |---|---|---|
 | `search-click` | — | Search area clicked |
-| `icon-button-click` | `label: string` | An icon button clicked |
-| `ai-assistant-click` | `event: Event` | AI Assistant button clicked |
-| `back` | — | Back button clicked (only when `showBackButton` is true) |
+| `icon-button-click` | `label: string` | Icon button clicked |
+| `ai-assistant-click` | `event: Event` | AI Assistant clicked |
+| `back` | — | Back clicked when `showBackButton` |
 
-## Slots
+### Slots (AdminTopBar)
 
 | Slot | Description |
 |---|---|
-| `search-icon` | Replace the default AI search icon |
+| `search-icon` | Replace default AI search icon |
 | `icon-buttons` | Replace all default icon buttons |
 
-## Customizing Icon Buttons
+### Page layout (admin)
+
+Place `AdminTopBar` as the first child in the main column after `AppNavigation`:
+
+```html
+<div class="flex h-screen overflow-hidden">
+  <AppNavigation ... />
+  <div class="flex-1 flex flex-col min-w-0 overflow-auto">
+    <AdminTopBar />
+    <PageHeader title="Devices" />
+  </div>
+</div>
+```
+
+### Figma detection (admin)
+
+Use **AdminTopBar** when the bar includes search + shortcut tag + AI assistant / icon cluster. Use **back** variant when the design shows a back control with divider on the left.
+
+---
+
+## UserTopBar
+
+### Import
 
 ```typescript
-import { markRaw } from 'vue';
-import { Cog6ToothIcon, BellIcon } from '@heroicons/vue/24/outline';
-
-const myButtons = [
-  { icon: markRaw(Cog6ToothIcon), label: 'Settings' },
-  { icon: markRaw(BellIcon), label: 'Notifications' },
-];
+import UserTopBar from '@/components/UserTopBar.vue';
 ```
+
+### Behavior
+
+Right-aligned `LinkText` links with external-link icon (`showIcon`), `target="_blank"`, `rel="noopener noreferrer"`. Default labels: **Launch Admin Portal**, **Learn more**.
 
 ```html
-<TopBar :iconButtons="myButtons" />
+<UserTopBar
+  adminPortalHref="https://console.example.com"
+  learnMoreHref="https://docs.example.com"
+/>
 ```
 
-## Page Layout Integration
+### Props (UserTopBar)
 
-Place the TopBar as the first child inside the main content area, after `AppNavigation`:
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `adminPortalHref` | `string` | `'#'` | Admin portal URL |
+| `learnMoreHref` | `string` | `'#'` | Learn-more URL |
+| `adminPortalLabel` | `string` | `'Launch Admin Portal'` | First link label |
+| `learnMoreLabel` | `string` | `'Learn more'` | Second link label |
 
-**Main/root page (default TopBar):**
+### Page layout (user portal)
 
-```html
-<div class="flex h-screen overflow-hidden">
-  <AppNavigation ... />
-  <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-    <TopBar />
-    <PageHeader title="Devices" />
-    <!-- Page content below -->
-  </div>
-</div>
-```
+Same position as admin bar: first row in the main column after `AppNavigation`.
 
-**Nested/detail page (TopBar with back button):**
+### Figma detection (user)
 
-```html
-<div class="flex h-screen overflow-hidden">
-  <AppNavigation ... />
-  <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-    <TopBar showBackButton backButtonLabel="Devices" @back="router.back()" />
-    <PageHeader title="Device Detail" />
-    <!-- Page content below -->
-  </div>
-</div>
-```
-
-## Detection Rule
-
-If a Figma design contains any of the following, use this component:
-- A node named **"Top Bar"**, **"Top Bar / Bar"**, or **"TopBar"**
-- A horizontal bar at `y=0` of the main content area with a search field and action buttons
-- An **AI Assistant** gradient button on the right edge
-- A search area with an AI search icon and keyboard shortcut tag
-
-**Back button detection:** If the Figma Top Bar node has `hasBackButton=true` or shows a "Back" button with a left arrow icon and a vertical divider on the left side, use `showBackButton` prop. This indicates a nested/detail page — the back button must navigate to the previous page.
+Use **UserTopBar** when the bar is a thin strip with text links and external-link icons only (no search, no AI button).

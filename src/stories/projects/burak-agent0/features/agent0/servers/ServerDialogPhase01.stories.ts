@@ -5,7 +5,7 @@ import { phase01AuthStyleOptions } from '../shared/data';
 import type { Phase01ServerFormState } from '../shared/types';
 
 const meta: Meta<typeof ServerDialogPhase01> = {
-  title: 'Projects/Burak - AI Connector/Phase 01 Parts/Server',
+  title: 'AI Connector - Burak/Admin Portal/Phase 01 Parts/Server',
   component: ServerDialogPhase01,
   parameters: {
     layout: 'fullscreen',

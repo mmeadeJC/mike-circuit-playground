@@ -36,7 +36,7 @@ import {
   TrashIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '../../../../components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 
 import {
   DeviceManagementIcon,
@@ -168,7 +168,7 @@ const WorkflowNodesAsCardsPage = defineComponent({
     PvTag: Tag,
     PvInputText: InputText,
     PvSelect: Select,
-    TopBar,
+    AdminTopBar,
     BoltIcon,
     PlayIcon,
     XMarkIcon,
@@ -411,7 +411,7 @@ const WorkflowNodesAsCardsPage = defineComponent({
         :collapsible="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <TopBar showBackButton backButtonLabel="Back" />
+        <AdminTopBar showBackButton backButtonLabel="Back" />
 
         <PageHeader
           title="Workflow nodes as cards"

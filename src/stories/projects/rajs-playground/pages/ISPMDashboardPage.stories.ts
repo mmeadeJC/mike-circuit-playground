@@ -48,7 +48,7 @@ import {
   WorkflowIcon,
 } from '@jumpcloud/icons';
 
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 import ListPageLayout from '@/components/layout/page-layouts/ListPageLayout.vue';
 
 // ─── Navigation ───
@@ -251,7 +251,7 @@ const ISPMDashboardPage = defineComponent({
     CircuitDataTable,
     MessageNotification,
     PageHeader,
-    TopBar,
+    AdminTopBar,
     ListPageLayout,
     PvButton: Button,
     PvDivider: Divider,
@@ -303,7 +303,7 @@ const ISPMDashboardPage = defineComponent({
         :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-        <TopBar />
+        <AdminTopBar />
         <PageHeader
           title="Identity Posture"
           subtitleText="Last scan: Feb 28, 2026 at 3:45 PM"

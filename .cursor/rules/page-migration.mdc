@@ -24,7 +24,7 @@ Every page MUST use this standard shell structure:
 <div class="flex h-screen overflow-hidden">
   <AppNavigation :menuItems="menuItems" ... />
   <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-    <TopBar />
+    <AdminTopBar />
     <PageHeader ... />
     <!-- Page content using a layout component -->
   </div>
@@ -34,7 +34,8 @@ Every page MUST use this standard shell structure:
 | Component | Source | Purpose |
 |---|---|---|
 | `AppNavigation` | `@jumpcloud/circuit/components` | Left sidebar navigation |
-| `TopBar` | `src/components/TopBar.vue` | Top bar with search, icons, AI assistant |
+| `AdminTopBar` | `src/components/AdminTopBar.vue` | Admin console top bar: search, icons, AI assistant |
+| `UserTopBar` | `src/components/UserTopBar.vue` | User portal: external links only (e.g. Launch Admin Portal) |
 | `PageHeader` | `@jumpcloud/circuit/components` | Page title, subtitle, icon, tabs, actions |
 
 ## 3. Page Layout Components — Choose the Right One
@@ -62,7 +63,7 @@ Analyze the image content and match:
 
 ### Layout Integration Notes
 
-- All layouts use `w-screen h-screen` by default. When embedding inside a page shell (after AppNavigation + TopBar + PageHeader), override with `class="w-full! h-full!"` so they fit within the existing container.
+- All layouts use `w-screen h-screen` by default. When embedding inside a page shell (after AppNavigation + `AdminTopBar` or `UserTopBar` + PageHeader), override with `class="w-full! h-full!"` so they fit within the existing container.
 - All layouts support an optional `#sidebar` slot. If the image shows a right sidebar, use it.
 - The default slot is the main content area.
 
@@ -115,7 +116,8 @@ When analyzing the image, map every visual element to the correct Circuit DS com
 | Visual Element in Image | Use This Component | Import From |
 |---|---|---|
 | Key-value pairs in sidebar | `DetailsKeyValue` | `src/components/DetailsKeyValue.vue` |
-| Top bar | `TopBar` | `src/components/TopBar.vue` |
+| Admin top bar | `AdminTopBar` | `src/components/AdminTopBar.vue` |
+| User portal top bar | `UserTopBar` | `src/components/UserTopBar.vue` |
 
 ## 5. CollapsiblePanel — Slots and Usage
 
@@ -235,7 +237,7 @@ Before writing any code for a page migration:
 1. **Analyze the image** — list all content zones and visual elements.
 2. **Choose the page layout** — pick from `DetailPageLayout`, `ListPageLayout`, `ConfigPageLayout`, or `DashboardPageLayout`.
 3. **Map every element to a Circuit DS component** — check `@jumpcloud/circuit/components` exports first, then PrimeVue primitives. Never build custom duplicates.
-4. **Set up the page shell** — `AppNavigation` + `TopBar` + `PageHeader` with correct props (icon, title, subtitle, tabs, actions).
+4. **Set up the page shell** — `AppNavigation` + `AdminTopBar` or `UserTopBar` + `PageHeader` with correct props (icon, title, subtitle, tabs, actions).
 5. **Implement tab by tab** — each tab may need a different layout. Choose the best layout component for each.
 6. **Verify all imports** — everything must come from Circuit DS (custom or PT-styled primitive). No raw PrimeVue when a Circuit wrapper exists.
 7. **Check Figma Code Connect** (if Figma URL provided) — use `get_code_connect_map` and `get_design_context` MCP tools to find the correct component mappings.

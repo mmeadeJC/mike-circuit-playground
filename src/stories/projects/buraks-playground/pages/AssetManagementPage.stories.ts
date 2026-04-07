@@ -62,7 +62,7 @@ import {
   XMarkIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
 import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
 import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
@@ -705,7 +705,7 @@ const AssetManagementPage = defineComponent({
     PvDialog: Dialog,
     PvDivider: Divider,
     PvSelectButton: SelectButton,
-    TopBar,
+    AdminTopBar,
     DetailPageLayout,
     ConfigPageLayout,
     DetailsKeyValue,
@@ -921,7 +921,7 @@ const AssetManagementPage = defineComponent({
         </div>
 
         <!-- TopBar (list view only) -->
-        <TopBar v-if="currentView === 'list'" />
+        <AdminTopBar v-if="currentView === 'list'" />
 
         <PageHeader
           :title="pageTitle"

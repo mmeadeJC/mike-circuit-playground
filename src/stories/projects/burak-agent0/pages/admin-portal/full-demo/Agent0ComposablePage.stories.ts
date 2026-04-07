@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/vue3';
 import Agent0ComposablePage from './Agent0ComposablePage.vue';
 
 const meta: Meta<typeof Agent0ComposablePage> = {
-  title: 'Projects/Burak - AI Connector/Full Demo',
+  title: 'AI Connector - Burak/Admin Portal/Full Demo',
   component: Agent0ComposablePage,
   parameters: {
     layout: 'fullscreen',

@@ -19,7 +19,10 @@ export interface UserDemoNavProps {
   userInitials?: string;
   /** User portal nav is fixed-width by default (not collapsible). */
   collapsible?: boolean;
-  /** Top bar menu toggle; off by default for user portal. */
+  /**
+   * Drives AppNavigation `isNavOpen` (labels + logo). Default true so the rail is expanded;
+   * set false for icon-only until the user opens the nav (e.g. mobile / top-bar toggle).
+   */
   topNavToggle?: boolean;
 }
 
@@ -29,7 +32,7 @@ const props = withDefaults(defineProps<UserDemoNavProps>(), {
   userEmail: 'baris.ermut@company.com',
   userInitials: 'BE',
   collapsible: false,
-  topNavToggle: false,
+  topNavToggle: true,
 });
 
 const emit = defineEmits<{

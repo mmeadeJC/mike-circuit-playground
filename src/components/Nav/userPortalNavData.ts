@@ -2,11 +2,12 @@ import { markRaw } from 'vue';
 import {
   ArrowRightStartOnRectangleIcon,
   ArrowTopRightOnSquareIcon,
+  CpuChipIcon,
   CubeIcon,
+  TicketIcon,
 } from '@heroicons/vue/24/outline';
 import {
   SsoIcon,
-  AccessIcon,
   CheckListIcon,
   PasswordManagerIcon,
 } from '@jumpcloud/icons';
@@ -14,9 +15,10 @@ import {
 /** Flat user-portal sidebar items (Baris User Portal — My Assets default). */
 export const userPortalNavMenuItems = [
   { label: 'All Applications', leftIcon: markRaw(SsoIcon) },
-  { label: 'Requests', leftIcon: markRaw(AccessIcon) },
+  { label: 'Requests', leftIcon: markRaw(TicketIcon) },
   { label: 'Tasks', leftIcon: markRaw(CheckListIcon) },
   { label: 'My Assets', leftIcon: markRaw(CubeIcon), isNew: true },
+  { label: 'AI Connector', leftIcon: markRaw(CpuChipIcon), isNew: true },
   { label: 'Security', leftIcon: markRaw(PasswordManagerIcon) },
 ];
 

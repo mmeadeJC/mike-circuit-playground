@@ -1,15 +1,9 @@
 import { markRaw } from 'vue';
 import { DataTableCellText, DataTableCellStatus } from '@jumpcloud/circuit/components';
 import AllowedAiClientActionsCell from '../../allowed-ai-clients/AllowedAiClientActionsCell.vue';
+import { getAllowedAiClientKindLabel } from '../allowedAiClientOriginKindLabels';
 import type { AllowedAiClientOriginKind } from '../types';
 import { formatListedDateTime } from '../formatListedDateTime';
-
-const KIND_LABELS: Record<AllowedAiClientOriginKind, string> = {
-  single_domain: 'Single domain',
-  pattern: 'Pattern',
-  local_dev: 'Local development',
-  custom_protocol: 'Custom protocol',
-};
 
 /** Categorical Tag severities; custom protocol uses neutral default (secondary). */
 const KIND_SEVERITY: Record<AllowedAiClientOriginKind, string> = {
@@ -44,7 +38,7 @@ export function getAllowedAiClientColumns(handlers?: AllowedAiClientColumnHandle
       componentProps: (sp: { data: Record<string, unknown> }) => {
         const kind = sp.data.kind as AllowedAiClientOriginKind;
         return {
-          label: KIND_LABELS[kind] ?? String(kind),
+          label: getAllowedAiClientKindLabel(kind),
           severity: KIND_SEVERITY[kind] ?? 'secondary',
           shouldShowDefaultIcon: false,
         };

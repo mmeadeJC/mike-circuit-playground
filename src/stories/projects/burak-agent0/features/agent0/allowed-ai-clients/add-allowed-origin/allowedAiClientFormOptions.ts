@@ -1,11 +1,6 @@
-import type { AllowedAiClientOriginKind } from '../../shared/types';
+import { ALLOWED_AI_CLIENT_KIND_MODE_OPTIONS } from '../../shared/allowedAiClientOriginKindLabels';
 
-export const modeOptions: { label: string; value: AllowedAiClientOriginKind }[] = [
-  { label: 'Single domain', value: 'single_domain' },
-  { label: 'Pattern', value: 'pattern' },
-  { label: 'Local development', value: 'local_dev' },
-  { label: 'Custom protocol', value: 'custom_protocol' },
-];
+export const modeOptions = ALLOWED_AI_CLIENT_KIND_MODE_OPTIONS;
 
 export const protocolOptions = [
   { label: 'https', value: 'https' as const },

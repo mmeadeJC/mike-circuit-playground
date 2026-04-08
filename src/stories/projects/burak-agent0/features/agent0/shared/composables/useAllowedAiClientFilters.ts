@@ -1,4 +1,8 @@
 import { computed, ref, type Ref } from 'vue';
+import {
+  ALLOWED_AI_CLIENT_KIND_ORDER,
+  getAllowedAiClientKindLabel,
+} from '../allowedAiClientOriginKindLabels';
 import type { AllowedAiClient, AllowedAiClientOriginKind } from '../types';
 
 export interface AllowedAiClientFilterChip {
@@ -13,17 +17,6 @@ function formatGroupedValues(values: string[], maxVisible = 2): string {
   return `${values.slice(0, maxVisible).join(', ')}, +${values.length - maxVisible}`;
 }
 
-const KIND_LABELS: Record<AllowedAiClientOriginKind, string> = {
-  single_domain: 'Single domain',
-  pattern: 'Pattern',
-  local_dev: 'Local development',
-  custom_protocol: 'Custom protocol',
-};
-
-function kindLabel(kind: AllowedAiClientOriginKind): string {
-  return KIND_LABELS[kind];
-}
-
 export function useAllowedAiClientFilters(sourceDataRef: Ref<AllowedAiClient[]>) {
   const searchQuery = ref('');
   const showFilterDialog = ref(false);
@@ -31,15 +24,15 @@ export function useAllowedAiClientFilters(sourceDataRef: Ref<AllowedAiClient[]>)
   const appliedKinds = ref<AllowedAiClientOriginKind[]>([]);
   const draftKinds = ref<AllowedAiClientOriginKind[]>([]);
 
-  const kindOptions = (Object.keys(KIND_LABELS) as AllowedAiClientOriginKind[]).map((k) => ({
-    label: kindLabel(k),
+  const kindOptions = ALLOWED_AI_CLIENT_KIND_ORDER.map((k) => ({
+    label: getAllowedAiClientKindLabel(k),
     value: k,
   }));
 
   const activeFilterChips = computed<AllowedAiClientFilterChip[]>(() => {
     const chips: AllowedAiClientFilterChip[] = [];
     if (appliedKinds.value.length > 0) {
-      const labels = appliedKinds.value.map((k) => kindLabel(k));
+      const labels = appliedKinds.value.map((k) => getAllowedAiClientKindLabel(k));
       chips.push({
         id: 'kind',
         key: 'Match type',
@@ -61,7 +54,7 @@ export function useAllowedAiClientFilters(sourceDataRef: Ref<AllowedAiClient[]>)
         (entry) =>
           entry.origin.toLowerCase().includes(q) ||
           (entry.note ?? '').toLowerCase().includes(q) ||
-          kindLabel(entry.kind).toLowerCase().includes(q),
+          getAllowedAiClientKindLabel(entry.kind).toLowerCase().includes(q),
       );
     }
 

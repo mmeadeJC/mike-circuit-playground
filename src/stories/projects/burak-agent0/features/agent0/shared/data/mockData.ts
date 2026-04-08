@@ -1,3 +1,10 @@
+import type {
+  AllowedAiClient,
+  AllowedAiClientDialogSnapshot,
+  AllowedAiClientOriginKind,
+} from '../types';
+import { computeOriginPreview } from '../../allowed-ai-clients/allowedAiClientOrigin';
+
 export type {
   Server,
   Profile,
@@ -618,82 +625,166 @@ export const phase01MainTabs = [
   { label: 'Activity Log', value: 'activity' },
 ];
 
-export const allowedAiClientsData: AllowedAiClient[] = [
+function emptySnapshotBase(): Omit<
+  AllowedAiClientDialogSnapshot,
+  'mode' | 'protocol' | 'singleHost' | 'singlePort' | 'patternValue' | 'customProtocolName' | 'customDomainValue' | 'note'
+> {
+  return {
+    localPreset: 'localhost',
+    localCustom: '',
+  };
+}
+
+function snapSingle(
+  protocol: 'http' | 'https',
+  singleHost: string,
+  note = '',
+): AllowedAiClientDialogSnapshot {
+  return {
+    mode: 'single_domain',
+    protocol,
+    singleHost,
+    singlePort: '',
+    patternValue: '',
+    ...emptySnapshotBase(),
+    customProtocolName: '',
+    customDomainValue: '',
+    note,
+  };
+}
+
+function snapLocal(localPreset: 'localhost' | '127', note = ''): AllowedAiClientDialogSnapshot {
+  return {
+    mode: 'local_dev',
+    protocol: 'http',
+    singleHost: '',
+    singlePort: '',
+    patternValue: '',
+    ...emptySnapshotBase(),
+    localPreset,
+    customProtocolName: '',
+    customDomainValue: '',
+    note,
+  };
+}
+
+function snapPattern(protocol: 'https', patternValue: string, note = ''): AllowedAiClientDialogSnapshot {
+  return {
+    mode: 'pattern',
+    protocol,
+    singleHost: '',
+    singlePort: '',
+    patternValue,
+    ...emptySnapshotBase(),
+    customProtocolName: '',
+    customDomainValue: '',
+    note,
+  };
+}
+
+function snapCustom(protocolName: string, domainValue: string, note = ''): AllowedAiClientDialogSnapshot {
+  return {
+    mode: 'custom_protocol',
+    protocol: 'https',
+    singleHost: '',
+    singlePort: '',
+    patternValue: '',
+    ...emptySnapshotBase(),
+    customProtocolName: protocolName,
+    customDomainValue: domainValue,
+    note,
+  };
+}
+
+/** Product default allowed AI clients (HTTP / HTTPS / custom protocol). */
+const defaultAllowedAiClientSnapshots: Array<{
+  kind: AllowedAiClientOriginKind;
+  snapshot: AllowedAiClientDialogSnapshot;
+  note?: string;
+}> = [
   {
-    id: 1,
-    kind: 'single_domain',
-    origin: 'https://ai.company.com',
-    note: 'Prod assistant',
-    createdAt: '2026-03-01T09:44:00',
-    snapshot: {
-      mode: 'single_domain',
-      protocol: 'https',
-      singleHost: 'ai.company.com',
-      singlePort: '',
-      patternValue: '',
-      localPreset: 'localhost',
-      localCustom: '',
-      customProtocolName: '',
-      customDomainValue: '',
-      note: 'Prod assistant',
-    },
-  },
-  {
-    id: 2,
-    kind: 'pattern',
-    origin: 'https://{dev,staging,prod}.company.com/**',
-    createdAt: '2026-02-28T15:03:00',
-    snapshot: {
-      mode: 'pattern',
-      protocol: 'https',
-      singleHost: '',
-      singlePort: '',
-      patternValue: '{dev,staging,prod}.company.com/**',
-      localPreset: 'localhost',
-      localCustom: '',
-      customProtocolName: '',
-      customDomainValue: '',
-      note: '',
-    },
-  },
-  {
-    id: 3,
     kind: 'local_dev',
-    origin: 'http://localhost:*/**',
-    createdAt: '2026-02-20T03:00:00',
-    snapshot: {
-      mode: 'local_dev',
-      protocol: 'http',
-      singleHost: '',
-      singlePort: '',
-      patternValue: '',
-      localPreset: 'localhost',
-      localCustom: '',
-      customProtocolName: '',
-      customDomainValue: '',
-      note: '',
-    },
+    snapshot: snapLocal('127', 'Loopback address for local Agent0 and API testing.'),
   },
   {
-    id: 4,
-    kind: 'custom_protocol',
-    origin: 'vscode://file/workspace',
-    note: 'IDE bridge',
-    createdAt: '2026-02-15T18:14:00',
-    snapshot: {
-      mode: 'custom_protocol',
-      protocol: 'https',
-      singleHost: '',
-      singlePort: '',
-      patternValue: '',
-      localPreset: 'localhost',
-      localCustom: '',
-      customProtocolName: 'vscode',
-      customDomainValue: 'file/workspace',
-      note: 'IDE bridge',
-    },
+    kind: 'local_dev',
+    snapshot: snapLocal('localhost', 'Hostname alias for local development servers.'),
   },
+  {
+    kind: 'pattern',
+    snapshot: snapPattern('https', '*.api.staging.example.com', 'Pattern example for staging API subdomains.'),
+  },
+  {
+    kind: 'pattern',
+    snapshot: snapPattern('https', 'tenant-*.widgets.app', 'Pattern example for multi-tenant SaaS hosts.'),
+  },
+  {
+    kind: 'custom_protocol',
+    snapshot: snapCustom('acme-desktop', 'auth-callback', 'Custom protocol example for desktop OAuth return.'),
+  },
+  {
+    kind: 'single_domain',
+    snapshot: snapSingle('https', 'app.writer.com', 'Primary Writer web application.'),
+  },
+  {
+    kind: 'single_domain',
+    snapshot: snapSingle('https', 'chatgpt.com', 'OpenAI ChatGPT browser client.'),
+  },
+  {
+    kind: 'single_domain',
+    snapshot: snapSingle('https', 'claude.ai', 'Anthropic Claude consumer domain.'),
+  },
+  {
+    kind: 'single_domain',
+    snapshot: snapSingle('https', 'claude.com', 'Anthropic Claude alternate domain.'),
+  },
+  {
+    kind: 'single_domain',
+    snapshot: snapSingle('https', 'integrations.zoom.us', 'Zoom integration OAuth and embed flows.'),
+  },
+  {
+    kind: 'single_domain',
+    snapshot: snapSingle('https', 'figma-gov.com', 'Figma GovCloud design and review.'),
+  },
+  {
+    kind: 'single_domain',
+    snapshot: snapSingle('https', 'global.consent.azure-apim.net', 'Azure APIM consent and policy redirects.'),
+  },
+  {
+    kind: 'single_domain',
+    snapshot: snapSingle('https', 'api.devin.ai', 'Devin AI browser and tooling origin.'),
+  },
+  {
+    kind: 'pattern',
+    snapshot: snapPattern('https', '*.apps.dynatrace.com', 'Wildcard for Dynatrace SaaS app hosts.'),
+  },
+  { kind: 'pattern', snapshot: snapPattern('https', '*.azuredatabricks.net') },
+  { kind: 'pattern', snapshot: snapPattern('https', '*.databricks.com') },
+  { kind: 'pattern', snapshot: snapPattern('https', '*.resolve.ai') },
+  { kind: 'single_domain', snapshot: snapSingle('https', 'vertexaisearch.cloud.google.com') },
+  { kind: 'single_domain', snapshot: snapSingle('https', 'lovable.dev') },
+  { kind: 'single_domain', snapshot: snapSingle('https', 'mcp.docker.com') },
+  { kind: 'single_domain', snapshot: snapSingle('https', 'callback.mistral.ai') },
+  { kind: 'single_domain', snapshot: snapSingle('https', 'oauth.pstmn.io') },
+  { kind: 'single_domain', snapshot: snapSingle('https', 'token.botframework.com') },
+  { kind: 'single_domain', snapshot: snapSingle('https', 'vscode.dev') },
+  { kind: 'single_domain', snapshot: snapSingle('https', 'us-east-1.quicksight.aws.amazon.com') },
+  { kind: 'single_domain', snapshot: snapSingle('https', 'www.canva.com') },
+  { kind: 'custom_protocol', snapshot: snapCustom('cursor', 'cursor.mcp') },
+  { kind: 'custom_protocol', snapshot: snapCustom('raycast', 'oauth') },
 ];
+
+export const allowedAiClientsData: AllowedAiClient[] = defaultAllowedAiClientSnapshots.map((row, index) => {
+  const mergedNote = row.note?.trim() || row.snapshot.note?.trim() || undefined;
+  return {
+    id: index + 1,
+    kind: row.kind,
+    origin: computeOriginPreview(row.snapshot),
+    note: mergedNote,
+    createdAt: `2026-01-${String((index % 28) + 1).padStart(2, '0')}T${String(8 + (index % 12)).padStart(2, '0')}:${String(index % 60).padStart(2, '0')}:00.000Z`,
+    snapshot: row.snapshot,
+  };
+});
 
 export function getServerActivityLogData(serverSlug: string): ActivityLogEntry[] {
   const server = serversData.find((s) => s.slug === serverSlug);

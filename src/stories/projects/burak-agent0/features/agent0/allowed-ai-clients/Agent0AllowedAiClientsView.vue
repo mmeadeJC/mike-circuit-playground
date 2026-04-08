@@ -149,7 +149,7 @@ const rowDeleteClientOrigin = computed(() => pendingRowDelete.value?.origin);
         :scrollable="true"
         scrollHeight="flex"
         :paginator="true"
-        :rows="10"
+        :rows="15"
         @row-click="handleRowClick"
       >
         <template #toolbar>

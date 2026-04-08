@@ -3,14 +3,11 @@ import { reactive, ref, watch } from 'vue';
 import UserAuthCard from '../../../features/user-portal/phase-01-parts/UserAuthCard.vue';
 import {
   createDefaultMcpToolsStack,
-  MCP_TOOL_URLS,
   type McpToolDemoRow,
 } from '../../../features/user-portal/phase-01-parts/mcpToolsDemo';
 
-export { MCP_TOOL_URLS } from '../../../features/user-portal/phase-01-parts/mcpToolsDemo';
-
 const meta: Meta<typeof UserAuthCard> = {
-  title: 'AI Connector - Burak/User Portal/Phase 01 Parts/User Auth Card',
+  title: 'AI Gateway - Burak/User Portal/Phase 01 Parts/User Auth Card',
   component: UserAuthCard,
   tags: ['!autodocs'],
   parameters: {
@@ -38,7 +35,7 @@ type Story = StoryObj<typeof UserAuthCard>;
 export const Playground: Story = {
   args: {
     title: 'Figma',
-    description: MCP_TOOL_URLS.figma,
+    faviconDomain: 'figma.com',
     status: 'notConnected',
     authMethod: 'apiKey',
     enabled: true,
@@ -69,7 +66,7 @@ export const Playground: Story = {
         v-model:enabled="enabled"
         v-model:api-key="apiKey"
         :title="args.title"
-        :description="args.description"
+        :favicon-domain="args.faviconDomain"
         :status="args.status"
         :auth-method="args.authMethod"
         :api-key-placeholder="args.apiKeyPlaceholder"
@@ -85,7 +82,7 @@ export const Collapsed: Story = {
   name: 'Collapsed (unchecked)',
   args: {
     title: 'Figma',
-    description: MCP_TOOL_URLS.figma,
+    faviconDomain: 'figma.com',
     status: 'notConnected',
     authMethod: 'apiKey',
     enabled: false,
@@ -102,7 +99,7 @@ export const Collapsed: Story = {
         v-model:enabled="enabled"
         v-model:api-key="apiKey"
         :title="args.title"
-        :description="args.description"
+        :favicon-domain="args.faviconDomain"
         :status="args.status"
         :auth-method="args.authMethod"
       />
@@ -114,7 +111,7 @@ export const ApiKeyExpanded: Story = {
   name: 'API key (expanded)',
   args: {
     title: 'Figma',
-    description: MCP_TOOL_URLS.figma,
+    faviconDomain: 'figma.com',
     status: 'notConnected',
     authMethod: 'apiKey',
     enabled: true,
@@ -131,7 +128,7 @@ export const ApiKeyExpanded: Story = {
         v-model:enabled="enabled"
         v-model:api-key="apiKey"
         :title="args.title"
-        :description="args.description"
+        :favicon-domain="args.faviconDomain"
         :status="args.status"
         :auth-method="args.authMethod"
       />
@@ -143,7 +140,7 @@ export const OAuthExpanded: Story = {
   name: 'OAuth (not connected)',
   args: {
     title: 'Atlassian',
-    description: MCP_TOOL_URLS.atlassian,
+    faviconDomain: 'atlassian.com',
     status: 'notConnected',
     authMethod: 'oauth',
     enabled: true,
@@ -160,7 +157,7 @@ export const OAuthExpanded: Story = {
         v-model:enabled="enabled"
         v-model:api-key="apiKey"
         :title="args.title"
-        :description="args.description"
+        :favicon-domain="args.faviconDomain"
         :status="args.status"
         :auth-method="args.authMethod"
       />
@@ -172,7 +169,7 @@ export const OAuthConnected: Story = {
   name: 'OAuth (connected)',
   args: {
     title: 'Github',
-    description: MCP_TOOL_URLS.github,
+    faviconDomain: 'github.com',
     status: 'connected',
     authMethod: 'oauth',
     enabled: true,
@@ -189,7 +186,7 @@ export const OAuthConnected: Story = {
         v-model:enabled="enabled"
         v-model:api-key="apiKey"
         :title="args.title"
-        :description="args.description"
+        :favicon-domain="args.faviconDomain"
         :status="args.status"
         :auth-method="args.authMethod"
       />
@@ -201,7 +198,7 @@ export const StatusError: Story = {
   name: 'Error status',
   args: {
     title: 'Slack',
-    description: MCP_TOOL_URLS.slack,
+    faviconDomain: 'slack.com',
     status: 'error',
     authMethod: 'oauth',
     enabled: true,
@@ -218,7 +215,7 @@ export const StatusError: Story = {
         v-model:enabled="enabled"
         v-model:api-key="apiKey"
         :title="args.title"
-        :description="args.description"
+        :favicon-domain="args.faviconDomain"
         :status="args.status"
         :auth-method="args.authMethod"
       />
@@ -242,7 +239,7 @@ export const McpToolsStack: Story = {
           v-model:enabled="t.enabled"
           v-model:api-key="t.apiKey"
           :title="t.title"
-          :description="t.description"
+          :favicon-domain="t.faviconDomain"
           :status="t.status"
           :auth-method="t.authMethod"
         />

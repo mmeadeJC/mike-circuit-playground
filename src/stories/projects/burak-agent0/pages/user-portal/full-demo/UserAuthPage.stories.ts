@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/vue3';
 import UserAuthPage from './UserAuthPage.vue';
 
 const meta: Meta<typeof UserAuthPage> = {
-  title: 'AI Connector - Burak/User Portal/Full Demo/User Auth Page',
+  title: 'AI Gateway - Burak/User Portal/Full Demo',
   component: UserAuthPage,
   tags: ['!autodocs'],
   parameters: {
@@ -16,12 +16,13 @@ export default meta;
 type Story = StoryObj<typeof UserAuthPage>;
 
 export const Default: Story = {
-  name: 'Overview',
+  name: 'User Auth Page',
   render: args => ({
     components: { UserAuthPage },
     setup() {
       return { args };
     },
-    template: '<UserAuthPage v-bind="args" @authorize="() => {}" />',
+    template:
+      '<UserAuthPage v-bind="args" @authorize="() => {}" @logout="() => {}" />',
   }),
 };

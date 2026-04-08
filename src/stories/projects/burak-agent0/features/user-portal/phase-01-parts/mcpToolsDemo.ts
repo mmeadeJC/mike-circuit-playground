@@ -1,20 +1,10 @@
-/** MCP tools from design reference: title = tool name, description = domain / URL */
-export const MCP_TOOL_URLS = {
-  figma: 'https://mcp.figma.com/mcp',
-  github: 'https://api.githubcopilot.com/mcp/',
-  jumpcloudLabsAdmin: 'https://mcp.jumpcloud.com/v1',
-  atlassian: 'https://mcp.atlassian.com/v1/sse',
-  salesforce:
-    'https://api.salesforce.com/platform/mcp/v1-beta.2/sandbox/platform/sobject-all',
-  slack: 'https://mcp.slack.com/mcp',
-} as const;
-
 export type McpToolDemoStatus = 'notConnected' | 'connected' | 'error';
 export type McpToolDemoAuthMethod = 'apiKey' | 'oauth';
 
 export type McpToolDemoRow = {
   title: string;
-  description: string;
+  /** Hostname for Google favicon next to the title */
+  faviconDomain: string;
   enabled: boolean;
   apiKey: string;
   status: McpToolDemoStatus;
@@ -26,7 +16,7 @@ export function createDefaultMcpToolsStack(): McpToolDemoRow[] {
   return [
     {
       title: 'Figma',
-      description: MCP_TOOL_URLS.figma,
+      faviconDomain: 'figma.com',
       enabled: false,
       apiKey: '',
       status: 'notConnected',
@@ -34,15 +24,15 @@ export function createDefaultMcpToolsStack(): McpToolDemoRow[] {
     },
     {
       title: 'Github',
-      description: MCP_TOOL_URLS.github,
+      faviconDomain: 'github.com',
       enabled: true,
       apiKey: '',
       status: 'connected',
       authMethod: 'oauth',
     },
     {
-      title: 'JumpCloud Labs Admin',
-      description: MCP_TOOL_URLS.jumpcloudLabsAdmin,
+      title: 'Notion',
+      faviconDomain: 'notion.so',
       enabled: false,
       apiKey: '',
       status: 'notConnected',
@@ -50,7 +40,7 @@ export function createDefaultMcpToolsStack(): McpToolDemoRow[] {
     },
     {
       title: 'Atlassian',
-      description: MCP_TOOL_URLS.atlassian,
+      faviconDomain: 'atlassian.com',
       enabled: true,
       apiKey: '',
       status: 'notConnected',
@@ -58,7 +48,7 @@ export function createDefaultMcpToolsStack(): McpToolDemoRow[] {
     },
     {
       title: 'Salesforce',
-      description: MCP_TOOL_URLS.salesforce,
+      faviconDomain: 'salesforce.com',
       enabled: false,
       apiKey: '',
       status: 'notConnected',
@@ -66,7 +56,7 @@ export function createDefaultMcpToolsStack(): McpToolDemoRow[] {
     },
     {
       title: 'Slack',
-      description: MCP_TOOL_URLS.slack,
+      faviconDomain: 'slack.com',
       enabled: false,
       apiKey: '',
       status: 'notConnected',

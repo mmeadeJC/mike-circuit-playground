@@ -13,7 +13,7 @@ import {
 import { useChartThemeOptions } from '../shared/composables';
 
 const meta: Meta<typeof Agent0ServerDetailView> = {
-  title: 'AI Connector - Burak/Admin Portal/Concept Parts/Server',
+  title: 'AI Gateway - Burak/Admin Portal/Concept Parts/Server',
   component: Agent0ServerDetailView,
   parameters: {
     layout: 'fullscreen',

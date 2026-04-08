@@ -13,8 +13,8 @@ const props = withDefaults(
   defineProps<{
     /** Tool name (e.g. MCP provider) shown as the card title */
     title: string;
-    /** Domain or MCP endpoint URL shown under the title */
-    description?: string;
+    /** Hostname for Google’s favicon service (e.g. figma.com); 20×20 icon shown next to the title */
+    faviconDomain?: string;
     /** Connection status shown in the header tag */
     status: UserAuthCardStatus;
     authMethod: UserAuthCardAuthMethod;
@@ -23,7 +23,6 @@ const props = withDefaults(
     apiKeyDocumentationHref?: string;
   }>(),
   {
-    description: '',
     apiKeyPlaceholder: 'Enter API key',
     apiKeyDocumentationHref: '#',
   }
@@ -42,6 +41,12 @@ const emit = defineEmits<{
 const headingId = useId();
 const regionId = useId();
 const checkboxId = useId();
+
+const faviconSrc = computed(() => {
+  const domain = props.faviconDomain?.trim();
+  if (!domain) return null;
+  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=64`;
+});
 
 const tagDisplay = computed(() => {
   switch (props.status) {
@@ -67,7 +72,12 @@ const docLinkAttrs = computed(() => {
   return {};
 });
 
+const apiKeyIsEmpty = computed(() => !apiKey.value.trim());
+
+const saveDisabledTooltip = 'Enter an API key before saving.';
+
 function onSave() {
+  if (apiKeyIsEmpty.value) return;
   emit('save', apiKey.value);
 }
 </script>
@@ -78,30 +88,36 @@ function onSave() {
     :aria-label="title"
   >
     <div
-      class="flex items-start gap-sm p-md min-h-0 border-b transition-colors duration-168 ease-out"
+      class="flex items-center gap-3 p-md min-h-0 border-b transition-colors duration-168 ease-out"
       :class="enabled ? 'border-neutral-default_solid' : 'border-transparent'"
     >
-      <div class="user-auth-card__checkbox-wrap shrink-0">
-        <Checkbox
-          v-model="enabled"
-          binary
-          :input-id="checkboxId"
-          :aria-label="`Show connection options for ${title}`"
-          :aria-controls="regionId"
-          :aria-expanded="enabled"
-        />
-      </div>
-      <div class="flex-1 min-w-0 flex flex-col gap-xs">
-        <h3 :id="headingId" class="text-heading-3 text-neutral-base m-0 min-w-0 truncate">
-          {{ title }}
-        </h3>
-        <p
-          v-if="description"
-          class="text-body-sm text-neutral-subtle m-0 min-w-0 truncate"
-        >
-          {{ description }}
-        </p>
-      </div>
+      <label
+        :for="checkboxId"
+        class="flex min-h-0 min-w-0 flex-1 cursor-pointer items-center gap-3"
+      >
+        <span class="shrink-0">
+          <Checkbox
+            v-model="enabled"
+            binary
+            :input-id="checkboxId"
+            :aria-controls="enabled ? regionId : undefined"
+            :aria-expanded="enabled"
+          />
+        </span>
+        <span class="flex min-h-0 min-w-0 flex-1 flex-row items-center gap-sm">
+          <img
+            v-if="faviconSrc"
+            :src="faviconSrc"
+            width="20"
+            height="20"
+            class="size-5 shrink-0 rounded-xs"
+            alt=""
+          />
+          <h3 :id="headingId" class="text-heading-3 text-neutral-base m-0 min-w-0 truncate">
+            {{ title }}
+          </h3>
+        </span>
+      </label>
       <Tag
         v-if="enabled"
         :value="tagDisplay.value"
@@ -111,82 +127,86 @@ function onSave() {
     </div>
 
     <div
+      v-if="enabled"
       :id="regionId"
-      class="grid min-h-0 overflow-hidden transition-[grid-template-rows] duration-168 ease-out"
-      :class="enabled ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'"
+      class="min-h-0 overflow-hidden"
       role="region"
       :aria-labelledby="headingId"
-      :aria-hidden="!enabled"
     >
-      <div class="min-h-0 overflow-hidden" :inert="!enabled">
-        <div class="px-md pb-md pt-md flex flex-col gap-md">
-          <template v-if="authMethod === 'apiKey'">
-            <div class="flex flex-col gap-xs">
-              <div class="flex flex-row flex-nowrap gap-sm items-end min-w-0">
-                <FormField label="API key" class="flex-1 min-w-0">
-                  <template #default="{ inputId }">
-                    <InputText
-                      :id="inputId"
-                      v-model="apiKey"
-                      class="w-full"
-                      :placeholder="apiKeyPlaceholder"
-                      autocomplete="off"
-                    />
-                  </template>
-                </FormField>
+      <div class="px-md pb-md pt-md flex flex-col gap-md">
+        <template v-if="authMethod === 'apiKey'">
+          <div class="flex flex-col gap-xs">
+            <div class="flex flex-row flex-nowrap gap-sm items-end min-w-0">
+              <FormField label="API key" class="flex-1 min-w-0">
+                <template #default="{ inputId }">
+                  <InputText
+                    :id="inputId"
+                    v-model="apiKey"
+                    class="w-full"
+                    :placeholder="apiKeyPlaceholder"
+                    autocomplete="off"
+                  />
+                </template>
+              </FormField>
+              <span
+                class="user-auth-card__save-tooltip-target inline-flex shrink-0 cursor-pointer"
+                v-tooltip.top="apiKeyIsEmpty ? saveDisabledTooltip : undefined"
+              >
                 <Button
                   label="Save"
                   severity="secondary"
                   class="shrink-0"
+                  :disabled="apiKeyIsEmpty"
                   @click="onSave"
                 />
-              </div>
-              <p class="text-sm text-neutral-subtle m-0">
-                See the
-                <a
-                  :href="apiKeyDocumentationHref"
-                  v-bind="docLinkAttrs"
-                  class="text-sm font-semibold text-link-base hover:text-link-hover active:text-link-active"
-                >
-                  documentation
-                </a>
-                for help finding the API key.
-              </p>
+              </span>
             </div>
-          </template>
-          <template v-else>
-            <div class="flex flex-row flex-nowrap gap-sm items-center min-w-0">
-              <Button
-                v-if="status !== 'connected'"
-                label="Connect via OAuth"
-                variant="outlined"
-                class="shrink-0"
-                @click="emit('connect')"
-              />
-              <Button
-                v-else
-                label="Reconnect"
-                severity="secondary"
-                variant="outlined"
-                class="shrink-0"
-                @click="emit('reconnect')"
-              />
-              <p class="text-body-sm text-neutral-subtle mx-0 mb-0 mt-px flex-1 min-w-0">
-                {{
-                  status === 'connected' ? oauthHelperWhenConnected : oauthHelperWhenDisconnected
-                }}
-              </p>
-            </div>
-          </template>
-        </div>
+            <p class="text-body-sm text-neutral-subtle m-0">
+              See the
+              <a
+                :href="apiKeyDocumentationHref"
+                v-bind="docLinkAttrs"
+                class="text-body-sm font-semibold text-link-base hover:text-link-hover active:text-link-active"
+              >
+                documentation
+              </a>
+              for help finding the API key.
+            </p>
+          </div>
+        </template>
+        <template v-else>
+          <div class="flex flex-row flex-nowrap gap-sm items-center min-w-0">
+            <Button
+              v-if="status !== 'connected'"
+              label="Connect via OAuth"
+              variant="outlined"
+              class="shrink-0"
+              @click="emit('connect')"
+            />
+            <Button
+              v-else
+              label="Reconnect"
+              severity="secondary"
+              variant="outlined"
+              class="shrink-0"
+              @click="emit('reconnect')"
+            />
+            <p class="text-body-sm text-neutral-subtle mx-0 mb-0 mt-px flex-1 min-w-0">
+              {{
+                status === 'connected' ? oauthHelperWhenConnected : oauthHelperWhenDisconnected
+              }}
+            </p>
+          </div>
+        </template>
       </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-/* Optical alignment with heading; arbitrary Tailwind mt-[3px] was not emitted in the build */
-.user-auth-card__checkbox-wrap {
-  margin-top: 3px;
+/* Let hover hit the wrapper so the tooltip works while Save is disabled. */
+.user-auth-card__save-tooltip-target :deep(button:disabled) {
+  pointer-events: none;
 }
 </style>
+

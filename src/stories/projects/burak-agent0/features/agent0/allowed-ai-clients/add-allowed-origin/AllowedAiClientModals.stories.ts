@@ -10,7 +10,7 @@ import { allowedAiClientsData } from '../../shared/data';
  * If Storybook shows “couldn’t find story after HMR”, do a full reload — IDs change when `title` changes.
  */
 const meta: Meta = {
-  title: 'AI Connector - Burak/Admin Portal/Phase 01 Parts/Allowed AI Clients/Add allowed origin',
+  title: 'AI Gateway - Burak/Admin Portal/Phase 01 Parts/Allowed AI Clients/Add allowed origin',
   parameters: {
     layout: 'fullscreen',
   },

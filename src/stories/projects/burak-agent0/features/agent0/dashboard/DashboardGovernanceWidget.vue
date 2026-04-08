@@ -40,7 +40,7 @@ const defaultLabel = computed(() => isServerScope.value ? 'All Servers' : 'All P
       <!-- Empty state -->
       <template v-if="isEmpty">
         <p class="text-neutral-subtle">
-          <span class="text-body-md-semi-bold">No conditional access policies are applied to AI Connector.</span><br>
+          <span class="text-body-md-semi-bold">No conditional access policies are applied to AI Gateway.</span><br>
           <span class="text-body-md">Create policies to control access to MCP servers and connected profiles.</span>
         </p>
         <div class="flex items-center gap-sm">

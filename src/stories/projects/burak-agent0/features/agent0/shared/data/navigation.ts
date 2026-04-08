@@ -77,7 +77,7 @@ export const menuItems = [
       { label: 'SSO Applications', leftIcon: markRaw(SsoIcon) },
       { label: 'Access Requests', leftIcon: markRaw(ClipboardDocumentCheckIcon) },
       { label: 'AI & SaaS Management', leftIcon: markRaw(SaasManagementIcon) },
-      { label: 'AI Connector', leftIcon: markRaw(CpuChipIcon), isNew: true },
+      { label: 'AI Gateway', leftIcon: markRaw(CpuChipIcon), isNew: true },
       { label: 'Vault', leftIcon: markRaw(PasswordManagerIcon), isNew: true },
       { separator: true },
       { label: 'LDAP' },

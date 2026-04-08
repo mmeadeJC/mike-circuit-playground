@@ -18,7 +18,7 @@ export const userPortalNavMenuItems = [
   { label: 'Requests', leftIcon: markRaw(TicketIcon) },
   { label: 'Tasks', leftIcon: markRaw(CheckListIcon) },
   { label: 'My Assets', leftIcon: markRaw(CubeIcon), isNew: true },
-  { label: 'AI Connector', leftIcon: markRaw(CpuChipIcon), isNew: true },
+  { label: 'AI Gateway', leftIcon: markRaw(CpuChipIcon), isNew: true },
   { label: 'Security', leftIcon: markRaw(PasswordManagerIcon) },
 ];
 

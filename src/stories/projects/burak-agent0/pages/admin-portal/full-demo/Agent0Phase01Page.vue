@@ -1,24 +1,18 @@
 <script setup lang="ts">
 import { markRaw, reactive, ref } from 'vue';
 import { AppNavigation, PageHeader, ToastNotification } from '@jumpcloud/circuit/components';
-import { CpuChipIcon } from '@heroicons/vue/24/outline';
+import { Cog6ToothIcon, CpuChipIcon } from '@heroicons/vue/24/outline';
+import Button from 'primevue/button';
 import AdminTopBar from '@/components/AdminTopBar.vue';
+import PageSaveBar from '@/components/PageSaveBar.vue';
 import Agent0ServersView from '../../../features/agent0/servers/Agent0ServersView.vue';
-import Agent0AllowedAiClientsView from '../../../features/agent0/allowed-ai-clients/Agent0AllowedAiClientsView.vue';
 import Agent0ActivityView from '../../../features/agent0/activity/Agent0ActivityView.vue';
+import Agent0RedirectURLSettingsView from '../../../features/agent0/redirect-url-settings/Agent0RedirectURLSettingsView.vue';
+import { useAgent0RedirectURLSettings } from '../../../features/agent0/redirect-url-settings/Agent0RedirectURLSettings';
 import ServerDialogPhase01 from '../../../features/agent0/servers/ServerDialogPhase01.vue';
-import {
-  useActivityFilters,
-  useAllowedAiClientFilters,
-  useServerFilters,
-} from '../../../features/agent0/shared/composables';
+import { useActivityFilters, useServerFilters } from '../../../features/agent0/shared/composables';
 import { prefixFromServerSlug } from '../../../features/agent0/shared/prefixFromName';
-import type {
-  AllowedAiClientSubmitPayload,
-  Phase01ServerFormState,
-  Server,
-  ServerFormState,
-} from '../../../features/agent0/shared/types';
+import type { Phase01ServerFormState, Server, ServerFormState } from '../../../features/agent0/shared/types';
 import {
   menuItems,
   profileMenuItems,
@@ -31,11 +25,6 @@ import {
 } from '../../../features/agent0/shared/data';
 import { activityLogColumns } from '../../../features/agent0/shared/columns';
 import {
-  pushAllowedAiClientAddedToast,
-  pushAllowedAiClientRemovedToast,
-  pushAllowedAiClientUpdatedToast,
-} from '../../../features/agent0/shared/allowedAiClientToasts';
-import {
   pushServerCreatedToast,
   pushServerDeletedToast,
   pushServerSavedToast,
@@ -43,7 +32,9 @@ import {
 import { useToast } from 'primevue/usetoast';
 
 const cpuChipIcon = markRaw(CpuChipIcon);
+const cog6ToothIcon = markRaw(Cog6ToothIcon);
 const activeTab = ref('servers');
+const currentView = ref<'main' | 'settings'>('main');
 
 /** Stub for Agent0ServersView legacy detail dialog (unused in Phase 01) */
 const serversViewFormStub = reactive<ServerFormState>({
@@ -78,12 +69,35 @@ const { filteredActivityData, handleActivitySearch } = activityFilters;
 const serverFilters = useServerFilters(serversData);
 
 const allowedAiClients = ref([...allowedAiClientsData]);
-const allowedAiClientFilters = useAllowedAiClientFilters(allowedAiClients);
+const redirectURLSettings = useAgent0RedirectURLSettings(allowedAiClients);
+
+const redirectUrlFocusKey = ref<string | null>(null);
 
 const toast = useToast();
 
+function handleAddRedirectRow() {
+  redirectUrlFocusKey.value = redirectURLSettings.addRow();
+}
+
+function clearRedirectUrlFocusKey() {
+  redirectUrlFocusKey.value = null;
+}
+
 function handleTabChange(tab: string) {
   activeTab.value = tab;
+}
+
+function openAiGatewaySettings() {
+  currentView.value = 'settings';
+  redirectURLSettings.resetDraftFromClients();
+}
+
+function backFromSettings() {
+  currentView.value = 'main';
+}
+
+function handleSaveRedirectUrls() {
+  redirectURLSettings.save((m) => toast.add(m));
 }
 
 /** Map table connection type to Phase 01 auth control */
@@ -140,48 +154,6 @@ function handlePhase01Save() {
 function handleDeleteServer() {
   pushServerDeletedToast((m) => toast.add(m));
 }
-
-function nextAllowedAiClientId() {
-  const ids = allowedAiClients.value.map((e) => e.id);
-  return ids.length === 0 ? 1 : Math.max(...ids) + 1;
-}
-
-function handleAllowedAiClientAdd(payload: AllowedAiClientSubmitPayload) {
-  allowedAiClients.value = [
-    ...allowedAiClients.value,
-    {
-      id: nextAllowedAiClientId(),
-      kind: payload.kind,
-      origin: payload.origin,
-      note: payload.note,
-      createdAt: new Date().toISOString(),
-      snapshot: payload.snapshot,
-    },
-  ];
-  pushAllowedAiClientAddedToast((m) => toast.add(m));
-}
-
-function handleAllowedAiClientUpdate(payload: AllowedAiClientSubmitPayload) {
-  if (payload.id == null) return;
-  allowedAiClients.value = allowedAiClients.value.map((e) =>
-    e.id === payload.id
-      ? {
-          ...e,
-          kind: payload.kind,
-          origin: payload.origin,
-          note: payload.note,
-          snapshot: payload.snapshot,
-        }
-      : e,
-  );
-  pushAllowedAiClientUpdatedToast((m) => toast.add(m));
-}
-
-function handleAllowedAiClientDelete(ids: number[]) {
-  allowedAiClients.value = allowedAiClients.value.filter((e) => !ids.includes(e.id));
-  pushAllowedAiClientRemovedToast((m) => toast.add(m));
-}
-
 </script>
 
 <template>
@@ -189,22 +161,44 @@ function handleAllowedAiClientDelete(ids: number[]) {
     <AppNavigation
       :menuItems="menuItems"
       :profileMenuItems="profileMenuItems"
-      activeItem="ai connector"
+      activeItem="ai gateway"
       :collapsible="true"
       :topNavToggle="true"
     />
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-      <AdminTopBar />
+      <AdminTopBar v-if="currentView === 'main'" />
+      <AdminTopBar
+        v-else
+        showBackButton
+        backButtonLabel="AI Gateway"
+        @back="backFromSettings"
+      />
 
       <PageHeader
-        title="AI Connector"
+        v-if="currentView === 'main'"
+        title="AI Gateway"
         :icon="cpuChipIcon"
         :tabs="phase01MainTabs"
         :activeTab="activeTab"
         @update:activeTab="handleTabChange"
-      />
+      >
+        <template #actions>
+          <Button
+            label="AI Gateway Settings"
+            severity="secondary"
+            variant="outlined"
+            @click="openAiGatewaySettings"
+          >
+            <template #icon="iconProps">
+              <Cog6ToothIcon :class="iconProps.class" />
+            </template>
+          </Button>
+        </template>
+      </PageHeader>
+      <PageHeader v-else title="AI Gateway Settings" :icon="cog6ToothIcon" />
 
-      <Agent0ServersView
+      <template v-if="currentView === 'main'">
+        <Agent0ServersView
           v-if="activeTab === 'servers'"
           :filteredServersData="serverFilters.filteredData.value"
           :selectedServers="selectedServers"
@@ -222,53 +216,43 @@ function handleAllowedAiClientDelete(ids: number[]) {
           @search="serverFilters.handleSearch"
         />
 
-      <Agent0AllowedAiClientsView
-        v-if="activeTab === 'allowed-ai-clients'"
-        :filtered-entries="allowedAiClientFilters.filteredAllowedAiClientsData.value"
-        :show-filter-dialog="allowedAiClientFilters.showFilterDialog.value"
-        :draft-kinds="allowedAiClientFilters.draftKinds.value"
-        :kind-options="allowedAiClientFilters.kindOptions"
-        :active-filter-chips="allowedAiClientFilters.activeFilterChips.value"
-        :draft-filter-count="allowedAiClientFilters.draftFilterCount.value"
-        @search="allowedAiClientFilters.handleSearch"
-        @open-filter-dialog="allowedAiClientFilters.openFilterDialog"
-        @apply-filters="allowedAiClientFilters.applyFilters"
-        @cancel-filter-dialog="allowedAiClientFilters.cancelFilterDialog"
-        @clear-draft-filters="allowedAiClientFilters.clearDraftFilters"
-        @clear-all-filters="allowedAiClientFilters.clearAllFilters"
-        @remove-filter-chip="allowedAiClientFilters.removeFilterChip"
-        @update:draft-kinds="allowedAiClientFilters.draftKinds.value = $event"
-        @add-entry="handleAllowedAiClientAdd"
-        @update-entry="handleAllowedAiClientUpdate"
-        @delete-entries="handleAllowedAiClientDelete"
-      />
+        <Agent0ActivityView
+          v-if="activeTab === 'activity'"
+          :activityLogColumns="activityLogColumns"
+          :filteredActivityData="filteredActivityData"
+          :showFilterDialog="activityFilters.showFilterDialog.value"
+          :draftUsers="activityFilters.draftUsers.value"
+          :draftEventTypes="activityFilters.draftEventTypes.value"
+          :draftServers="activityFilters.draftServers.value"
+          :draftStatus="activityFilters.draftStatus.value"
+          :userOptions="activityFilters.userOptions"
+          :eventTypeOptions="activityFilters.eventTypeOptions"
+          :serverOptions="activityFilters.serverOptions"
+          :statusOptions="activityFilters.statusOptions"
+          :activeFilterChips="activityFilters.activeFilterChips.value"
+          :activeFilterCount="activityFilters.activeFilterCount.value"
+          @search="handleActivitySearch"
+          @openFilterDialog="activityFilters.openFilterDialog"
+          @applyFilters="activityFilters.applyFilters"
+          @cancelFilterDialog="activityFilters.cancelFilterDialog"
+          @clearDraftFilters="activityFilters.clearDraftFilters"
+          @clearAllFilters="activityFilters.clearAllFilters"
+          @removeFilterChip="activityFilters.removeFilterChip"
+          @update:draftUsers="activityFilters.draftUsers.value = $event"
+          @update:draftEventTypes="activityFilters.draftEventTypes.value = $event"
+          @update:draftServers="activityFilters.draftServers.value = $event"
+          @update:draftStatus="activityFilters.draftStatus.value = $event"
+        />
+      </template>
 
-      <Agent0ActivityView
-        v-if="activeTab === 'activity'"
-        :activityLogColumns="activityLogColumns"
-        :filteredActivityData="filteredActivityData"
-        :showFilterDialog="activityFilters.showFilterDialog.value"
-        :draftUsers="activityFilters.draftUsers.value"
-        :draftEventTypes="activityFilters.draftEventTypes.value"
-        :draftServers="activityFilters.draftServers.value"
-        :draftStatus="activityFilters.draftStatus.value"
-        :userOptions="activityFilters.userOptions"
-        :eventTypeOptions="activityFilters.eventTypeOptions"
-        :serverOptions="activityFilters.serverOptions"
-        :statusOptions="activityFilters.statusOptions"
-        :activeFilterChips="activityFilters.activeFilterChips.value"
-        :activeFilterCount="activityFilters.activeFilterCount.value"
-        @search="handleActivitySearch"
-        @openFilterDialog="activityFilters.openFilterDialog"
-        @applyFilters="activityFilters.applyFilters"
-        @cancelFilterDialog="activityFilters.cancelFilterDialog"
-        @clearDraftFilters="activityFilters.clearDraftFilters"
-        @clearAllFilters="activityFilters.clearAllFilters"
-        @removeFilterChip="activityFilters.removeFilterChip"
-        @update:draftUsers="activityFilters.draftUsers.value = $event"
-        @update:draftEventTypes="activityFilters.draftEventTypes.value = $event"
-        @update:draftServers="activityFilters.draftServers.value = $event"
-        @update:draftStatus="activityFilters.draftStatus.value = $event"
+      <Agent0RedirectURLSettingsView
+        v-else
+        :draft-rows="redirectURLSettings.draftRows"
+        :focus-row-key="redirectUrlFocusKey"
+        @update:row-url="redirectURLSettings.setRowUrl($event.key, $event.url)"
+        @remove-row="redirectURLSettings.removeRow"
+        @add-row="handleAddRedirectRow"
+        @focus-row-handled="clearRedirectUrlFocusKey"
       />
 
       <ServerDialogPhase01
@@ -282,6 +266,17 @@ function handleAllowedAiClientDelete(ids: number[]) {
         @create="handlePhase01Create"
         @save="handlePhase01Save"
       />
+
+      <template v-if="currentView === 'settings'">
+        <PageSaveBar
+          :visible="redirectURLSettings.isDirty"
+          :saving="redirectURLSettings.isSaving"
+          :saved="redirectURLSettings.isSaved"
+          message="You have unsaved changes"
+          @save="handleSaveRedirectUrls"
+          @discard="redirectURLSettings.discard"
+        />
+      </template>
 
       <ToastNotification />
     </div>

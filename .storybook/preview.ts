@@ -40,7 +40,7 @@ const preview: Preview = {
         order: [
           'Introduction',
           'Circuit DS',
-          'AI Connector - Burak',
+          'AI Gateway - Burak',
           'Projects',
           '*',
         ],

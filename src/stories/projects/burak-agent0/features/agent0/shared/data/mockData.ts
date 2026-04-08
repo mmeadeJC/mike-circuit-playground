@@ -621,7 +621,6 @@ export const alt02MainTabs = [
 
 export const phase01MainTabs = [
   { label: 'Servers', value: 'servers' },
-  { label: 'Allowed AI Clients', value: 'allowed-ai-clients' },
   { label: 'Activity Log', value: 'activity' },
 ];
 

@@ -132,7 +132,7 @@ const pageTitle = computed(() => {
   if (currentView.value === 'profile-detail' && editingProfile.value) {
     return editingProfile.value.name;
   }
-  return currentView.value === 'settings' ? 'AI Connector Settings' : 'AI Connector';
+  return currentView.value === 'settings' ? 'AI Gateway Settings' : 'AI Gateway';
 });
 
 const pageTabs = computed(() =>
@@ -222,7 +222,7 @@ function openDeleteDialog(name: string) {
     <AppNavigation
       :menuItems="menuItems"
       :profileMenuItems="profileMenuItems"
-      activeItem="ai connector"
+      activeItem="ai gateway"
       :collapsible="true"
       :topNavToggle="true"
     />
@@ -231,13 +231,13 @@ function openDeleteDialog(name: string) {
       <AdminTopBar
         v-if="currentView === 'settings'"
         showBackButton
-        backButtonLabel="AI Connector"
+        backButtonLabel="AI Gateway"
         @back="backToMain"
       />
       <AdminTopBar
         v-if="currentView === 'profile-detail'"
         showBackButton
-        backButtonLabel="AI Connector"
+        backButtonLabel="AI Gateway"
         @back="backFromProfileDetail"
       />
 
@@ -251,7 +251,7 @@ function openDeleteDialog(name: string) {
         <template #actions>
           <Button
             v-if="currentView === 'main'"
-            label="AI Connector Settings"
+            label="AI Gateway Settings"
             severity="secondary"
             @click="openSettings"
           >

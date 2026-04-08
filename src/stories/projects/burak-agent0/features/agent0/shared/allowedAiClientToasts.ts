@@ -28,3 +28,12 @@ export function pushAllowedAiClientRemovedToast(add: ToastAdd) {
     life: 5000,
   });
 }
+
+export function pushRedirectUrlsSavedToast(add: ToastAdd) {
+  add({
+    severity: 'success',
+    summary: 'Redirect URLs saved',
+    detail: 'Your redirect URL list was updated.',
+    life: 5000,
+  });
+}

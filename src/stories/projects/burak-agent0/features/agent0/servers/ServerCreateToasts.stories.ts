@@ -11,7 +11,7 @@ import {
 } from '../shared/serverCreateToasts';
 
 const meta: Meta = {
-  title: 'AI Connector - Burak/Admin Portal/Phase 01 Parts/Server/Server create toasts',
+  title: 'AI Gateway - Burak/Admin Portal/Phase 01 Parts/Server/Server create toasts',
   parameters: {
     layout: 'fullscreen',
   },

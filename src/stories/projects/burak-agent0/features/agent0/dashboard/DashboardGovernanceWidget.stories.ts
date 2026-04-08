@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/vue3';
 import DashboardGovernanceWidget from './DashboardGovernanceWidget.vue';
 
 const meta: Meta<typeof DashboardGovernanceWidget> = {
-  title: 'AI Connector - Burak/Admin Portal/Concept Parts/Dashboard/Governance Card',
+  title: 'AI Gateway - Burak/Admin Portal/Concept Parts/Dashboard/Governance Card',
   component: DashboardGovernanceWidget,
   parameters: {
     layout: 'centered',

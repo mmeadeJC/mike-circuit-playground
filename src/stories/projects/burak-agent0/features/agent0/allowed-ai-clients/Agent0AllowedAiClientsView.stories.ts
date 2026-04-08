@@ -6,7 +6,7 @@ import { useAllowedAiClientFilters } from '../shared/composables';
 import type { AllowedAiClientSubmitPayload } from '../shared/types';
 
 const meta: Meta<typeof Agent0AllowedAiClientsView> = {
-  title: 'AI Connector - Burak/Admin Portal/Phase 01 Parts/Allowed AI Clients',
+  title: 'AI Gateway - Burak/Admin Portal/Phase 01 Parts/Allowed AI Clients',
   component: Agent0AllowedAiClientsView,
   parameters: {
     layout: 'fullscreen',

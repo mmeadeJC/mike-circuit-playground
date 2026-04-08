@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/vue3';
 import AdminTopBar from '@/components/AdminTopBar.vue';
 
 const meta: Meta<typeof AdminTopBar> = {
-  title: 'Circuit DS/Custom Components/Top bar/AdminTopBar',
+  title: 'Circuit DS/Custom Components/AdminTopBar',
   component: AdminTopBar,
   parameters: {
     layout: 'fullscreen',

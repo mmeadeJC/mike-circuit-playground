@@ -920,7 +920,7 @@ const AssetManagementPage = defineComponent({
           </PvButton>
         </div>
 
-        <!-- TopBar (list view only) -->
+        <!-- AdminTopBar (list view only) -->
         <AdminTopBar v-if="currentView === 'list'" />
 
         <PageHeader

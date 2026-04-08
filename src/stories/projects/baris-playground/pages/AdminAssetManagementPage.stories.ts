@@ -1117,7 +1117,7 @@ const AdminAssetManagementPage = defineComponent({
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-        <!-- TopBar -->
+        <!-- AdminTopBar -->
         <AdminTopBar v-if="currentView === 'list'" />
         <AdminTopBar v-else showBackButton backButtonLabel="Asset Management" @back="backToList" />
 

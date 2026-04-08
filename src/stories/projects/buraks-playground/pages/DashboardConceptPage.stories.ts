@@ -242,7 +242,7 @@ const DashboardConceptPage = defineComponent({
         :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-        <!-- Top Bar -->
+        <!-- AdminTopBar -->
         <AdminTopBar />
 
         <!-- Page Header -->

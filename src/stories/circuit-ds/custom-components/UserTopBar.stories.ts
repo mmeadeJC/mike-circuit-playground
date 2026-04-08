@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/vue3';
 import UserTopBar from '@/components/UserTopBar.vue';
 
 const meta: Meta<typeof UserTopBar> = {
-  title: 'Circuit DS/Custom Components/Top bar/UserTopBar',
+  title: 'Circuit DS/Custom Components/UserTopBar',
   component: UserTopBar,
   parameters: {
     layout: 'fullscreen',

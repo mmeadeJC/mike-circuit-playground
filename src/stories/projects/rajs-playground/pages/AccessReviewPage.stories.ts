@@ -793,7 +793,7 @@ const AccessReviewPage = defineComponent({
           </PvButton>
         </div>
 
-        <!-- TopBar (list view only) -->
+        <!-- AdminTopBar (list view only) -->
         <AdminTopBar v-if="currentView === 'list'" />
 
         <!-- ═══════════════ LIST VIEW ═══════════════ -->

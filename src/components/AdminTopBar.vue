@@ -7,22 +7,22 @@ import { AiSearchIcon, CustomerSupportIcon, CheckListIcon } from '@jumpcloud/ico
 import { AiAgentButton } from '@jumpcloud/circuit/components';
 import { LifebuoyIcon, FlagIcon, ArrowLeftIcon } from '@heroicons/vue/24/outline';
 
-export interface TopBarIconButton {
+export interface AdminTopBarIconButton {
   icon: Component;
   label: string;
   onClick?: () => void;
 }
 
-export interface TopBarProps {
+export interface AdminTopBarProps {
   searchPlaceholder?: string;
   shortcutLabel?: string;
-  iconButtons?: TopBarIconButton[];
+  iconButtons?: AdminTopBarIconButton[];
   showSearchIcon?: boolean;
   showBackButton?: boolean;
   backButtonLabel?: string;
 }
 
-const props = withDefaults(defineProps<TopBarProps>(), {
+const props = withDefaults(defineProps<AdminTopBarProps>(), {
   searchPlaceholder: 'Search User, Devices, Apps, etc...',
   shortcutLabel: '⌘/Ctrl + K',
   showSearchIcon: true,
@@ -37,7 +37,7 @@ const emit = defineEmits<{
   (e: 'back'): void;
 }>();
 
-const defaultIconButtons: TopBarIconButton[] = [
+const defaultIconButtons: AdminTopBarIconButton[] = [
   { icon: CustomerSupportIcon, label: 'Customer Support' },
   { icon: LifebuoyIcon, label: 'Lifebuoy' },
   { icon: FlagIcon, label: 'Flag' },
@@ -46,7 +46,7 @@ const defaultIconButtons: TopBarIconButton[] = [
 
 const activeIconButtons = computed(() => props.iconButtons ?? defaultIconButtons);
 
-function handleIconButtonClick(button: TopBarIconButton) {
+function handleIconButtonClick(button: AdminTopBarIconButton) {
   if (button.onClick) {
     button.onClick();
   }

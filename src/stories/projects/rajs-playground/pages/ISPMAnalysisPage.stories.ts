@@ -53,7 +53,7 @@ import {
   WorkflowIcon,
 } from '@jumpcloud/icons';
 
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
 import ListPageLayout from '@/components/layout/page-layouts/ListPageLayout.vue';
 
@@ -342,7 +342,7 @@ const ISPMAnalysisPage = defineComponent({
     DataTableToolbar,
     MessageNotification,
     PageHeader,
-    TopBar,
+    AdminTopBar,
     DetailsKeyValue,
     ListPageLayout,
     PvButton: Button,
@@ -637,7 +637,7 @@ const ISPMAnalysisPage = defineComponent({
         :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-        <TopBar />
+        <AdminTopBar />
         <PageHeader
           title="ISPM Analysis"
           subtitleText="Identity security posture — who has access to what"

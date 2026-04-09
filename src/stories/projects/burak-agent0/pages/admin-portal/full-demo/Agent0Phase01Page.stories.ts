@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/vue3';
 import Agent0Phase01Page from './Agent0Phase01Page.vue';
 
 const meta: Meta<typeof Agent0Phase01Page> = {
-  title: 'Projects/Burak - AI Connector/Full Demo',
+  title: 'AI Gateway - Burak/Admin Portal/Full Demo',
   component: Agent0Phase01Page,
   parameters: {
     layout: 'fullscreen',

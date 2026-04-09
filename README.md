@@ -68,7 +68,7 @@ circuit-playground/
 ├── .storybook/              # Storybook configuration (main.ts, preview.ts)
 ├── src/
 │   ├── assets/              # Global styles (Tailwind entry point)
-│   ├── components/          # Shared Vue components (e.g. TopBar)
+│   ├── components/          # Shared Vue components (e.g. AdminTopBar, UserTopBar)
 │   └── stories/
 │       ├── Introduction.mdx           # Welcome page
 │       ├── circuit-ds/                # Component-level stories

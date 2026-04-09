@@ -7,7 +7,7 @@ import { getProfileColumns } from '../shared/columns';
 import { useProfileFilters } from '../shared/composables';
 
 const meta: Meta<typeof Agent0ProfilesView> = {
-  title: 'Projects/Burak - AI Connector/Concept Parts/Profile',
+  title: 'AI Gateway - Burak/Admin Portal/Concept Parts/Profile',
   component: Agent0ProfilesView,
   parameters: {
     layout: 'fullscreen',

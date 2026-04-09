@@ -27,7 +27,7 @@ import {
   PasswordManagerIcon,
   WorkflowIcon,
 } from '@jumpcloud/icons';
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 import AdminSettingsPage from './AdminSettingsPage.vue';
 
 const menuItems = [
@@ -133,7 +133,7 @@ const AdminSettingsPageStory = defineComponent({
   components: {
     AppNavigation,
     PageHeader,
-    TopBar,
+    AdminTopBar,
     AdminSettingsPage,
     Cog6ToothIcon,
   },
@@ -150,7 +150,7 @@ const AdminSettingsPageStory = defineComponent({
         :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-        <TopBar />
+        <AdminTopBar />
         <PageHeader
           title="Settings"
           subtitleText="Manage your organization's configuration and preferences"

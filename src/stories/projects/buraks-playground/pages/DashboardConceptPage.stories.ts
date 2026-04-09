@@ -26,7 +26,7 @@ import {
   ArrowUpIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 
 // JumpCloud custom icons
 import {
@@ -169,7 +169,7 @@ const DashboardConceptPage = defineComponent({
     AppNavigation,
     PvButton: Button,
     PvTag: Tag,
-    TopBar,
+    AdminTopBar,
     CollapsiblePanel,
     RectangleStackIcon,
     EllipsisHorizontalIcon,
@@ -242,8 +242,8 @@ const DashboardConceptPage = defineComponent({
         :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-        <!-- Top Bar -->
-        <TopBar />
+        <!-- AdminTopBar -->
+        <AdminTopBar />
 
         <!-- Page Header -->
         <div class="border-b border-neutral-default_solid bg-neutral-base shrink-0">

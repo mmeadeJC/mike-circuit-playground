@@ -39,7 +39,7 @@ import {
 
 import { CheckCircleIcon as CheckCircleSolidIcon } from '@heroicons/vue/24/solid';
 
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 
 import {
   DeviceManagementIcon,
@@ -437,7 +437,7 @@ const CisBenchmarkPage = defineComponent({
     PvButton: Button,
     PvTag: Tag,
     PvSelectButton: SelectButton,
-    TopBar,
+    AdminTopBar,
     ShieldCheckIcon,
     CheckCircleSolidIcon,
     XCircleIcon,
@@ -544,7 +544,7 @@ const CisBenchmarkPage = defineComponent({
         :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-        <TopBar />
+        <AdminTopBar />
 
         <PageHeader
           title="CIS Benchmarks"

@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { PageHeader } from '@jumpcloud/circuit/components';
 import Tag from 'primevue/tag';
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 import AdminDemoNav from '@/components/Nav/AdminDemoNav.vue';
 import DeviceCard from '../components/DeviceCard.vue';
 import { useDemoSettings } from '@/composables/useDemoSettings';
@@ -25,7 +25,7 @@ const sourceSeverity = computed(() => isLive.value ? 'success' : 'info');
       @settings-saved="reload"
     />
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-      <TopBar />
+      <AdminTopBar />
       <PageHeader title="Devices" subtitle="Manage your fleet">
         <template #actions>
           <Tag :value="sourceLabel" :severity="sourceSeverity" />

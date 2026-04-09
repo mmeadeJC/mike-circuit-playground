@@ -5,7 +5,7 @@ import { serversData, authStyleOptions } from '../shared/data';
 import { useServerFilters } from '../shared/composables';
 
 const meta: Meta<typeof Agent0ServersView> = {
-  title: 'Projects/Burak - AI Connector/Phase 01 Parts/Server',
+  title: 'AI Gateway - Burak/Admin Portal/Phase 01 Parts/Server',
   component: Agent0ServersView,
   parameters: {
     layout: 'fullscreen',

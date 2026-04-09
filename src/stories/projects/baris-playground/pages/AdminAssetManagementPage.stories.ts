@@ -60,7 +60,7 @@ import {
 } from '@heroicons/vue/24/outline';
 
 // @ts-expect-error Vue SFC import
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 // @ts-expect-error Vue SFC import
 import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
 // @ts-expect-error Vue SFC import
@@ -790,7 +790,7 @@ const AdminAssetManagementPage = defineComponent({
     PvMenu: Menu,
     PvSelectButton: SelectButton,
     PvMultiSelect: MultiSelect,
-    TopBar,
+    AdminTopBar,
     DetailPageLayout,
     ConfigPageLayout,
     DetailsKeyValue,
@@ -1117,9 +1117,9 @@ const AdminAssetManagementPage = defineComponent({
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-        <!-- TopBar -->
-        <TopBar v-if="currentView === 'list'" />
-        <TopBar v-else showBackButton backButtonLabel="Asset Management" @back="backToList" />
+        <!-- AdminTopBar -->
+        <AdminTopBar v-if="currentView === 'list'" />
+        <AdminTopBar v-else showBackButton backButtonLabel="Asset Management" @back="backToList" />
 
         <!-- PageHeader -->
         <PageHeader

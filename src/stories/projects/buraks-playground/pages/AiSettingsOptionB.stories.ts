@@ -31,7 +31,7 @@ import {
   ChevronRightIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
 
 import {
@@ -170,7 +170,7 @@ const AiSettingsOptionB = defineComponent({
     PvButton: Button,
     PvTag: Tag,
     PvDivider: Divider,
-    TopBar,
+    AdminTopBar,
     PageHeader,
     ConfigPageLayout,
     CollapsiblePanel,
@@ -283,7 +283,7 @@ const AiSettingsOptionB = defineComponent({
         :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-        <TopBar />
+        <AdminTopBar />
         <PageHeader
           title="Settings"
           :icon="$options.components.SparklesIcon"

@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 
-const meta: Meta<typeof TopBar> = {
-  title: 'Circuit DS/Custom Components/TopBar',
-  component: TopBar,
+const meta: Meta<typeof AdminTopBar> = {
+  title: 'Circuit DS/Custom Components/AdminTopBar',
+  component: AdminTopBar,
   parameters: {
     layout: 'fullscreen',
   },
@@ -33,7 +33,7 @@ const meta: Meta<typeof TopBar> = {
 
 export default meta;
 
-type Story = StoryObj<typeof TopBar>;
+type Story = StoryObj<typeof AdminTopBar>;
 
 export const Default: Story = {};
 

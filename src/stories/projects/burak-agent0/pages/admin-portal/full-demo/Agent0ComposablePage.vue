@@ -3,22 +3,22 @@ import { computed, markRaw, reactive, ref } from 'vue';
 import { AppNavigation, PageHeader, SeverityDialog } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import { Cog6ToothIcon, CpuChipIcon } from '@heroicons/vue/24/outline';
-import TopBar from '@/components/TopBar.vue';
-import Agent0DashboardView from '../features/agent0/dashboard/Agent0DashboardView.vue';
-import Agent0ServersView from '../features/agent0/servers/Agent0ServersView.vue';
-import Agent0ProfilesView from '../features/agent0/profiles/Agent0ProfilesView.vue';
-import Agent0ProfileDialog from '../features/agent0/profiles/Agent0ProfileDialog.vue';
-import Agent0ActivityView from '../features/agent0/activity/Agent0ActivityView.vue';
-import Agent0SettingsView from '../features/agent0/settings/Agent0SettingsView.vue';
-import Agent0ProfileDetailView from '../features/agent0/profile-detail/Agent0ProfileDetailView.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
+import Agent0DashboardView from '../../../features/agent0/dashboard/Agent0DashboardView.vue';
+import Agent0ServersView from '../../../features/agent0/servers/Agent0ServersView.vue';
+import Agent0ProfilesView from '../../../features/agent0/profiles/Agent0ProfilesView.vue';
+import Agent0ProfileDialog from '../../../features/agent0/profiles/Agent0ProfileDialog.vue';
+import Agent0ActivityView from '../../../features/agent0/activity/Agent0ActivityView.vue';
+import Agent0SettingsView from '../../../features/agent0/settings/Agent0SettingsView.vue';
+import Agent0ProfileDetailView from '../../../features/agent0/profile-detail/Agent0ProfileDetailView.vue';
 import {
   useActivityFilters,
   useServerFilters,
   useProfileFilters,
   useChartThemeOptions,
   useProfileDetailBindings,
-} from '../features/agent0/shared/composables';
-import type { Server, Profile } from '../features/agent0/shared/types';
+} from '../../../features/agent0/shared/composables';
+import type { Server, Profile } from '../../../features/agent0/shared/types';
 import {
   menuItems,
   profileMenuItems,
@@ -43,13 +43,13 @@ import {
   getProfileMonthlyChartData,
   getProfileTopServerUsage,
   profileDashboardStats,
-} from '../features/agent0/shared/data';
+} from '../../../features/agent0/shared/data';
 import {
   getProfileColumns,
   activityLogColumns,
   profileServerColumns,
   profileUserGroupColumns,
-} from '../features/agent0/shared/columns';
+} from '../../../features/agent0/shared/columns';
 
 const cpuChipIcon = markRaw(CpuChipIcon);
 const currentView = ref<'main' | 'settings' | 'profile-detail'>('main');
@@ -132,7 +132,7 @@ const pageTitle = computed(() => {
   if (currentView.value === 'profile-detail' && editingProfile.value) {
     return editingProfile.value.name;
   }
-  return currentView.value === 'settings' ? 'AI Connector Settings' : 'AI Connector';
+  return currentView.value === 'settings' ? 'AI Gateway Settings' : 'AI Gateway';
 });
 
 const pageTabs = computed(() =>
@@ -222,22 +222,22 @@ function openDeleteDialog(name: string) {
     <AppNavigation
       :menuItems="menuItems"
       :profileMenuItems="profileMenuItems"
-      activeItem="ai connector"
+      activeItem="ai gateway"
       :collapsible="true"
       :topNavToggle="true"
     />
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-      <TopBar v-if="currentView === 'main'" />
-      <TopBar
+      <AdminTopBar v-if="currentView === 'main'" />
+      <AdminTopBar
         v-if="currentView === 'settings'"
         showBackButton
-        backButtonLabel="AI Connector"
+        backButtonLabel="AI Gateway"
         @back="backToMain"
       />
-      <TopBar
+      <AdminTopBar
         v-if="currentView === 'profile-detail'"
         showBackButton
-        backButtonLabel="AI Connector"
+        backButtonLabel="AI Gateway"
         @back="backFromProfileDetail"
       />
 
@@ -251,7 +251,7 @@ function openDeleteDialog(name: string) {
         <template #actions>
           <Button
             v-if="currentView === 'main'"
-            label="AI Connector Settings"
+            label="AI Gateway Settings"
             severity="secondary"
             @click="openSettings"
           >

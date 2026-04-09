@@ -1,4 +1,5 @@
 export * from './useActivityFilters';
+export * from './useAllowedAiClientFilters';
 export * from './useServerFilters';
 export * from './useProfileFilters';
 export * from './useResponsiveServerPanel';

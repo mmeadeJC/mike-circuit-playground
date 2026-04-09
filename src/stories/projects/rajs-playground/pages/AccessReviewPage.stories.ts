@@ -46,7 +46,7 @@ import {
   HandThumbDownIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
 
 import {
@@ -640,7 +640,7 @@ const AccessReviewPage = defineComponent({
     PvButton: Button,
     PvTag: Tag,
     PvDivider: Divider,
-    TopBar,
+    AdminTopBar,
     DetailsKeyValue,
     ArrowLeftIcon,
     ChevronRightIcon,
@@ -793,8 +793,8 @@ const AccessReviewPage = defineComponent({
           </PvButton>
         </div>
 
-        <!-- TopBar (list view only) -->
-        <TopBar v-if="currentView === 'list'" />
+        <!-- AdminTopBar (list view only) -->
+        <AdminTopBar v-if="currentView === 'list'" />
 
         <!-- ═══════════════ LIST VIEW ═══════════════ -->
         <template v-if="currentView === 'list'">

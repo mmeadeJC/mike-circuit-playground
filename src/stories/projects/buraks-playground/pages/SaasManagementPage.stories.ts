@@ -34,7 +34,7 @@ import {
   ClockIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 
 import {
   DeviceManagementIcon,
@@ -178,7 +178,7 @@ const SaasManagementPage = defineComponent({
     CollapsiblePanel,
     PvButton: Button,
     PvTag: Tag,
-    TopBar,
+    AdminTopBar,
     ArrowUpIcon,
     ArrowDownIcon,
     ExclamationTriangleIcon,
@@ -265,7 +265,7 @@ const SaasManagementPage = defineComponent({
         :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-        <TopBar />
+        <AdminTopBar />
 
         <PageHeader
           title="SaaS Management"

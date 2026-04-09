@@ -27,7 +27,7 @@ import {
   PasswordManagerIcon,
   WorkflowIcon,
 } from '@jumpcloud/icons';
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 import SimplePage from './SimplePage.vue';
 
 const menuItems = [
@@ -133,7 +133,7 @@ const SimplePageStory = defineComponent({
   components: {
     AppNavigation,
     PageHeader,
-    TopBar,
+    AdminTopBar,
     SimplePage,
     HomeIcon,
   },
@@ -150,7 +150,7 @@ const SimplePageStory = defineComponent({
         :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-        <TopBar />
+        <AdminTopBar />
         <PageHeader
           title="Farhana's Playground"
           subtitleText="A simple page with a header and a button"

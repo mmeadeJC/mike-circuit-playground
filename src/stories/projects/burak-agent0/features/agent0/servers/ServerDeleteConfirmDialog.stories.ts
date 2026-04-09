@@ -4,7 +4,7 @@ import Button from 'primevue/button';
 import ServerDeleteConfirmDialog from './ServerDeleteConfirmDialog.vue';
 
 const meta: Meta<typeof ServerDeleteConfirmDialog> = {
-  title: 'Projects/Burak - AI Connector/Phase 01 Parts/Server/Delete server confirmation',
+  title: 'AI Gateway - Burak/Admin Portal/Phase 01 Parts/Server/Delete server confirmation',
   component: ServerDeleteConfirmDialog,
   parameters: {
     layout: 'centered',

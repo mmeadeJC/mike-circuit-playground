@@ -46,7 +46,7 @@ import {
 } from '@heroicons/vue/24/outline';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/solid';
 
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
 import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
 import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
@@ -314,7 +314,7 @@ const UserDetailPage = defineComponent({
     PvDivider: Divider,
     CircuitDataTable,
     DataTableToolbar,
-    TopBar,
+    AdminTopBar,
     DetailsKeyValue,
     DetailPageLayout,
     ConfigPageLayout,
@@ -511,7 +511,7 @@ const UserDetailPage = defineComponent({
         :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <TopBar />
+        <AdminTopBar />
 
         <PageHeader
           title="Burak Başcı"

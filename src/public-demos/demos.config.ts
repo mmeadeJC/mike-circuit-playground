@@ -1,5 +1,7 @@
 /**
  * Demo manifest — the single source of truth.
+ * 
+ * https://demos.jumpcloud-test.workers.dev/{{demo.id}}-latest/
  *
  * Add your demo here and it will:
  *   1. Show up in the local dev server (pnpm dev:demos)
@@ -20,11 +22,10 @@ export const demos = [
   {
     id: 'agent0-composable',
     name: 'Agent Zero — Composable',
-    component: '@/stories/projects/burak-agent0/pages/Agent0ComposablePage.vue',
+    component: '@/stories/projects/burak-agent0/pages/admin-portal/full-demo/Agent0ComposablePage.vue',
   },
   {
-    id: 'agent0-alt02',
-    name: 'Agent Zero — Alternative 02',
-    component: '@/stories/projects/burak-agent0/pages/Agent0Alt02Page.vue',
-  },
+    id: 'ai-assistant-phase01',
+    name: 'AI Assistant | Phase 01',
+    component: '@/stories/projects/burak-agent0/pages/admin-portal/full-demo/Agent0Phase01Page.vue',  },
 ];

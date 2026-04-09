@@ -2,7 +2,7 @@
  * WorkflowsDashboard — Vue + Circuit DS version (converted from React).
  *
  * Features:
- *  - Full dashboard layout: AppNavigation, TopBar, PageHeader, DataTable
+ *  - Full dashboard layout: AppNavigation, AdminTopBar, PageHeader, DataTable
  *  - isEmpty toggle to preview the empty-state illustration + Create CTA
  *  - Add Workflow modal with Name, Type (Event / Schedule), and Status toggle
  *  - All mock data sourced from the reference design
@@ -47,7 +47,7 @@ import {
   DocumentDuplicateIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '../../../../components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 
 import {
   DeviceManagementIcon,
@@ -304,7 +304,7 @@ const WorkflowsDashboard = defineComponent({
     RadioButtonWithLabel,
     RadioButtonGroup,
     FormField,
-    TopBar,
+    AdminTopBar,
     PvButton: Button,
     PvDialog: Dialog,
     PvInputText: InputText,
@@ -406,7 +406,7 @@ const WorkflowsDashboard = defineComponent({
       />
 
       <div class="flex-[1_1_0] flex flex-col min-w-0 w-full h-full self-stretch">
-        <TopBar />
+        <AdminTopBar />
 
         <div class="flex-[1_1_0] flex flex-col min-h-0 h-full w-full">
           <PageHeader

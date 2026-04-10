@@ -3,7 +3,7 @@ import UserDemoNav from '@/components/Nav/UserDemoNav.vue';
 import UserTopBar from '@/components/UserTopBar.vue';
 
 const meta: Meta = {
-  title: 'AI Gateway - Burak/User Portal/Full Demo',
+  title: 'AI Gateway - Burak/User Portal/Full Demo/Overview',
   tags: ['!autodocs'],
   parameters: {
     layout: 'fullscreen',

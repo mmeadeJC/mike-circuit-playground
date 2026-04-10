@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/vue3';
 import UserAuthPage from './UserAuthPage.vue';
 
 const meta: Meta<typeof UserAuthPage> = {
-  title: 'AI Gateway - Burak/User Portal/Full Demo',
+  title: 'AI Gateway - Burak/User Portal/Full Demo/User Auth',
   component: UserAuthPage,
   tags: ['!autodocs'],
   parameters: {

@@ -29,12 +29,17 @@ export interface AuditReportUserSection {
   outcomes: AuditReportGroupOutcome[];
 }
 
+/** Document hash algorithm label; matches what `sha256HexUtf8` actually computes in this environment. */
+export type AuditReportDocumentHashAlgorithm =
+  | 'SHA-256'
+  | 'Playground digest (Web Crypto unavailable)';
+
 export interface AccessReviewAuditReportPayload {
   campaignId: string;
   campaignName: string;
   generatedAtIso: string;
   generatedAtDisplayUtc: string;
-  algorithm: 'SHA-256';
+  algorithm: AuditReportDocumentHashAlgorithm;
   integrityDescription: string;
   outcomesDescription: string;
   users: AuditReportUserSection[];
@@ -108,8 +113,35 @@ export function buildCanonicalReportPayloadForHash(payload: AccessReviewAuditRep
   return JSON.stringify(compact);
 }
 
+/** True when `sha256HexUtf8` uses SubtleCrypto SHA-256 (same guard as the async hasher). */
+export function documentHashUsesSha256(): boolean {
+  return typeof crypto !== 'undefined' && !!crypto.subtle;
+}
+
+function auditReportDocumentHashAlgorithm(): AuditReportDocumentHashAlgorithm {
+  return documentHashUsesSha256() ? 'SHA-256' : 'Playground digest (Web Crypto unavailable)';
+}
+
+function integrityDescriptionForAlgorithm(algorithm: AuditReportDocumentHashAlgorithm): string {
+  if (algorithm === 'SHA-256') {
+    return (
+      'This snapshot was generated at the time below. The document hash is SHA-256 over the canonical report payload ' +
+      '(campaign metadata, review rows, and audit identifiers) for tamper detection.'
+    );
+  }
+  return (
+    'This snapshot was generated at the time below. Web Crypto (SubtleCrypto) is not available here, so the document ' +
+    'hash is a deterministic playground digest (not SHA-256) over the same canonical payload. External SHA-256 ' +
+    'verification will not match; reproduce the value using this playground export only.'
+  );
+}
+
+/**
+ * Hex document hash for the UTF-8 canonical payload. Uses **SHA-256** when `crypto.subtle` exists; otherwise a
+ * deterministic FNV-style playground digest (64 hex chars) — see `documentHashUsesSha256()`.
+ */
 export async function sha256HexUtf8(text: string): Promise<string> {
-  if (typeof crypto !== 'undefined' && crypto.subtle) {
+  if (documentHashUsesSha256()) {
     const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
     return Array.from(new Uint8Array(buf))
       .map((b) => b.toString(16).padStart(2, '0'))
@@ -184,14 +216,14 @@ export function buildAccessReviewAuditReport(campaign: AccessReviewCampaign): Ac
     };
   });
 
+  const algorithm = auditReportDocumentHashAlgorithm();
   return {
     campaignId: campaign.id,
     campaignName: campaign.name,
     generatedAtIso,
     generatedAtDisplayUtc: formatUtcMedium(generatedAtIso),
-    algorithm: 'SHA-256',
-    integrityDescription:
-      'This snapshot was generated at the time below. The document hash is computed over the canonical report payload (campaign metadata, review rows, and audit identifiers) for tamper detection.',
+    algorithm,
+    integrityDescription: integrityDescriptionForAlgorithm(algorithm),
     outcomesDescription:
       'Each user begins with an identity row, followed by one row per access target (group or application) reviewed. Multiple reviewers may appear for the same target when your completion policy requires it.',
     users,

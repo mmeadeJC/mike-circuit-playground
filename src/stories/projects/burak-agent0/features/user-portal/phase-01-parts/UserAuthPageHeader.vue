@@ -15,12 +15,18 @@ const props = withDefaults(
     arrowImageSrc?: string;
     /** Override JumpCloud mark in the left box (default: bundled brand SVG, 32×32) */
     jumpCloudBrandSrc?: string;
+    /** When false, only the JumpCloud / arrow / tool icons render (no title or description). */
+    showTitleAndDescription?: boolean;
+    /** When false, the bidirectional arrow image between the two service marks is omitted. */
+    showConnectionArrows?: boolean;
   }>(),
   {
     toolName: 'Cursor',
     description:
       'Review the tool connections below and authorize which ones Cursor can access through JumpCloud.',
     toolFaviconSrc: 'https://cursor.com/favicon.svg',
+    showTitleAndDescription: true,
+    showConnectionArrows: true,
   }
 );
 
@@ -54,6 +60,7 @@ const resolvedJumpCloudBrandSrc = computed(() => {
         />
       </div>
       <img
+        v-if="showConnectionArrows"
         :src="resolvedArrowSrc"
         alt=""
         class="h-6 w-auto max-w-full shrink-0 object-contain"
@@ -71,7 +78,10 @@ const resolvedJumpCloudBrandSrc = computed(() => {
         />
       </div>
     </div>
-    <div class="flex w-full flex-col gap-sm">
+    <div
+      v-if="showTitleAndDescription"
+      class="flex w-full flex-col gap-sm"
+    >
       <h1 class="text-heading-1 text-neutral-base m-0">
         Authorize Tool Access for {{ toolName }}
       </h1>

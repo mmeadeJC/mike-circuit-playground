@@ -27,5 +27,21 @@ export const demos = [
   {
     id: 'ai-assistant-phase01',
     name: 'AI Assistant | Phase 01',
-    component: '@/stories/projects/burak-agent0/pages/admin-portal/full-demo/Agent0Phase01Page.vue',  },
+    component: '@/stories/projects/burak-agent0/pages/admin-portal/full-demo/Agent0Phase01Page.vue',
+  },
+  {
+    id: 'agent0-alt02',
+    name: 'Agent Zero — Alternative 02',
+    component: '@/stories/projects/burak-agent0/pages/Agent0Alt02Page.vue',
+  },
+  {
+    id: 'access-reviews-m1-admin',
+    name: 'Access Reviews — Milestone 1 (Admin)',
+    component: '@/stories/projects/access-reviews-milestone1/pages/AccessReviewsAdminPage.vue',
+  },
+  {
+    id: 'access-reviews-m1-reviewer',
+    name: 'Access Reviews — Milestone 1 (Reviewer)',
+    component: '@/stories/projects/access-reviews-milestone1/pages/AccessReviewsReviewerPage.vue',
+  },
 ];

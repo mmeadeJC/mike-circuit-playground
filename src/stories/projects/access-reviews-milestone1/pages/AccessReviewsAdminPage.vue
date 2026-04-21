@@ -8,7 +8,7 @@ import Tab from 'primevue/tab';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 import { AppNavigation, PageHeader } from '@jumpcloud/circuit/components';
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 import ListPageLayout from '@/components/layout/page-layouts/ListPageLayout.vue';
 import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
 import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
@@ -139,13 +139,13 @@ function backFromSettings() {
       :topNavToggle="true"
     />
     <div class="flex flex-1 flex-col min-w-0 overflow-hidden">
-      <TopBar
+      <AdminTopBar
         v-if="adminView !== 'settings'"
       />
-      <TopBar
+      <AdminTopBar
         v-else
-        showBackButton
-        backButtonLabel="Access Reviews"
+        show-back-button
+        back-button-label="Access Reviews"
         @back="backFromSettings"
       />
       <PageHeader

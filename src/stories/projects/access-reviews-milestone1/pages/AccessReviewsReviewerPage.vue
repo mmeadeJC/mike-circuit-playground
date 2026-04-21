@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { provide } from 'vue';
 import { PageHeader } from '@jumpcloud/circuit/components';
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 import { ClipboardDocumentCheckIcon } from '@heroicons/vue/24/outline';
 import { markRaw } from 'vue';
 import {
@@ -20,7 +20,7 @@ const headerIcon = markRaw(ClipboardDocumentCheckIcon);
 
 <template>
   <div class="flex h-screen overflow-hidden flex-col bg-neutral-surface">
-    <TopBar />
+    <AdminTopBar />
     <PageHeader
       title="My access reviews"
       subtitle="Reviewer workspace (user portal) — Milestone 1 playground"

@@ -1,0 +1,98 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Get Started — Circuit Playground demo (Go Lambda + DynamoDB sessions)
+
+Globals:
+  Function:
+    Timeout: 15
+    MemorySize: 256
+
+Parameters:
+  StackName:
+    Type: String
+    Default: get-started
+  DomainName:
+    Type: String
+    Default: get-started.jcprodux.net
+  HostedZoneId:
+    Type: String
+    Default: Z00445592TH2X5CKZ2FCI
+  CertificateArn:
+    Type: String
+    Default: arn:aws:acm:us-east-1:112284275763:certificate/667deffa-ddd7-4802-a4fe-23d215034495
+
+Resources:
+
+  # --- DynamoDB ---
+  SessionTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref StackName
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+
+  # --- Lambda ---
+  AppFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      FunctionName: !Sub "${StackName}-app"
+      CodeUri: backend/
+      Handler: bootstrap
+      Runtime: provided.al2023
+      Architectures:
+        - arm64
+      Environment:
+        Variables:
+          SESSION_TABLE: !Ref SessionTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SessionTable
+      Events:
+        CatchAll:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /{proxy+}
+            Method: ANY
+        Root:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /
+            Method: ANY
+
+  # --- HTTP API ---
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: $default
+      Domain:
+        DomainName: !Ref DomainName
+        CertificateArn: !Ref CertificateArn
+        Route53:
+          HostedZoneId: !Ref HostedZoneId
+
+Outputs:
+  AppUrl:
+    Description: Application URL
+    Value: !Sub "https://${DomainName}"
+  ApiEndpoint:
+    Description: Raw API Gateway endpoint
+    Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+  SessionTableName:
+    Description: DynamoDB session table
+    Value: !Ref SessionTable

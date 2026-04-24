@@ -44,4 +44,9 @@ export const demos = [
     name: 'Access Reviews — Milestone 1 (Reviewer)',
     component: '@/stories/projects/access-reviews-milestone1/pages/AccessReviewsReviewerPage.vue',
   },
+  {
+    id: 'get-started',
+    name: 'Get Started',
+    component: '@/stories/projects/jakes-playground/pages/GetStartedPage.vue',
+  },
 ];

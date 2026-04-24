@@ -12,3 +12,6 @@ dist-demos/
 .demo-*.html
 .wrangler/
 public/fonts/
+.aws-sam/
+backend/static/*
+!backend/static/.gitkeep

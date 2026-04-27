@@ -3,7 +3,7 @@ import { ArrowTopRightOnSquareIcon, UserIcon } from '@heroicons/vue/24/outline';
 import RecentResultItem from './RecentResultItem.vue';
 
 const meta: Meta<typeof RecentResultItem> = {
-  title: 'Projects/sena-playground/Components/Result Row',
+  title: 'Projects/sena-playground/AI Search Dialog/Parts/Recent Result Item',
   component: RecentResultItem,
   parameters: {
     layout: 'fullscreen',

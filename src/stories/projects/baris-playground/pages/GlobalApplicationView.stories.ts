@@ -178,6 +178,9 @@ const profileMenuItems = [
 
 // ─── Table data & column types ───
 
+/** Discovered-view segmented control: Newly Discovered / Approved / All. */
+type DiscoveryFilterId = 'new' | 'approved' | 'all';
+
 interface UnifiedAppRow {
   id: string;
   name: string;
@@ -189,6 +192,8 @@ interface UnifiedAppRow {
   deviceSource: string;
   accounts: number;
   detailProfile: 'full' | 'governance';
+  /** Discovered list only: whether the app is still newly discovered or already approved. */
+  discoveryWorkflow?: 'new' | 'approved';
 }
 
 /** Stat card filter for the Applications & Services catalog table (All + Discovered views). */
@@ -201,6 +206,19 @@ function filterUnifiedRowsByStat(rows: UnifiedAppRow[], id: CatalogStatId): Unif
   if (id === 'mcp') return rows.filter((r) => r.type === 'MCP');
   if (id === 'saas_tracked') return rows.filter((r) => r.saasLabel === 'Tracked');
   return rows;
+}
+
+function discoveryWorkflowForRow(r: UnifiedAppRow): 'new' | 'approved' {
+  return r.discoveryWorkflow ?? 'new';
+}
+
+function filterDiscoveredRowsByWorkflow(
+  rows: UnifiedAppRow[],
+  id: DiscoveryFilterId,
+): UnifiedAppRow[] {
+  if (id === 'all') return [...rows];
+  if (id === 'new') return rows.filter((r) => discoveryWorkflowForRow(r) === 'new');
+  return rows.filter((r) => discoveryWorkflowForRow(r) === 'approved');
 }
 
 const unifiedAppsData: UnifiedAppRow[] = [
@@ -239,6 +257,7 @@ const unifiedAppsData: UnifiedAppRow[] = [
     deviceSource: '—',
     accounts: 6,
     detailProfile: 'governance',
+    discoveryWorkflow: 'new',
   },
   {
     id: '4',
@@ -251,12 +270,24 @@ const unifiedAppsData: UnifiedAppRow[] = [
     deviceSource: '—',
     accounts: 0,
     detailProfile: 'governance',
+    discoveryWorkflow: 'new',
+  },
+  {
+    id: '5',
+    name: 'Asana',
+    category: 'Productivity',
+    type: 'SaaS',
+    management: 'Active',
+    ssoLabel: 'Available',
+    saasLabel: 'Discovered',
+    deviceSource: '—',
+    accounts: 12,
+    detailProfile: 'governance',
+    discoveryWorkflow: 'approved',
   },
 ];
 
-const discoveredAppsData = unifiedAppsData.filter(
-  (r) => r.name === 'Notion' || r.name === 'Internal MCP — billing',
-);
+const discoveredAppsData = unifiedAppsData.filter((r) => r.saasLabel === 'Discovered');
 
 interface ConnectorRow {
   id: string;
@@ -324,6 +355,8 @@ const GlobalApplicationViewPage = defineComponent({
     Dialog,
     FormField,
     InputText,
+    DetailsKeyValue,
+    XMarkIcon,
   },
   setup() {
     const mainShell = ref<MainShell>('global-app');
@@ -341,11 +374,11 @@ const GlobalApplicationViewPage = defineComponent({
     const addFormName = ref('');
 
     const catalogStatFilter = ref<CatalogStatId>('total');
-    const discoveryFilter = ref('new');
+    const discoveryFilter = ref<DiscoveryFilterId>('new');
     const discoveryFilterOptions = [
-      { label: 'Newly Discovered (2)', value: 'new' },
-      { label: 'Approved', value: 'approved' },
-      { label: 'All Apps', value: 'all' },
+      { label: 'Newly Discovered (2)', value: 'new' as const },
+      { label: 'Approved', value: 'approved' as const },
+      { label: 'All Apps', value: 'all' as const },
     ];
 
     const activeDetailTab = ref<string | number>('overview');
@@ -654,7 +687,7 @@ const GlobalApplicationViewPage = defineComponent({
     const tableData = computed(() => {
       if (listVariant.value === 'connectors') return connectorsData;
       if (listVariant.value === 'discovered') {
-        return filterUnifiedRowsByStat(discoveredAppsData, catalogStatFilter.value);
+        return filterDiscoveredRowsByWorkflow(discoveredAppsData, discoveryFilter.value);
       }
       return filterUnifiedRowsByStat(unifiedAppsData, catalogStatFilter.value);
     });
@@ -729,11 +762,6 @@ const GlobalApplicationViewPage = defineComponent({
     }
 
     function openAddFlow() {
-      if (listVariant.value === 'connectors') {
-        addFormName.value = '';
-        showAddDialog.value = true;
-        return;
-      }
       addFormName.value = '';
       showAddDialog.value = true;
     }

@@ -375,11 +375,16 @@ const GlobalApplicationViewPage = defineComponent({
 
     const catalogStatFilter = ref<CatalogStatId>('total');
     const discoveryFilter = ref<DiscoveryFilterId>('new');
-    const discoveryFilterOptions = [
-      { label: 'Newly Discovered (2)', value: 'new' as const },
-      { label: 'Approved', value: 'approved' as const },
-      { label: 'All Apps', value: 'all' as const },
-    ];
+    const discoveryFilterOptions = computed(() => {
+      const newlyDiscoveredCount = discoveredAppsData.filter(
+        (r) => discoveryWorkflowForRow(r) === 'new',
+      ).length;
+      return [
+        { label: `Newly Discovered (${newlyDiscoveredCount})`, value: 'new' as const },
+        { label: 'Approved', value: 'approved' as const },
+        { label: 'All Apps', value: 'all' as const },
+      ];
+    });
 
     const activeDetailTab = ref<string | number>('overview');
     const actionsMenu = ref<InstanceType<typeof Menu> | null>(null);

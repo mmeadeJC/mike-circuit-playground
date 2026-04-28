@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/vue3';
 import SuggestionRow from './SuggestionRow.vue';
 
 const meta: Meta<typeof SuggestionRow> = {
-  title: 'Projects/sena-playground/Components/Suggestion Row',
+  title: 'Projects/sena-playground/AI Search Dialog/Parts/Suggestion Row',
   component: SuggestionRow,
   parameters: {
     layout: 'fullscreen',

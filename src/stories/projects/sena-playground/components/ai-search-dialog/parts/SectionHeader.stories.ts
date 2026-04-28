@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/vue3';
 import SectionHeader from './SectionHeader.vue';
 
 const meta: Meta<typeof SectionHeader> = {
-  title: 'Projects/sena-playground/Components/Section Header',
+  title: 'Projects/sena-playground/AI Search Dialog/Parts/Section Header',
   component: SectionHeader,
   parameters: {
     layout: 'padded',

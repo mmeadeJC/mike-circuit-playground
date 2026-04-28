@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/vue3';
 import AiSearchActionButton from './AiSearchActionButton.vue';
 
 const meta: Meta<typeof AiSearchActionButton> = {
-  title: 'Projects/sena-playground/Components/AI Search Action Button',
+  title: 'Projects/sena-playground/AI Search Dialog/Parts/AI Search Action Button',
   component: AiSearchActionButton,
   parameters: {
     layout: 'fullscreen',

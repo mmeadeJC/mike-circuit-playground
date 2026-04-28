@@ -45,7 +45,7 @@ withDefaults(
       <Button
         type="button"
         severity="secondary"
-        variant="text"
+        variant="outlined"
         size="small"
         :aria-label="thumbUpLabel"
       >
@@ -56,7 +56,7 @@ withDefaults(
       <Button
         type="button"
         severity="secondary"
-        variant="text"
+        variant="outlined"
         size="small"
         :aria-label="thumbDownLabel"
       >

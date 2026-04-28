@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/vue3';
 import AiSearchFooter from './AiSearchFooter.vue';
 
 const meta: Meta<typeof AiSearchFooter> = {
-  title: 'Projects/sena-playground/Components/AI Search Footer',
+  title: 'Projects/sena-playground/AI Search Dialog/Parts/AI Search Footer',
   component: AiSearchFooter,
   parameters: {
     layout: 'fullscreen',

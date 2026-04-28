@@ -1,13 +1,15 @@
 import { ref } from 'vue';
 import type { Meta, StoryObj } from '@storybook/vue3';
-import Button from 'primevue/button';
 import DefaultSearchDialogShell from './DefaultSearchDialogShell.vue';
 
 const meta: Meta<typeof DefaultSearchDialogShell> = {
   title: 'Projects/sena-playground/Default Search Dialog',
   component: DefaultSearchDialogShell,
   parameters: {
-    layout: 'padded',
+    layout: 'fullscreen',
+    viewport: {
+      defaultViewport: 'responsive',
+    },
   },
 };
 
@@ -18,14 +20,13 @@ type Story = StoryObj<typeof DefaultSearchDialogShell>;
 export const Default: Story = {
   name: 'Default',
   render: () => ({
-    components: { DefaultSearchDialogShell, Button },
+    components: { DefaultSearchDialogShell },
     setup() {
-      const visible = ref(false);
+      const visible = ref(true);
       return { visible };
     },
     template: `
-      <div class="flex min-h-[240px] w-full items-start p-md">
-        <Button label="Open default search dialog" @click="visible = true" />
+      <div class="flex min-h-screen w-full items-start py-[10vh]">
         <DefaultSearchDialogShell v-model:visible="visible" />
       </div>
     `,
@@ -36,14 +37,13 @@ export const Default: Story = {
 export const NoRecentSearches: Story = {
   name: 'No recent searches',
   render: () => ({
-    components: { DefaultSearchDialogShell, Button },
+    components: { DefaultSearchDialogShell },
     setup() {
-      const visible = ref(false);
+      const visible = ref(true);
       return { visible };
     },
     template: `
-      <div class="flex min-h-[240px] w-full items-start p-md">
-        <Button label="Open (empty recent)" @click="visible = true" />
+      <div class="flex min-h-screen w-full items-start py-[10vh]">
         <DefaultSearchDialogShell
           v-model:visible="visible"
           :initial-has-recent-searches="false"
@@ -57,14 +57,13 @@ export const NoRecentSearches: Story = {
 export const Typing: Story = {
   name: 'Typing state',
   render: () => ({
-    components: { DefaultSearchDialogShell, Button },
+    components: { DefaultSearchDialogShell },
     setup() {
-      const visible = ref(false);
+      const visible = ref(true);
       return { visible };
     },
     template: `
-      <div class="flex min-h-[240px] w-full items-start p-md">
-        <Button label="Open (typing: Slack)" @click="visible = true" />
+      <div class="flex min-h-screen w-full items-start py-[10vh]">
         <DefaultSearchDialogShell v-model:visible="visible" initial-query="Slack" />
       </div>
     `,
@@ -75,14 +74,13 @@ export const Typing: Story = {
 export const TypingNoMatches: Story = {
   name: 'Typing, no matches',
   render: () => ({
-    components: { DefaultSearchDialogShell, Button },
+    components: { DefaultSearchDialogShell },
     setup() {
-      const visible = ref(false);
+      const visible = ref(true);
       return { visible };
     },
     template: `
-      <div class="flex min-h-[240px] w-full items-start p-md">
-        <Button label="Open (typing: no matches)" @click="visible = true" />
+      <div class="flex min-h-screen w-full items-start py-[10vh]">
         <DefaultSearchDialogShell v-model:visible="visible" initial-query="xyzabc" />
       </div>
     `,

@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { computed, markRaw, ref, type Component } from 'vue';
-import { ArrowTopRightOnSquareIcon } from '@heroicons/vue/24/outline';
+import {
+  ArrowTopRightOnSquareIcon,
+  InboxStackIcon,
+  MagnifyingGlassIcon,
+} from '@heroicons/vue/24/outline';
 import {
   AiSearchIcon,
   DeviceGroupsIcon,
@@ -10,15 +14,18 @@ import {
   SaasManagementIcon,
   SsoIcon,
 } from '@jumpcloud/icons';
+import { DataTable, DataTableCellText } from '@jumpcloud/circuit/components';
 import Dialog from 'primevue/dialog';
 import AiSearchHeader from './parts/AiSearchHeader.vue';
-import PlaceholderIcon from './parts/PlaceholderIcon.vue';
 import SectionHeader from './parts/SectionHeader.vue';
 import SuggestionRow from './parts/SuggestionRow.vue';
-import RecentResultItem from './parts/RecentResultItem.vue';
+import SearchItemRow from './parts/SearchItemRow.vue';
 import AiSearchFooter from './parts/AiSearchFooter.vue';
 import SearchScopeSelectButton from './parts/SearchScopeSelectButton.vue';
 import type { SearchScopeValue } from './parts/searchScopeOptions';
+import NoRecentSearches from './parts/empty-states/NoRecentSearches.vue';
+import NoMatchesFound from './parts/empty-states/NoMatchesFound.vue';
+import NoAiResults from './parts/empty-states/NoAiResults.vue';
 
 const props = withDefaults(
   defineProps<{
@@ -73,7 +80,7 @@ const recentItems: {
     title: 'Left nav – first round',
     subtitle: 'Search',
     timestamp: '7 minutes ago',
-    leadingIcon: markRaw(PlaceholderIcon),
+    leadingIcon: markRaw(MagnifyingGlassIcon),
   },
   {
     title: 'Find users without MFA',
@@ -85,7 +92,7 @@ const recentItems: {
     title: 'MacBook Pro M2',
     subtitle: 'Assets',
     timestamp: '20 minutes ago',
-    leadingIcon: markRaw(PlaceholderIcon),
+    leadingIcon: markRaw(InboxStackIcon),
   },
   {
     title: 'Sarah Mitchell',
@@ -137,7 +144,7 @@ const searchResultItems: {
   {
     title: 'Slack-IT-Test-Mac',
     subtitle: 'Assets',
-    leadingIcon: DeviceManagementIcon,
+    leadingIcon: InboxStackIcon,
   },
   {
     title: 'SlackAdmins',
@@ -204,6 +211,38 @@ const aiResultData = [
   { user: 'Grace Lee', status: 'Active', department: 'Engineering' },
 ];
 
+type AiResultRow = (typeof aiResultData)[number];
+
+const aiResultColumns = [
+  {
+    field: 'user',
+    header: 'Users',
+    sortable: false,
+    component: markRaw(DataTableCellText),
+    componentProps: (sp: { data: AiResultRow }) => ({
+      label: sp.data.user,
+    }),
+  },
+  {
+    field: 'status',
+    header: 'Status',
+    sortable: false,
+    component: markRaw(DataTableCellText),
+    componentProps: (sp: { data: AiResultRow }) => ({
+      label: sp.data.status,
+    }),
+  },
+  {
+    field: 'department',
+    header: 'Department',
+    sortable: false,
+    component: markRaw(DataTableCellText),
+    componentProps: (sp: { data: AiResultRow }) => ({
+      label: sp.data.department,
+    }),
+  },
+];
+
 /** Computed properties for new AI result states */
 const showAiResultWithData = computed(() => isAiResultMode.value && hasAiResults.value);
 /** Tag is for “no directory matches” while typing — hide in AI result mode (with or without data). */
@@ -249,16 +288,18 @@ function simulateAiResultsExist(queryText: string): boolean {
   return !queryText.toLowerCase().includes('empty') && !queryText.toLowerCase().includes('none');
 }
 
+
 const dialogPt = {
   root: {
     class:
-      '!flex !max-h-[min(92vh,720px)] !flex-col !overflow-hidden !rounded-lg border border-neutral-default_solid bg-neutral-surface shadow-e100',
+      '!flex !max-h-[70vh] !flex-col !overflow-hidden !rounded-lg border border-neutral-default_solid bg-neutral-surface shadow-e100',
   },
   header: { class: '!shrink-0 !border-0 !p-0' },
   headerActions: { class: '!hidden' },
   content: {
     class:
       '!flex !min-h-0 !flex-1 !flex-col !overflow-hidden !bg-neutral-surface !p-0 !rounded-b-lg',
+    style: 'height: auto',
   },
 };
 </script>
@@ -267,9 +308,14 @@ const dialogPt = {
   <Dialog
     v-model:visible="visible"
     modal
+    position="top"
     :closable="false"
     :draggable="false"
-    :style="{ width: '560px' }"
+    :style="{
+      width: '560px',
+      marginTop: '10vh',
+      marginBottom: '10%',
+    }"
     :pt="dialogPt"
     v-bind="$attrs"
   >
@@ -288,13 +334,16 @@ const dialogPt = {
       <div
         class="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
-        <div class="flex flex-col gap-4 px-2 pb-2 pt-4">
-          <div v-show="!showAiResultEmpty" class="self-start px-2">
-            <SearchScopeSelectButton
-              v-model="selectedScope"
-              :show-counts="isTyping"
-            />
-          </div>
+        <div class="flex flex-col gap-4 px-2 pb-4 pt-4">
+          <div class="flex flex-col gap-2">
+            <div v-show="!isAiResultMode" class="self-start px-2">
+              <SearchScopeSelectButton
+                v-model="selectedScope"
+                :show-counts="isTyping"
+                :show-zero-counts="noSearchMatches"
+              />
+            </div>
+            <div class="flex flex-col gap-4">
           <div v-show="showRecentList" class="flex flex-col">
             <SectionHeader
               title="Recent"
@@ -302,7 +351,7 @@ const dialogPt = {
               :show-feedback="false"
             />
             <div class="flex flex-col gap-0">
-              <RecentResultItem
+              <SearchItemRow
                 v-for="(item, index) in recentItems"
                 :key="index"
                 variant="recent"
@@ -317,7 +366,7 @@ const dialogPt = {
                     aria-hidden="true"
                   />
                 </template>
-              </RecentResultItem>
+              </SearchItemRow>
             </div>
           </div>
           <div v-show="showNoRecentPlaceholder" class="flex flex-col">
@@ -326,14 +375,7 @@ const dialogPt = {
               :show-icon="false"
               :show-feedback="false"
             />
-            <div class="px-2">
-              <p
-                class="m-0 text-body-sm text-neutral-subtle"
-                role="status"
-              >
-                No recent searches yet.
-              </p>
-            </div>
+            <NoRecentSearches />
           </div>
           <div v-show="showTypingResults" class="flex flex-col">
             <SectionHeader
@@ -342,16 +384,9 @@ const dialogPt = {
               :show-feedback="false"
             />
             <div class="flex flex-col gap-0">
-              <div v-if="noSearchMatches" class="px-2">
-                <p
-                  class="m-0 text-body-sm text-neutral-subtle"
-                  role="status"
-                >
-                  No matches found. Try AI search for broader results.
-                </p>
-              </div>
+              <NoMatchesFound v-if="noSearchMatches" />
               <template v-else>
-                <RecentResultItem
+                <SearchItemRow
                   v-for="(item, index) in searchResults"
                   :key="`result-${index}`"
                   variant="result"
@@ -379,40 +414,27 @@ const dialogPt = {
                       />
                     </div>
                   </template>
-                </RecentResultItem>
+                </SearchItemRow>
               </template>
             </div>
           </div>
           <!-- AI Result with Data Section -->
-          <div v-show="showAiResultWithData" class="flex flex-col">
+          <div v-show="showAiResultWithData" class="flex flex-col flex-grow min-h-0">
             <SectionHeader
               title="AI Result"
               :show-icon="true"
               :show-feedback="true"
             />
-            <div class="px-2 pb-2">
-              <div class="overflow-x-auto">
-                <table class="w-full shadow-e100 rounded">
-                  <thead>
-                    <tr class="border-b border-neutral-default_solid">
-                      <th class="p-3 text-left text-body-sm-bold text-neutral-subtle">Users</th>
-                      <th class="p-3 text-left text-body-sm-bold text-neutral-subtle">Status</th>
-                      <th class="p-3 text-left text-body-sm-bold text-neutral-subtle">Department</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      v-for="(item, index) in aiResultData"
-                      :key="index"
-                      class="border-b border-neutral-default_solid last:border-b-0 hover:bg-state-hover"
-                    >
-                      <td class="p-3 text-body-md text-neutral-base">{{ item.user }}</td>
-                      <td class="p-3 text-body-md text-neutral-base">{{ item.status }}</td>
-                      <td class="p-3 text-body-md text-neutral-base">{{ item.department }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+            <div class="flex flex-col flex-grow min-h-0 px-2 pt-[2px] pb-2">
+              <DataTable
+                :data="aiResultData"
+                :columns="aiResultColumns"
+                data-key="user"
+                :paginator="false"
+                scrollable
+                scroll-height="flex"
+                class="w-full h-full"
+              />
             </div>
           </div>
           <!-- AI Result Empty Section -->
@@ -422,14 +444,7 @@ const dialogPt = {
               :show-icon="true"
               :show-feedback="false"
             />
-            <div class="px-2">
-              <p
-                class="m-0 text-body-sm text-neutral-subtle"
-                role="status"
-              >
-                No AI result matches found.
-              </p>
-            </div>
+            <NoAiResults />
           </div>
           <div v-show="!isAiResultMode" class="flex flex-col gap-0">
             <SectionHeader
@@ -453,6 +468,8 @@ const dialogPt = {
                 :search-query="query"
                 @click="handleSuggestionClick"
               />
+            </div>
+          </div>
             </div>
           </div>
         </div>

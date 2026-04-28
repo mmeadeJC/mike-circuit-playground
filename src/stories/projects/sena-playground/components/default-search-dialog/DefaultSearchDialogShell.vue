@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { computed, markRaw, ref, type Component } from 'vue';
-import { ArrowTopRightOnSquareIcon } from '@heroicons/vue/24/outline';
+import {
+  ArrowTopRightOnSquareIcon,
+  InboxStackIcon,
+  MagnifyingGlassIcon,
+} from '@heroicons/vue/24/outline';
 import {
   AiSearchIcon,
   DeviceGroupsIcon,
@@ -12,11 +16,13 @@ import {
 } from '@jumpcloud/icons';
 import Dialog from 'primevue/dialog';
 import AiSearchHeader from '../ai-search-dialog/parts/AiSearchHeader.vue';
-import PlaceholderIcon from '../ai-search-dialog/parts/PlaceholderIcon.vue';
 import SectionHeader from '../ai-search-dialog/parts/SectionHeader.vue';
-import RecentResultItem from '../ai-search-dialog/parts/RecentResultItem.vue';
+import SearchItemRow from '../ai-search-dialog/parts/SearchItemRow.vue';
 import SearchScopeSelectButton from '../ai-search-dialog/parts/SearchScopeSelectButton.vue';
 import type { SearchScopeValue } from '../ai-search-dialog/parts/searchScopeOptions';
+import NoRecentSearches from '../ai-search-dialog/parts/empty-states/NoRecentSearches.vue';
+import NoMatchesFound from '../ai-search-dialog/parts/empty-states/NoMatchesFound.vue';
+import AiSearchFooter from '../ai-search-dialog/parts/AiSearchFooter.vue';
 
 const props = withDefaults(
   defineProps<{
@@ -55,7 +61,7 @@ const recentItems: {
     title: 'Left nav – first round',
     subtitle: 'Search',
     timestamp: '7 minutes ago',
-    leadingIcon: markRaw(PlaceholderIcon),
+    leadingIcon: markRaw(MagnifyingGlassIcon),
   },
   {
     title: 'Find users without MFA',
@@ -67,7 +73,7 @@ const recentItems: {
     title: 'MacBook Pro M2',
     subtitle: 'Assets',
     timestamp: '20 minutes ago',
-    leadingIcon: markRaw(PlaceholderIcon),
+    leadingIcon: markRaw(InboxStackIcon),
   },
   {
     title: 'Sarah Mitchell',
@@ -119,7 +125,7 @@ const searchResultItems: {
   {
     title: 'Slack-IT-Test-Mac',
     subtitle: 'Assets',
-    leadingIcon: DeviceManagementIcon,
+    leadingIcon: InboxStackIcon,
   },
   {
     title: 'SlackAdmins',
@@ -170,13 +176,14 @@ const showNoRecentPlaceholder = computed(
 const dialogPt = {
   root: {
     class:
-      '!flex !max-h-[min(92vh,720px)] !flex-col !overflow-hidden !rounded-lg border border-neutral-default_solid bg-neutral-surface shadow-e100',
+      '!flex !max-h-[70vh] !flex-col !overflow-hidden !rounded-lg border border-neutral-default_solid bg-neutral-surface shadow-e100',
   },
   header: { class: '!shrink-0 !border-0 !p-0' },
   headerActions: { class: '!hidden' },
   content: {
     class:
       '!flex !min-h-0 !flex-1 !flex-col !overflow-hidden !bg-neutral-surface !p-0 !rounded-b-lg',
+    style: 'height: auto',
   },
 };
 </script>
@@ -185,22 +192,27 @@ const dialogPt = {
   <Dialog
     v-model:visible="visible"
     modal
+    position="top"
     :closable="false"
     :draggable="false"
-    :style="{ width: '560px' }"
+    :style="{
+      width: '560px',
+      marginTop: '10vh',
+      marginBottom: '10%',
+    }"
     :pt="dialogPt"
     v-bind="$attrs"
   >
     <template #header>
       <div class="flex min-w-0 w-full items-center">
-        <span class="sr-only">Search</span>
+        <span class="sr-only">Default Search</span>
         <AiSearchHeader
           v-model="query"
           class="min-w-0 flex-1"
           :enable-enter-key="false"
         >
           <template #leading>
-            <PlaceholderIcon
+            <MagnifyingGlassIcon
               class="size-4 shrink-0 text-neutral-base"
               aria-hidden="true"
             />
@@ -212,14 +224,17 @@ const dialogPt = {
       <div
         class="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
-        <div class="flex flex-col gap-4 px-2 pb-2 pt-4">
-          <div class="self-start px-2">
-            <SearchScopeSelectButton
-              v-model="selectedScope"
-              :show-counts="isTyping"
-            />
-          </div>
+        <div class="flex flex-col gap-4 px-2 pb-4 pt-4">
+          <div class="flex flex-col gap-2">
+            <div class="self-start px-2">
+              <SearchScopeSelectButton
+                v-model="selectedScope"
+                :show-counts="isTyping"
+                :show-zero-counts="noSearchMatches"
+              />
+            </div>
 
+            <div class="flex flex-col gap-4">
           <div v-show="showRecentResults" class="flex flex-col">
             <SectionHeader
               title="Recent"
@@ -227,7 +242,7 @@ const dialogPt = {
               :show-feedback="false"
             />
             <div class="flex flex-col gap-0">
-              <RecentResultItem
+              <SearchItemRow
                 v-for="(item, index) in recentItems"
                 :key="index"
                 variant="recent"
@@ -242,7 +257,7 @@ const dialogPt = {
                     aria-hidden="true"
                   />
                 </template>
-              </RecentResultItem>
+              </SearchItemRow>
             </div>
           </div>
 
@@ -252,11 +267,7 @@ const dialogPt = {
               :show-icon="false"
               :show-feedback="false"
             />
-            <div class="px-2">
-              <p class="m-0 text-body-sm text-neutral-subtle" role="status">
-                No recent searches yet.
-              </p>
-            </div>
+            <NoRecentSearches />
           </div>
 
           <div v-show="isTyping" class="flex flex-col">
@@ -266,13 +277,12 @@ const dialogPt = {
               :show-feedback="false"
             />
             <div class="flex flex-col gap-0">
-              <div v-if="noSearchMatches" class="px-2">
-                <p class="m-0 text-body-sm text-neutral-subtle" role="status">
-                  No matches found.
-                </p>
-              </div>
+              <NoMatchesFound
+                v-if="noSearchMatches"
+                message="No matches found."
+              />
               <template v-else>
-                <RecentResultItem
+                <SearchItemRow
                   v-for="(item, index) in searchResults"
                   :key="`result-${index}`"
                   variant="result"
@@ -300,12 +310,15 @@ const dialogPt = {
                       />
                     </div>
                   </template>
-                </RecentResultItem>
+                </SearchItemRow>
               </template>
             </div>
+            </div>
+          </div>
           </div>
         </div>
       </div>
+      <AiSearchFooter variant="default" />
     </div>
   </Dialog>
 </template>

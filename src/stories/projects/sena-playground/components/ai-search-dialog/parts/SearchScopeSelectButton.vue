@@ -11,15 +11,19 @@ const props = withDefaults(
   defineProps<{
     /** When true, labels show mock counts: `All (17)` (AI dialog typing state). */
     showCounts?: boolean;
+    /** When true with showCounts, every scope shows `(0)` instead of mock counts (empty result states). */
+    showZeroCounts?: boolean;
   }>(),
   {
     showCounts: false,
+    showZeroCounts: false,
   }
 );
 
 function optionLabel(option: (typeof SCOPE_FILTER_OPTIONS)[number]): string {
   if (props.showCounts) {
-    return `${option.label} (${option.count})`;
+    const count = props.showZeroCounts ? 0 : option.count;
+    return `${option.label} (${count})`;
   }
   return option.label;
 }

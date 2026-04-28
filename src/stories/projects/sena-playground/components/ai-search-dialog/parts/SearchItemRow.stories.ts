@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
 import { ArrowTopRightOnSquareIcon, UserIcon } from '@heroicons/vue/24/outline';
-import RecentResultItem from './RecentResultItem.vue';
+import SearchItemRow from './SearchItemRow.vue';
 
-const meta: Meta<typeof RecentResultItem> = {
-  title: 'Projects/sena-playground/AI Search Dialog/Parts/Recent Result Item',
-  component: RecentResultItem,
+const meta: Meta<typeof SearchItemRow> = {
+  title: 'Projects/sena-playground/AI Search Dialog/Parts/Search Item Row',
+  component: SearchItemRow,
   parameters: {
     layout: 'fullscreen',
   },
@@ -12,7 +12,7 @@ const meta: Meta<typeof RecentResultItem> = {
 
 export default meta;
 
-type Story = StoryObj<typeof RecentResultItem>;
+type Story = StoryObj<typeof SearchItemRow>;
 
 function storyCanvas(inner: string) {
   return `
@@ -34,11 +34,11 @@ const storyArgs = {
 export const RecentVariant: Story = {
   name: 'Recent variant (timestamp)',
   render: (args) => ({
-    components: { RecentResultItem },
+    components: { SearchItemRow },
     setup() {
       return { args };
     },
-    template: storyCanvas(`<RecentResultItem v-bind="args" variant="recent" />`),
+    template: storyCanvas(`<SearchItemRow v-bind="args" variant="recent" />`),
   }),
   args: { ...storyArgs },
 };
@@ -46,16 +46,16 @@ export const RecentVariant: Story = {
 export const CustomLeadingIcon: Story = {
   name: 'Custom leading icon',
   render: (args) => ({
-    components: { RecentResultItem, UserIcon },
+    components: { SearchItemRow, UserIcon },
     setup() {
       return { args };
     },
     template: storyCanvas(`
-      <RecentResultItem v-bind="args" variant="recent">
+      <SearchItemRow v-bind="args" variant="recent">
         <template #icon>
           <UserIcon class="size-4 shrink-0 text-neutral-subtle" aria-hidden="true" />
         </template>
-      </RecentResultItem>
+      </SearchItemRow>
     `),
   }),
   args: { ...storyArgs, title: 'Show users matching…' },
@@ -64,18 +64,18 @@ export const CustomLeadingIcon: Story = {
 export const ResultVariant: Story = {
   name: 'Result variant (external link)',
   render: (args) => ({
-    components: { RecentResultItem, ArrowTopRightOnSquareIcon },
+    components: { SearchItemRow, ArrowTopRightOnSquareIcon },
     setup() {
       return { args };
     },
     template: storyCanvas(`
-      <RecentResultItem v-bind="args" variant="result" search-query="device">
+      <SearchItemRow v-bind="args" variant="result" search-query="device">
         <template #right>
           <div class="flex h-auto w-auto shrink-0 items-center justify-center">
             <ArrowTopRightOnSquareIcon class="size-4 text-icon-neutral-base" aria-hidden="true" />
           </div>
         </template>
-      </RecentResultItem>
+      </SearchItemRow>
     `),
   }),
   args: {
@@ -88,11 +88,11 @@ export const ResultVariant: Story = {
 export const SearchHighlighting: Story = {
   name: 'Search highlighting',
   render: (args) => ({
-    components: { RecentResultItem },
+    components: { SearchItemRow },
     setup() {
       return { args };
     },
-    template: storyCanvas(`<RecentResultItem v-bind="args" variant="recent" />`),
+    template: storyCanvas(`<SearchItemRow v-bind="args" variant="recent" />`),
   }),
   args: {
     title: 'Slack notification settings and SSO for Engineering',
@@ -106,11 +106,11 @@ export const SearchHighlighting: Story = {
 export const AiSearchResult: Story = {
   name: 'Long title (truncation)',
   render: (args) => ({
-    components: { RecentResultItem },
+    components: { SearchItemRow },
     setup() {
       return { args };
     },
-    template: storyCanvas(`<RecentResultItem v-bind="args" variant="recent" />`),
+    template: storyCanvas(`<SearchItemRow v-bind="args" variant="recent" />`),
   }),
   args: {
     ...storyArgs,

@@ -1,13 +1,15 @@
 import { ref } from 'vue';
 import type { Meta, StoryObj } from '@storybook/vue3';
-import Button from 'primevue/button';
 import AiSearchDialogShell from './AiSearchDialogShell.vue';
 
 const meta: Meta<typeof AiSearchDialogShell> = {
   title: 'Projects/sena-playground/AI Search Dialog',
   component: AiSearchDialogShell,
   parameters: {
-    layout: 'padded',
+    layout: 'fullscreen',
+    viewport: {
+      defaultViewport: 'responsive',
+    },
   },
 };
 
@@ -18,14 +20,13 @@ type Story = StoryObj<typeof AiSearchDialogShell>;
 export const Default: Story = {
   name: 'Default',
   render: () => ({
-    components: { AiSearchDialogShell, Button },
+    components: { AiSearchDialogShell },
     setup() {
-      const visible = ref(false);
+      const visible = ref(true);
       return { visible };
     },
     template: `
-      <div class="flex min-h-[240px] w-full items-start p-md">
-        <Button label="Open AI search dialog" @click="visible = true" />
+      <div class="flex min-h-screen w-full items-start py-[10vh]">
         <AiSearchDialogShell v-model:visible="visible" />
       </div>
     `,
@@ -36,14 +37,13 @@ export const Default: Story = {
 export const NoRecentSearches: Story = {
   name: 'No recent searches',
   render: () => ({
-    components: { AiSearchDialogShell, Button },
+    components: { AiSearchDialogShell },
     setup() {
-      const visible = ref(false);
+      const visible = ref(true);
       return { visible };
     },
     template: `
-      <div class="flex min-h-[240px] w-full items-start p-md">
-        <Button label="Open (no recent searches)" @click="visible = true" />
+      <div class="flex min-h-screen w-full items-start py-[10vh]">
         <AiSearchDialogShell
           v-model:visible="visible"
           :initial-has-recent-searches="false"
@@ -57,14 +57,13 @@ export const NoRecentSearches: Story = {
 export const Typing: Story = {
   name: 'Typing state',
   render: () => ({
-    components: { AiSearchDialogShell, Button },
+    components: { AiSearchDialogShell },
     setup() {
-      const visible = ref(false);
+      const visible = ref(true);
       return { visible };
     },
     template: `
-      <div class="flex min-h-[240px] w-full items-start p-md">
-        <Button label="Open (typing: Slack)" @click="visible = true" />
+      <div class="flex min-h-screen w-full items-start py-[10vh]">
         <AiSearchDialogShell v-model:visible="visible" initial-query="Slack" />
       </div>
     `,
@@ -75,14 +74,13 @@ export const Typing: Story = {
 export const TypingNoMatches: Story = {
   name: 'Typing, no matches',
   render: () => ({
-    components: { AiSearchDialogShell, Button },
+    components: { AiSearchDialogShell },
     setup() {
-      const visible = ref(false);
+      const visible = ref(true);
       return { visible };
     },
     template: `
-      <div class="flex min-h-[240px] w-full items-start p-md">
-        <Button label="Open (typing: no Slack matches)" @click="visible = true" />
+      <div class="flex min-h-screen w-full items-start py-[10vh]">
         <AiSearchDialogShell v-model:visible="visible" initial-query="support" />
       </div>
     `,
@@ -93,14 +91,13 @@ export const TypingNoMatches: Story = {
 export const AiResultWithData: Story = {
   name: 'AI Result with Data',
   render: () => ({
-    components: { AiSearchDialogShell, Button },
+    components: { AiSearchDialogShell },
     setup() {
-      const visible = ref(false);
+      const visible = ref(true);
       return { visible };
     },
     template: `
-      <div class="flex min-h-[240px] w-full items-start p-md">
-        <Button label="Open AI Result (with data)" @click="visible = true" />
+      <div class="flex min-h-screen w-full items-start py-[10vh]">
         <AiSearchDialogShell 
           v-model:visible="visible" 
           initial-query="users in engineering"
@@ -116,14 +113,13 @@ export const AiResultWithData: Story = {
 export const AiResultEmpty: Story = {
   name: 'AI Result Empty',
   render: () => ({
-    components: { AiSearchDialogShell, Button },
+    components: { AiSearchDialogShell },
     setup() {
-      const visible = ref(false);
+      const visible = ref(true);
       return { visible };
     },
     template: `
-      <div class="flex min-h-[240px] w-full items-start p-md">
-        <Button label="Open AI Result (empty)" @click="visible = true" />
+      <div class="flex min-h-screen w-full items-start py-[10vh]">
         <AiSearchDialogShell 
           v-model:visible="visible" 
           initial-query="empty query"

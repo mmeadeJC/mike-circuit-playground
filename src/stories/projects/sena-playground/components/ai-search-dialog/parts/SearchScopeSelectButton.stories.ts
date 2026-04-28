@@ -53,3 +53,23 @@ export const WithCounts: Story = {
     showCounts: true,
   },
 };
+
+export const WithZeroCounts: Story = {
+  name: 'Empty state counts (all zero)',
+  render: (args) => ({
+    components: { SearchScopeSelectButton },
+    setup() {
+      const scope = ref<SearchScopeValue>('all');
+      return { args, scope };
+    },
+    template: `
+      <div class="flex justify-start p-md">
+        <SearchScopeSelectButton v-bind="args" v-model="scope" />
+      </div>
+    `,
+  }),
+  args: {
+    showCounts: true,
+    showZeroCounts: true,
+  },
+};

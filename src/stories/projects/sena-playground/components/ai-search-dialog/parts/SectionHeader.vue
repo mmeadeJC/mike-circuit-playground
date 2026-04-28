@@ -1,6 +1,14 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import Button from 'primevue/button';
-import { HandThumbDownIcon, HandThumbUpIcon } from '@heroicons/vue/24/outline';
+import {
+  HandThumbDownIcon as HandThumbDownOutline,
+  HandThumbUpIcon as HandThumbUpOutline,
+} from '@heroicons/vue/24/outline';
+import {
+  HandThumbDownIcon as HandThumbDownSolid,
+  HandThumbUpIcon as HandThumbUpSolid,
+} from '@heroicons/vue/24/solid';
 import { AiSearchIcon } from '@jumpcloud/icons';
 
 withDefaults(
@@ -18,6 +26,14 @@ withDefaults(
     thumbDownLabel: 'Thumbs down',
   }
 );
+
+type FeedbackSelection = 'up' | 'down' | null;
+
+const feedbackSelection = ref<FeedbackSelection>(null);
+
+function toggleThumb(which: 'up' | 'down') {
+  feedbackSelection.value = feedbackSelection.value === which ? null : which;
+}
 </script>
 
 <template>
@@ -45,23 +61,41 @@ withDefaults(
       <Button
         type="button"
         severity="secondary"
-        variant="outlined"
+        variant="text"
         size="small"
+        :aria-pressed="feedbackSelection === 'up'"
         :aria-label="thumbUpLabel"
+        @click="toggleThumb('up')"
       >
         <template #icon="iconProps">
-          <HandThumbUpIcon :class="iconProps.class" />
+          <HandThumbUpSolid
+            v-if="feedbackSelection === 'up'"
+            :class="iconProps.class"
+          />
+          <HandThumbUpOutline
+            v-else
+            :class="iconProps.class"
+          />
         </template>
       </Button>
       <Button
         type="button"
         severity="secondary"
-        variant="outlined"
+        variant="text"
         size="small"
+        :aria-pressed="feedbackSelection === 'down'"
         :aria-label="thumbDownLabel"
+        @click="toggleThumb('down')"
       >
         <template #icon="iconProps">
-          <HandThumbDownIcon :class="iconProps.class" />
+          <HandThumbDownSolid
+            v-if="feedbackSelection === 'down'"
+            :class="iconProps.class"
+          />
+          <HandThumbDownOutline
+            v-else
+            :class="iconProps.class"
+          />
         </template>
       </Button>
     </div>

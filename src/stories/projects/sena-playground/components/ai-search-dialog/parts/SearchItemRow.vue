@@ -88,9 +88,11 @@ const titleSegments = computed(() => {
             class="block w-full min-w-0 truncate text-body-sm-semi-bold text-neutral-base focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-base"
           >
             <template v-for="(seg, i) in titleSegments" :key="i">
-              <span v-if="seg.highlight" class="text-branding-base">{{
-                seg.text
-              }}</span>
+              <span
+                v-if="seg.highlight"
+                class="text-body-sm-bold text-branding-base"
+                >{{ seg.text }}</span
+              >
               <template v-else>{{ seg.text }}</template>
             </template>
           </a>

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import { ArrowDownTrayIcon, ArrowTopRightOnSquareIcon } from '@heroicons/vue/24/outline';
-import { LinkText } from '@jumpcloud/circuit/components';
 import AiSearchActionButton from './AiSearchActionButton.vue';
 
 withDefaults(
@@ -19,17 +18,17 @@ withDefaults(
     <!-- Default state -->
     <div
       v-if="variant === 'default'"
-      class="flex w-full items-center justify-between gap-4 p-4"
+      class="flex w-full flex-wrap items-center gap-2 p-4"
     >
-      <span class="min-w-0 flex-1 text-body-sm text-neutral-subtle">
-        Search, or let AI be your expert
+      <span class="min-w-0 text-body-sm text-neutral-subtle">
+        Have questions? Search through our JumpCloud Help Center.
       </span>
-      <LinkText
-        label="Learn more"
+      <a
         href="#"
-        :show-icon="false"
-        custom-class="shrink-0"
-      />
+        class="inline-flex max-w-fit shrink-0 items-center gap-0.5 no-underline text-body-sm-link text-link-base transition-colors hover:text-link-hover hover:underline hover:underline-offset-2 active:text-link-active active:underline active:underline-offset-2"
+      >
+        Get Support
+      </a>
     </div>
 
     <!-- AI-mode state -->

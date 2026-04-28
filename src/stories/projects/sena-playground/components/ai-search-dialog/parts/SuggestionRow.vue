@@ -73,7 +73,11 @@ const labelSegments = computed(() => {
     />
     <span class="min-w-0 flex-1 text-body-sm text-neutral-base">
       <template v-for="(seg, i) in labelSegments" :key="i">
-        <span v-if="seg.highlight" class="text-branding-base">{{ seg.text }}</span>
+        <span
+          v-if="seg.highlight"
+          class="text-body-sm-bold text-branding-base"
+          >{{ seg.text }}</span
+        >
         <template v-else>{{ seg.text }}</template>
       </template>
     </span>

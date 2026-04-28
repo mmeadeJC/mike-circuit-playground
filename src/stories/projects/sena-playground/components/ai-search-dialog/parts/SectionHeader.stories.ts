@@ -73,6 +73,28 @@ export const WithIconNoFeedback: Story = {
   },
 };
 
+/** Text-variant feedback buttons; click toggles outline ↔ solid icon per button. */
+export const FeedbackTextButtonsPressed: Story = {
+  name: 'Feedback — text variant, pressed toggles solid icon',
+  render: (args) => ({
+    components: { SectionHeader },
+    setup() {
+      return { args };
+    },
+    template: `
+      <div class="w-full max-w-xl">
+        <p class="text-body-sm text-neutral-subtle mb-2">Click thumbs to toggle pressed state (outline / solid).</p>
+        <SectionHeader v-bind="args" />
+      </div>
+    `,
+  }),
+  args: {
+    title: 'AI Result',
+    showIcon: true,
+    showFeedback: true,
+  },
+};
+
 export const NarrowWidthFeedbackWraps: Story = {
   name: 'Narrow width — feedback wraps',
   render: (args) => ({

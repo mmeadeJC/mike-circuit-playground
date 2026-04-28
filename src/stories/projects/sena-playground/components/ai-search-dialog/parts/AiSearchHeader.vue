@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import { XMarkIcon } from '@heroicons/vue/24/outline';
+import { ArrowTurnDownLeftIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { AiSearchIcon } from '@jumpcloud/icons';
-import AiSearchTag from './AiSearchTag.vue';
 
 const modelValue = defineModel<string>({ default: '' });
 
@@ -11,7 +10,7 @@ const props = withDefaults(
   defineProps<{
     placeholder?: string;
     clearLabel?: string;
-    /** When true, shows the AI Search tag left of the clear button (e.g. no directory matches). */
+    /** When true, shows the AI Search button left of the clear button (e.g. no directory matches). */
     showAiSearchTag?: boolean;
     /** When false, Enter does not emit enterKey (e.g. default search dialog). */
     enableEnterKey?: boolean;
@@ -65,7 +64,20 @@ function handleKeydown(event: KeyboardEvent) {
       </div>
     </div>
     <div class="flex shrink-0 items-center gap-2">
-      <AiSearchTag v-if="showAiSearchTag" />
+      <Button
+        v-if="showAiSearchTag"
+        severity="primary"
+        variant="outlined"
+        size="small"
+        label="AI Search"
+        icon-pos="right"
+        type="button"
+        class="shrink-0"
+      >
+        <template #icon="iconProps">
+          <ArrowTurnDownLeftIcon :class="iconProps.class" />
+        </template>
+      </Button>
       <Button
         type="button"
         class="shrink-0"

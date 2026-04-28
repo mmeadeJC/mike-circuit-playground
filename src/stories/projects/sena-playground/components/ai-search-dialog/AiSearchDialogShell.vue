@@ -245,8 +245,8 @@ const aiResultColumns = [
 
 /** Computed properties for new AI result states */
 const showAiResultWithData = computed(() => isAiResultMode.value && hasAiResults.value);
-/** Tag is for “no directory matches” while typing — hide in AI result mode (with or without data). */
-const showHeaderAiSearchTag = computed(
+/** Outlined AI Search button when no directory matches while typing — hide in AI result mode (with or without data). */
+const showHeaderAiSearchButton = computed(
   () => noSearchMatches.value && !isAiResultMode.value
 );
 const showAiResultEmpty = computed(() => isAiResultMode.value && !hasAiResults.value);
@@ -325,7 +325,7 @@ const dialogPt = {
         <AiSearchHeader
           v-model="query"
           class="min-w-0 flex-1"
-          :show-ai-search-tag="showHeaderAiSearchTag"
+          :show-ai-search-button="showHeaderAiSearchButton"
           @enter-key="handleEnterKey"
         />
       </div>

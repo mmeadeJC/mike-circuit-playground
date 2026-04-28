@@ -70,7 +70,7 @@ export const Typing: Story = {
   }),
 };
 
-/** Typing with no mock matches (query is not "Slack"); empty Result copy + header AI Search tag. */
+/** Typing with no mock matches (query is not "Slack"); empty Result copy + header AI Search outline button. */
 export const TypingNoMatches: Story = {
   name: 'Typing, no matches',
   render: () => ({

@@ -10,15 +10,15 @@ const props = withDefaults(
   defineProps<{
     placeholder?: string;
     clearLabel?: string;
-    /** When true, shows the AI Search button left of the clear button (e.g. no directory matches). */
-    showAiSearchTag?: boolean;
+    /** When true, shows the outlined AI Search button left of the clear button (e.g. no directory matches). */
+    showAiSearchButton?: boolean;
     /** When false, Enter does not emit enterKey (e.g. default search dialog). */
     enableEnterKey?: boolean;
   }>(),
   {
     placeholder: 'Search Users, Devices, Apps...',
     clearLabel: 'Clear search',
-    showAiSearchTag: false,
+    showAiSearchButton: false,
     enableEnterKey: true,
   }
 );
@@ -65,7 +65,7 @@ function handleKeydown(event: KeyboardEvent) {
     </div>
     <div class="flex shrink-0 items-center gap-2">
       <Button
-        v-if="showAiSearchTag"
+        v-if="showAiSearchButton"
         severity="primary"
         variant="outlined"
         size="small"

@@ -85,7 +85,7 @@ export const WithLeadingSlotPlaceholder: Story = {
   },
 };
 
-export const WithAiSearchTag: Story = {
+export const WithAiSearchButton: Story = {
   name: 'With AI Search button',
   render: (args) => ({
     components: { AiSearchHeader },
@@ -103,6 +103,6 @@ export const WithAiSearchTag: Story = {
   }),
   args: {
     placeholder: 'Search Users, Devices, Apps...',
-    showAiSearchTag: true,
+    showAiSearchButton: true,
   },
 };

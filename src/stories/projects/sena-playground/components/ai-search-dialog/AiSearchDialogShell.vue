@@ -1,19 +1,6 @@
 <script setup lang="ts">
-import { computed, markRaw, ref, watch, type Component } from 'vue';
-import {
-  ArrowTopRightOnSquareIcon,
-  InboxStackIcon,
-  MagnifyingGlassIcon,
-} from '@heroicons/vue/24/outline';
-import {
-  AiSearchIcon,
-  DeviceGroupsIcon,
-  DeviceManagementIcon,
-  DynamicUserGroupIcon,
-  OAuthPermissionIcon,
-  SaasManagementIcon,
-  SsoIcon,
-} from '@jumpcloud/icons';
+import { computed, markRaw, ref, watch } from 'vue';
+import { ArrowTopRightOnSquareIcon } from '@heroicons/vue/24/outline';
 import { DataTable, DataTableCellText } from '@jumpcloud/circuit/components';
 import Dialog from 'primevue/dialog';
 import AiSearchHeader from './parts/AiSearchHeader.vue';
@@ -26,6 +13,10 @@ import type { SearchScopeValue } from './parts/searchScopeOptions';
 import NoRecentSearches from './parts/empty-states/NoRecentSearches.vue';
 import NoMatchesFound from './parts/empty-states/NoMatchesFound.vue';
 import NoAiResults from './parts/empty-states/NoAiResults.vue';
+import {
+  mockRecentItems as recentItems,
+  mockSearchResultItems as searchResultItems,
+} from '../searchDialogMockData';
 
 const props = withDefaults(
   defineProps<{
@@ -65,110 +56,6 @@ const queryAtAiModeEntry = ref(
 
 /** Has AI Results: determines if AI search returned data or is empty */
 const hasAiResults = ref(props.initialHasAiResults);
-
-const recentItems: {
-  title: string;
-  subtitle: string;
-  timestamp: string;
-  leadingIcon: Component;
-}[] = [
-  {
-    title: 'Show devices with failed login attempts',
-    subtitle: 'AI Result',
-    timestamp: '5 minutes ago',
-    leadingIcon: markRaw(AiSearchIcon),
-  },
-  {
-    title: 'Left nav – first round',
-    subtitle: 'Search',
-    timestamp: '7 minutes ago',
-    leadingIcon: markRaw(MagnifyingGlassIcon),
-  },
-  {
-    title: 'Find users without MFA',
-    subtitle: 'AI Result',
-    timestamp: '12 minutes ago',
-    leadingIcon: markRaw(AiSearchIcon),
-  },
-  {
-    title: 'MacBook Pro M2',
-    subtitle: 'Assets',
-    timestamp: '20 minutes ago',
-    leadingIcon: markRaw(InboxStackIcon),
-  },
-  {
-    title: 'Sarah Mitchell',
-    subtitle: 'User',
-    timestamp: '3 days ago',
-    leadingIcon: markRaw(DynamicUserGroupIcon),
-  },
-  {
-    title: 'MacBook Pro M2',
-    subtitle: 'Device',
-    timestamp: '3 days ago',
-    leadingIcon: markRaw(DeviceManagementIcon),
-  },
-  {
-    title: 'Salesforce',
-    subtitle: 'SSO Application',
-    timestamp: '1 week ago',
-    leadingIcon: markRaw(SsoIcon),
-  },
-  {
-    title: 'MFA Enforcement Policy',
-    subtitle: 'Policy',
-    timestamp: '2 weeks ago',
-    leadingIcon: markRaw(OAuthPermissionIcon),
-  },
-];
-
-/** Mock result list for Slack-style search (design reference). */
-const searchResultItems: {
-  title: string;
-  subtitle: string;
-  leadingIcon: Component;
-}[] = [
-  {
-    title: 'Slack',
-    subtitle: 'SSO Application',
-    leadingIcon: SsoIcon,
-  },
-  {
-    title: 'Slack',
-    subtitle: 'SaaS Management',
-    leadingIcon: SaasManagementIcon,
-  },
-  {
-    title: 'Slack-IT-Test-Mac',
-    subtitle: 'Device',
-    leadingIcon: DeviceManagementIcon,
-  },
-  {
-    title: 'Slack-IT-Test-Mac',
-    subtitle: 'Assets',
-    leadingIcon: InboxStackIcon,
-  },
-  {
-    title: 'SlackAdmins',
-    subtitle: 'User Group',
-    leadingIcon: DynamicUserGroupIcon,
-  },
-  {
-    title: 'Slack-DevTeam',
-    subtitle: 'User Group',
-    leadingIcon: DynamicUserGroupIcon,
-  },
-  {
-    title: 'Slack-Lab-Devices',
-    subtitle: 'Device Group',
-    leadingIcon: DeviceGroupsIcon,
-  },
-  {
-    title: 'Slack Access Policy',
-    subtitle: 'Policy',
-    leadingIcon: OAuthPermissionIcon,
-  },
-];
 
 const searchResults = computed(() => {
   const q = query.value.trim().toLowerCase();

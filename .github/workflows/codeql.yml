@@ -7,30 +7,34 @@ on:
   schedule:
     - cron: '44 6 * * 1'
 
+# Workflow-level permissions matter: if only `contents: read` is set here, every other
+# scope defaults to none and SARIF uploads fail (fork PR / API "Requires authentication").
 permissions:
   contents: read
+  security-events: write
+  actions: read
+  pull-requests: read
 
 jobs:
   analyze:
     name: Analyze (JavaScript/TypeScript)
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # javascript-typescript only (no Go here). If default setup still scans Go, remove it under Settings → Code security → CodeQL.
+      # JS/TS-only analysis; trivial Go stub under ci/codeql-placeholder satisfies parallel "Analyze (go)" from org default setups.
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
           languages: javascript-typescript
           build-mode: 'none'
 
+      # Fork PRs: SARIF upload often fails auth; skip upload—analysis still runs.
+      # Same-repo PR / push: upload succeeds with permissions above.
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
         with:
           category: '/language:javascript-typescript'
+          upload: ${{ github.event_name != 'pull_request' && 'always' || (github.event.pull_request.head.repo.full_name == github.repository && 'always' || 'never') }}

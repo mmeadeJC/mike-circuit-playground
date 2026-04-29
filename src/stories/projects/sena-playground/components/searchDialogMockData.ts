@@ -81,41 +81,41 @@ export const mockSearchResultItems: MockSearchResultRow[] = [
   {
     title: 'Slack',
     subtitle: 'SSO Application',
-    leadingIcon: SsoIcon,
+    leadingIcon: markRaw(SsoIcon),
   },
   {
     title: 'Slack',
     subtitle: 'SaaS Management',
-    leadingIcon: SaasManagementIcon,
+    leadingIcon: markRaw(SaasManagementIcon),
   },
   {
     title: 'Slack-IT-Test-Mac',
     subtitle: 'Device',
-    leadingIcon: DeviceManagementIcon,
+    leadingIcon: markRaw(DeviceManagementIcon),
   },
   {
     title: 'Slack-IT-Test-Mac',
     subtitle: 'Assets',
-    leadingIcon: InboxStackIcon,
+    leadingIcon: markRaw(InboxStackIcon),
   },
   {
     title: 'SlackAdmins',
     subtitle: 'User Group',
-    leadingIcon: DynamicUserGroupIcon,
+    leadingIcon: markRaw(DynamicUserGroupIcon),
   },
   {
     title: 'Slack-DevTeam',
     subtitle: 'User Group',
-    leadingIcon: DynamicUserGroupIcon,
+    leadingIcon: markRaw(DynamicUserGroupIcon),
   },
   {
     title: 'Slack-Lab-Devices',
     subtitle: 'Device Group',
-    leadingIcon: DeviceGroupsIcon,
+    leadingIcon: markRaw(DeviceGroupsIcon),
   },
   {
     title: 'Slack Access Policy',
     subtitle: 'Policy',
-    leadingIcon: OAuthPermissionIcon,
+    leadingIcon: markRaw(OAuthPermissionIcon),
   },
 ];

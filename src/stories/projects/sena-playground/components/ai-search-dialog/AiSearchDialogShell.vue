@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, markRaw, ref, type Component } from 'vue';
+import { computed, markRaw, ref, watch, type Component } from 'vue';
 import {
   ArrowTopRightOnSquareIcon,
   InboxStackIcon,
@@ -60,6 +60,11 @@ const isAiResultMode = ref(props.initialAiResultMode);
 
 /** AI Result Query: stores the query that triggered the AI result */
 const aiResultQuery = ref(props.initialQuery || '');
+
+/** Search box value when AI mode was entered (suggestions may set `aiResultQuery` ≠ input). */
+const queryAtAiModeEntry = ref(
+  props.initialAiResultMode ? (props.initialQuery ?? '').trim() : ''
+);
 
 /** Has AI Results: determines if AI search returned data or is empty */
 const hasAiResults = ref(props.initialHasAiResults);
@@ -279,9 +284,29 @@ function handleSuggestionClick(suggestionLabel: string) {
 function triggerAiResult(searchQuery: string) {
   isAiResultMode.value = true;
   aiResultQuery.value = searchQuery;
+  queryAtAiModeEntry.value = query.value.trim();
   // Simulate AI result logic - for demo, some queries return empty results
   hasAiResults.value = simulateAiResultsExist(searchQuery);
 }
+
+function exitAiResultMode() {
+  isAiResultMode.value = false;
+  aiResultQuery.value = '';
+  queryAtAiModeEntry.value = '';
+  hasAiResults.value = true;
+}
+
+watch(query, (next) => {
+  if (!isAiResultMode.value) return;
+  if (next.trim() !== queryAtAiModeEntry.value) {
+    exitAiResultMode();
+  }
+});
+
+/** Leaving the dialog should not preserve AI-only UI on next open. */
+watch(visible, (open) => {
+  if (!open) exitAiResultMode();
+});
 
 function simulateAiResultsExist(queryText: string): boolean {
   // Mock logic: queries containing "empty" or "none" return no results
@@ -327,6 +352,7 @@ const dialogPt = {
           class="min-w-0 flex-1"
           :show-ai-search-button="showHeaderAiSearchButton"
           @enter-key="handleEnterKey"
+          @clear="exitAiResultMode"
         />
       </div>
     </template>

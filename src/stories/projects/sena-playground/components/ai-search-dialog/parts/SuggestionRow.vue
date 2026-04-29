@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { AiSearchIcon } from '@jumpcloud/icons';
+import { splitTextByQueryHighlight } from './queryHighlightSegments';
 
 const props = withDefaults(
   defineProps<{
@@ -28,35 +29,9 @@ function handleKeydown(event: KeyboardEvent) {
   }
 }
 
-function escapeRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-const labelSegments = computed(() => {
-  const text = props.label;
-  const q = props.searchQuery?.trim();
-  if (!q) {
-    return [{ text, highlight: false as const }];
-  }
-  const segments: { text: string; highlight: boolean }[] = [];
-  let lastIndex = 0;
-  const re = new RegExp(`(${escapeRegExp(q)})`, 'gi');
-  let match: RegExpExecArray | null;
-  while ((match = re.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      segments.push({
-        text: text.slice(lastIndex, match.index),
-        highlight: false,
-      });
-    }
-    segments.push({ text: match[0], highlight: true });
-    lastIndex = match.index + match[0].length;
-  }
-  if (lastIndex < text.length) {
-    segments.push({ text: text.slice(lastIndex), highlight: false });
-  }
-  return segments.length > 0 ? segments : [{ text, highlight: false as const }];
-});
+const labelSegments = computed(() =>
+  splitTextByQueryHighlight(props.label, props.searchQuery)
+);
 </script>
 
 <template>

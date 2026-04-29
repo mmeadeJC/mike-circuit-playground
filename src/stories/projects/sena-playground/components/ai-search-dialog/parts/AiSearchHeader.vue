@@ -38,6 +38,10 @@ function handleKeydown(event: KeyboardEvent) {
     emit('enterKey');
   }
 }
+
+function handleAiSearchButtonClick() {
+  emit('enterKey');
+}
 </script>
 
 <template>
@@ -73,6 +77,7 @@ function handleKeydown(event: KeyboardEvent) {
         icon-pos="right"
         type="button"
         class="shrink-0"
+        @click="handleAiSearchButtonClick"
       >
         <template #icon="iconProps">
           <ArrowTurnDownLeftIcon :class="iconProps.class" />

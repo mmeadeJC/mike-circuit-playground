@@ -58,10 +58,7 @@ const isTyping = computed(() => query.value.trim().length > 0);
 /** AI Result Mode: tracks if we're in AI result state */
 const isAiResultMode = ref(props.initialAiResultMode);
 
-/** AI Result Query: stores the query that triggered the AI result */
-const aiResultQuery = ref(props.initialQuery || '');
-
-/** Search box value when AI mode was entered (suggestions may set `aiResultQuery` ≠ input). */
+/** Search box value when AI mode was entered (typing vs suggestion may differ from the prompt used for mock results). */
 const queryAtAiModeEntry = ref(
   props.initialAiResultMode ? (props.initialQuery ?? '').trim() : ''
 );
@@ -266,9 +263,7 @@ const showRecentList = computed(
 const showNoRecentPlaceholder = computed(
   () => showHomeBrowseState.value && !props.initialHasRecentSearches
 );
-const showAiModeFooter = computed(
-  () => isAiResultMode.value && hasAiResults.value
-);
+const showAiModeFooter = computed(() => isAiResultMode.value);
 
 /** Event handlers for AI result triggers */
 function handleEnterKey() {
@@ -283,7 +278,6 @@ function handleSuggestionClick(suggestionLabel: string) {
 
 function triggerAiResult(searchQuery: string) {
   isAiResultMode.value = true;
-  aiResultQuery.value = searchQuery;
   queryAtAiModeEntry.value = query.value.trim();
   // Simulate AI result logic - for demo, some queries return empty results
   hasAiResults.value = simulateAiResultsExist(searchQuery);
@@ -291,7 +285,6 @@ function triggerAiResult(searchQuery: string) {
 
 function exitAiResultMode() {
   isAiResultMode.value = false;
-  aiResultQuery.value = '';
   queryAtAiModeEntry.value = '';
   hasAiResults.value = true;
 }

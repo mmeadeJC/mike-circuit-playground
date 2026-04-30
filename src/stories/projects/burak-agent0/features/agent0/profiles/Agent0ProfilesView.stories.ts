@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { defineComponent, reactive, ref } from 'vue';
 import Agent0ProfilesView from './Agent0ProfilesView.vue';
 import Agent0ProfileDialog from './Agent0ProfileDialog.vue';

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { SavedViewsDropdown } from '@jumpcloud/circuit/components';
 
 const meta: Meta<typeof SavedViewsDropdown> = {

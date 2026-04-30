@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { defineComponent, reactive, ref } from 'vue';
 import ServerDialogPhase01 from './ServerDialogPhase01.vue';
 import { phase01AuthStyleOptions } from '../shared/data';

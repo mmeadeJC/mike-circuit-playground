@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { defineComponent } from 'vue';
 import { CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline';
 import DetailsKeyValue from '@/components/DetailsKeyValue.vue';

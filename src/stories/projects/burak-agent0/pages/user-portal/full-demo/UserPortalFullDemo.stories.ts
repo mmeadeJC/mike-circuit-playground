@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import UserDemoNav from '@/components/Nav/UserDemoNav.vue';
 import UserTopBar from '@/components/UserTopBar.vue';
 

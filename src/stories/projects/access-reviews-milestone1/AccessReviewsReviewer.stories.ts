@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import AccessReviewsReviewerPage from './pages/AccessReviewsReviewerPage.vue';
 
 const meta: Meta<typeof AccessReviewsReviewerPage> = {

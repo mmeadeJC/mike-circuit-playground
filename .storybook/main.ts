@@ -1,14 +1,16 @@
+// This file has been automatically migrated to valid ESM format by Storybook.
+import { fileURLToPath } from "node:url";
 import type { StorybookConfig } from '@storybook/vue3-vite';
 import { loadEnv } from 'vite';
-import { resolve } from 'node:path';
+import { resolve, dirname } from 'node:path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
   staticDirs: ['../public'],
-  addons: [
-    '@storybook/addon-essentials',
-    '@storybook/addon-links',
-  ],
+  addons: ['@storybook/addon-links', '@storybook/addon-docs'],
   framework: {
     name: '@storybook/vue3-vite',
     options: {

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import AccessRestrictedPage from './AccessRestrictedPage.vue';
 import UserAuthPage from './UserAuthPage.vue';
 

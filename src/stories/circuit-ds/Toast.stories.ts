@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import Toast from 'primevue/toast';
 import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { defineComponent } from 'vue';
 import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
 

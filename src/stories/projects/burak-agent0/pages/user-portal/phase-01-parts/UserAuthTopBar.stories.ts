@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import UserAuthTopBar from '../../../features/user-portal/phase-01-parts/UserAuthTopBar.vue';
 
 const meta: Meta<typeof UserAuthTopBar> = {

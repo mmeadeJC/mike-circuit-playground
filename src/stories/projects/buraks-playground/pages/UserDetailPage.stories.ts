@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
-import { ref, markRaw, defineComponent } from 'vue';
+import { ref, reactive, computed, markRaw, defineComponent } from 'vue';
 import {
   AppNavigation,
   PageHeader,

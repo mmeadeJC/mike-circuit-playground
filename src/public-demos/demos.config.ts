@@ -32,7 +32,7 @@ export const demos = [
   {
     id: 'agent0-alt02',
     name: 'Agent Zero — Alternative 02',
-    component: '@/stories/projects/burak-agent0/pages/Agent0Alt02Page.vue',
+    component: '@/stories/projects/burak-agent0/pages/admin-portal/full-demo/Agent0Alt02Page.vue',
   },
   {
     id: 'access-reviews-m1-admin',
@@ -43,5 +43,10 @@ export const demos = [
     id: 'access-reviews-m1-reviewer',
     name: 'Access Reviews — Milestone 1 (Reviewer)',
     component: '@/stories/projects/access-reviews-milestone1/pages/AccessReviewsReviewerPage.vue',
+  },
+  {
+    id: 'get-started',
+    name: 'Get Started',
+    component: '@/stories/projects/jakes-playground/pages/GetStartedPage.vue',
   },
 ];

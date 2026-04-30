@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { markRaw } from 'vue';
 import { DataTableCellText } from '@jumpcloud/circuit/components';
 import { DevicePhoneMobileIcon } from '@heroicons/vue/24/outline';

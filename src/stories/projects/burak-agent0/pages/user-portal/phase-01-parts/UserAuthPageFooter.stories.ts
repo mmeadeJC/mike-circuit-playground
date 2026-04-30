@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import UserAuthPageFooter from '../../../features/user-portal/phase-01-parts/UserAuthPageFooter.vue';
 
 const meta: Meta<typeof UserAuthPageFooter> = {

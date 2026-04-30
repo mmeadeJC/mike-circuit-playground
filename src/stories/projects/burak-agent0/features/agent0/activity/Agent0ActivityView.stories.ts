@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { defineComponent } from 'vue';
 import Agent0ActivityView from './Agent0ActivityView.vue';
 import { activityLogColumns } from '../shared/columns';

@@ -1,5 +1,5 @@
-import type { Preview, Decorator } from '@storybook/vue3';
-import { setup } from '@storybook/vue3';
+import type { Preview, Decorator } from '@storybook/vue3-vite';
+import { setup } from '@storybook/vue3-vite';
 import { decorators as annotationDecorators, initialGlobals as annotationGlobals } from '../src/addons/storybook-comments/preview';
 import PrimeVue from 'primevue/config';
 import ToastService from 'primevue/toastservice';
@@ -54,7 +54,7 @@ const preview: Preview = {
     },
     // Disable Storybook's built-in backgrounds addon toolbar —
     // Circuit DS bg-neutral-base handles the background and switches with the theme.
-    backgrounds: { disable: true },
+    backgrounds: { disabled: true },
     outline: { disable: true },
   },
   globalTypes: {

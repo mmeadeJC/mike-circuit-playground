@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { defineComponent } from 'vue';
 import Agent0DashboardView from './Agent0DashboardView.vue';
 import Agent0DashboardViewAlt02 from './Agent0DashboardViewAlt02.vue';

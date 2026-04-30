@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { reactive, ref, watch } from 'vue';
 import UserAuthCard from '../../../features/user-portal/phase-01-parts/UserAuthCard.vue';
 import {

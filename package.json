@@ -25,20 +25,18 @@
   },
   "devDependencies": {
     "@heroicons/vue": "^2.2.0",
-    "@storybook/addon-essentials": "8.6.18",
-    "@storybook/addon-links": "8.6.18",
-    "@storybook/addon-themes": "8.6.18",
-    "@storybook/blocks": "8.6.18",
-    "@storybook/vue3": "8.6.18",
-    "@storybook/vue3-vite": "8.6.18",
+    "@storybook/addon-links": "10.3.6",
+    "@storybook/addon-themes": "10.3.6",
+    "@storybook/vue3-vite": "10.3.6",
     "@tailwindcss/vite": "^4.1.4",
     "@vitejs/plugin-vue": "^5.2.3",
     "gh-pages": "^6.3.0",
-    "storybook": "8.6.18",
+    "storybook": "10.3.6",
     "tailwindcss": "^4.1.3",
     "typescript": "~5.8.3",
     "vite": "^6.1.0",
-    "vue-tsc": "^3.0.1"
+    "vue-tsc": "^3.0.1",
+    "@storybook/addon-docs": "10.3.6"
   },
   "packageManager": "pnpm@8.15.9+sha512.499434c9d8fdd1a2794ebf4552b3b25c0a633abcee5bb15e7b5de90f32f47b513aca98cd5cfd001c31f0db454bc3804edccd578501e4ca293a6816166bbd9f81"
 }

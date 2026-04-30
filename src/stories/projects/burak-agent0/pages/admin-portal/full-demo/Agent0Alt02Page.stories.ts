@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import Agent0Alt02Page from './Agent0Alt02Page.vue';
 
 const meta: Meta<typeof Agent0Alt02Page> = {

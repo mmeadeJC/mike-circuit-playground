@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { DataTable as CircuitDataTable, DataTableToolbar } from '@jumpcloud/circuit/components';
+import { DataTable as CircuitDataTable, DataTableToolbar, ListPageLayout } from '@jumpcloud/circuit/components';
 import Dialog from 'primevue/dialog';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
-import ListPageLayout from '@/components/layout/page-layouts/ListPageLayout.vue';
 import Agent0ServerDetailPanel from './Agent0ServerDetailPanel.vue';
 import ServerDeleteConfirmDialog from './ServerDeleteConfirmDialog.vue';
 import { getServerColumns } from '../shared/columns';

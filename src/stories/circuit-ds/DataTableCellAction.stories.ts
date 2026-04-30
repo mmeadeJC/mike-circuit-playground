@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { markRaw } from 'vue';
 import { DataTableCellAction } from '@jumpcloud/circuit/components';
 import { PencilSquareIcon, Square2StackIcon, TrashIcon } from '@heroicons/vue/24/outline';

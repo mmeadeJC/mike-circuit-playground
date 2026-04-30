@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref, computed, markRaw, defineComponent, h } from 'vue';
 import {
   AppNavigation,
@@ -14,6 +14,9 @@ import {
   ToggleSwitch,
   CheckboxWithLabel,
   MessageNotification,
+  KeyValue,
+  DetailPageLayout,
+  ConfigPageLayout,
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
@@ -63,9 +66,6 @@ import {
 } from '@heroicons/vue/24/outline';
 
 import AdminTopBar from '@/components/AdminTopBar.vue';
-import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
-import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
-import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
 
 import {
   DeviceManagementIcon,
@@ -708,7 +708,7 @@ const AssetManagementPage = defineComponent({
     AdminTopBar,
     DetailPageLayout,
     ConfigPageLayout,
-    DetailsKeyValue,
+    KeyValue,
     ArrowLeftIcon,
     ChevronRightIcon,
     PlusIcon,
@@ -1086,10 +1086,10 @@ const AssetManagementPage = defineComponent({
                     detail="This asset is linked to a device record in Device Management. Changes to the device will be reflected here."
                   />
                   <div class="flex flex-col gap-2">
-                    <DetailsKeyValue label="Device Name" :value="selectedAsset.deviceName" />
-                    <DetailsKeyValue label="Serial Number" :value="selectedAsset.serialNumber" />
-                    <DetailsKeyValue label="Operating System" :value="selectedAsset.os" />
-                    <DetailsKeyValue label="Status" :value="selectedAsset.status" />
+                    <KeyValue label="Device Name" :value="selectedAsset.deviceName" />
+                    <KeyValue label="Serial Number" :value="selectedAsset.serialNumber" />
+                    <KeyValue label="Operating System" :value="selectedAsset.os" />
+                    <KeyValue label="Status" :value="selectedAsset.status" />
                   </div>
                 </div>
               </CollapsiblePanel>
@@ -1107,13 +1107,13 @@ const AssetManagementPage = defineComponent({
                   <ChevronRightIcon :class="iconProps.class" />
                 </template>
                 <div class="flex flex-col gap-2">
-                  <DetailsKeyValue label="Asset Tag" :value="selectedAsset.assetTag" />
-                  <DetailsKeyValue label="Device Name" :value="selectedAsset.deviceName" />
-                  <DetailsKeyValue label="Assigned To" :value="selectedAsset.assignedTo" />
-                  <DetailsKeyValue label="Location" :value="selectedAsset.location" />
-                  <DetailsKeyValue label="Manufacturer" :value="selectedAsset.manufacturer" />
-                  <DetailsKeyValue label="Model" :value="selectedAsset.model" />
-                  <DetailsKeyValue label="Serial Number" :value="selectedAsset.serialNumber" />
+                  <KeyValue label="Asset Tag" :value="selectedAsset.assetTag" />
+                  <KeyValue label="Device Name" :value="selectedAsset.deviceName" />
+                  <KeyValue label="Assigned To" :value="selectedAsset.assignedTo" />
+                  <KeyValue label="Location" :value="selectedAsset.location" />
+                  <KeyValue label="Manufacturer" :value="selectedAsset.manufacturer" />
+                  <KeyValue label="Model" :value="selectedAsset.model" />
+                  <KeyValue label="Serial Number" :value="selectedAsset.serialNumber" />
                 </div>
               </CollapsiblePanel>
 
@@ -1130,10 +1130,10 @@ const AssetManagementPage = defineComponent({
                   <ChevronRightIcon :class="iconProps.class" />
                 </template>
                 <div class="flex flex-col gap-2">
-                  <DetailsKeyValue label="Processor" :value="selectedAsset.processor" />
-                  <DetailsKeyValue label="Memory" :value="selectedAsset.memory" />
-                  <DetailsKeyValue label="Storage" :value="selectedAsset.storage" />
-                  <DetailsKeyValue label="Operating System" :value="selectedAsset.os" />
+                  <KeyValue label="Processor" :value="selectedAsset.processor" />
+                  <KeyValue label="Memory" :value="selectedAsset.memory" />
+                  <KeyValue label="Storage" :value="selectedAsset.storage" />
+                  <KeyValue label="Operating System" :value="selectedAsset.os" />
                 </div>
               </CollapsiblePanel>
 
@@ -1150,11 +1150,11 @@ const AssetManagementPage = defineComponent({
                   <ChevronRightIcon :class="iconProps.class" />
                 </template>
                 <div class="flex flex-col gap-2">
-                  <DetailsKeyValue label="Purchase Date" :value="selectedAsset.purchaseDate" />
-                  <DetailsKeyValue label="Warranty Expiry" :value="selectedAsset.warrantyExpiry" />
-                  <DetailsKeyValue label="Purchase Price" :value="selectedAsset.purchasePrice" />
-                  <DetailsKeyValue label="Vendor" :value="selectedAsset.vendor" />
-                  <DetailsKeyValue label="PO Number" :value="selectedAsset.poNumber" />
+                  <KeyValue label="Purchase Date" :value="selectedAsset.purchaseDate" />
+                  <KeyValue label="Warranty Expiry" :value="selectedAsset.warrantyExpiry" />
+                  <KeyValue label="Purchase Price" :value="selectedAsset.purchasePrice" />
+                  <KeyValue label="Vendor" :value="selectedAsset.vendor" />
+                  <KeyValue label="PO Number" :value="selectedAsset.poNumber" />
                 </div>
               </CollapsiblePanel>
 
@@ -1187,11 +1187,11 @@ const AssetManagementPage = defineComponent({
               <div class="flex flex-col gap-4">
                 <h3 class="text-heading-4 text-neutral-base">Quick Info</h3>
                 <div class="flex flex-col gap-2">
-                  <DetailsKeyValue label="Asset Tag" :value="selectedAsset.assetTag" />
-                  <DetailsKeyValue label="Status" :value="selectedAsset.status" />
-                  <DetailsKeyValue label="Assigned To" :value="selectedAsset.assignedTo" />
-                  <DetailsKeyValue label="Location" :value="selectedAsset.location" />
-                  <DetailsKeyValue label="Warranty" :value="selectedAsset.warrantyExpiry" />
+                  <KeyValue label="Asset Tag" :value="selectedAsset.assetTag" />
+                  <KeyValue label="Status" :value="selectedAsset.status" />
+                  <KeyValue label="Assigned To" :value="selectedAsset.assignedTo" />
+                  <KeyValue label="Location" :value="selectedAsset.location" />
+                  <KeyValue label="Warranty" :value="selectedAsset.warrantyExpiry" />
                 </div>
               </div>
             </template>

@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
-import { ref, markRaw, defineComponent } from 'vue';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
+import { ref, computed, reactive, markRaw, defineComponent } from 'vue';
 import {
   AppNavigation,
   PageHeader,
@@ -11,6 +11,13 @@ import {
   DataTableCellText,
   DataTableCellLink,
   DataTableCellStatus,
+  KeyValue,
+  DetailPageLayout,
+  ConfigPageLayout,
+  ListPageLayout,
+  PageSaveBar,
+  LinkText,
+  DatePicker,
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
@@ -43,13 +50,11 @@ import {
   IdentificationIcon,
   TagIcon,
   KeyIcon,
+  FunnelIcon,
 } from '@heroicons/vue/24/outline';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/solid';
 
 import AdminTopBar from '@/components/AdminTopBar.vue';
-import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
-import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
-import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
 
 import {
   DeviceManagementIcon,
@@ -250,7 +255,7 @@ const userGroupsData = [
 ];
 
 const userGroupsColumns = [
-  { field: 'group', header: 'Group', sortable: true, width: '300px', component: markRaw(DataTableCellLink), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.group, description: sp.data.groupType, icon: markRaw(UsersIcon), href: '#' }) },
+  { field: 'group', header: 'Group', sortable: true, width: '300px', frozen: true, component: markRaw(DataTableCellLink), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.group, description: sp.data.groupType, icon: markRaw(UsersIcon), href: '#' }) },
   { field: 'membershipControls', header: 'User Membership Controls', sortable: true, component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.membershipControls }) },
 ];
 
@@ -269,7 +274,7 @@ const devicesData = [
 ];
 
 const devicesColumns = [
-  { field: 'status', header: 'Status', component: markRaw(DataTableCellStatus), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.status }) },
+  { field: 'status', header: 'Status', width: '120px', frozen: true, component: markRaw(DataTableCellStatus), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.status }) },
   { field: 'deviceName', header: 'Device Name', sortable: true, width: '240px', component: markRaw(DataTableCellLink), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.deviceName, href: '#' }) },
   { field: 'os', header: 'OS', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.os }) },
   { field: 'passwordSync', header: 'Password Sync', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.passwordSync || '—' }) },
@@ -288,7 +293,7 @@ const directoriesData = [
 ];
 
 const directoriesColumns = [
-  { field: 'type', header: 'Type', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.type }) },
+  { field: 'type', header: 'Type', width: '100px', frozen: true, component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.type }) },
   { field: 'syncStatus', header: 'Sync Status', component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.syncStatus || '—' }) },
   { field: 'name', header: 'Name', sortable: true, width: '280px', component: markRaw(DataTableCellLink), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: sp.data.name, description: sp.data.nameDescription, href: '#' }) },
   { field: 'tokenStatus', header: 'Token Status', component: markRaw(DataTableCellStatus), componentProps: (sp: { data: Record<string, unknown> }) => ({ type: 'Status', statusLabel: sp.data.tokenStatus || '—' }) },
@@ -315,9 +320,13 @@ const UserDetailPage = defineComponent({
     CircuitDataTable,
     DataTableToolbar,
     AdminTopBar,
-    DetailsKeyValue,
+    KeyValue,
     DetailPageLayout,
     ConfigPageLayout,
+    ListPageLayout,
+    PageSaveBar,
+    LinkText,
+    PvDatePicker: DatePicker,
     ChevronDownIcon,
     ChevronRightIcon,
     PencilSquareIcon,
@@ -326,12 +335,14 @@ const UserDetailPage = defineComponent({
     IdentificationIcon,
     TagIcon,
     KeyIcon,
+    FunnelIcon,
     CheckCircleIcon,
     XCircleIcon,
   },
   setup() {
     const activeTab = ref('highlights');
     const userStatus = ref('active');
+    const showSidebar = ref(true);
 
     // Sidebar menu refs
     const passwordMenu = ref();
@@ -376,8 +387,8 @@ const UserDetailPage = defineComponent({
     const department = ref('Design Team');
     const costCenter = ref('');
     const location = ref('');
-    const startDate = ref('');
-    const endDate = ref('');
+    const startDate = ref<Date | null>(null);
+    const endDate = ref<Date | null>(null);
 
     // Personal info
     const personalFirstName = ref('Burak');
@@ -396,6 +407,199 @@ const UserDetailPage = defineComponent({
     const selectedDirectories = ref([directoriesData[2], directoriesData[3]]);
     const showBoundGroups = ref(true);
     const showBoundDevices = ref(true);
+    const showBoundDirectories = ref(true);
+
+    // PageSaveBar state
+    const isSaving = ref(false);
+    const showSavedConfirmation = ref(false);
+
+    // Helper for bound-item array comparison (by id)
+    function arraysMatchById<T extends { id: number }>(a: T[], b: T[]): boolean {
+      if (a.length !== b.length) return false;
+      const bIds = new Set(b.map((x) => x.id));
+      return a.every((x) => bIds.has(x.id));
+    }
+
+    // Reactive baseline snapshot — captured on load, updated after save
+    const baseline = reactive({
+      username: username.value,
+      accountEmail: accountEmail.value,
+      firstName: firstName.value,
+      lastName: lastName.value,
+      displayName: displayName.value,
+      employeeId: employeeId.value,
+      description: description.value,
+      personalEmail: personalEmail.value,
+      alternateEmail: alternateEmail.value,
+      recoveryEmail: recoveryEmail.value,
+      enableUserPortal: enableUserPortal.value,
+      passwordAddress: passwordAddress.value,
+      encryptedEmailRole: encryptedEmailRole.value,
+      setPasswordOnLogin: setPasswordOnLogin.value,
+      allowPasswordReset: allowPasswordReset.value,
+      requireMfaAccount: requireMfaAccount.value,
+      requireMfaDevice: requireMfaDevice.value,
+      deviceAdminAll: deviceAdminAll.value,
+      empId: empId.value,
+      jobTitle: jobTitle.value,
+      company: company.value,
+      manager: manager.value,
+      department: department.value,
+      costCenter: costCenter.value,
+      location: location.value,
+      startDate: startDate.value as Date | null,
+      endDate: endDate.value as Date | null,
+      personalFirstName: personalFirstName.value,
+      personalEmailField: personalEmailField.value,
+      mobilePhone: mobilePhone.value,
+      homePhone: homePhone.value,
+      city: city.value,
+      state: state.value,
+      country: country.value,
+      addressZip: addressZip.value,
+      homeCountry: homeCountry.value,
+      selectedUserGroups: [...selectedUserGroups.value],
+      selectedDevices: [...selectedDevices.value],
+      selectedDirectories: [...selectedDirectories.value],
+    });
+
+    // Derived dirty state — computed against baseline so reverting any field to its
+    // original value automatically and instantly hides the save bar.
+    const isDirty = computed(() => {
+      if (username.value !== baseline.username) return true;
+      if (accountEmail.value !== baseline.accountEmail) return true;
+      if (firstName.value !== baseline.firstName) return true;
+      if (lastName.value !== baseline.lastName) return true;
+      if (displayName.value !== baseline.displayName) return true;
+      if (employeeId.value !== baseline.employeeId) return true;
+      if (description.value !== baseline.description) return true;
+      if (personalEmail.value !== baseline.personalEmail) return true;
+      if (alternateEmail.value !== baseline.alternateEmail) return true;
+      if (recoveryEmail.value !== baseline.recoveryEmail) return true;
+      if (enableUserPortal.value !== baseline.enableUserPortal) return true;
+      if (passwordAddress.value !== baseline.passwordAddress) return true;
+      if (encryptedEmailRole.value !== baseline.encryptedEmailRole) return true;
+      if (setPasswordOnLogin.value !== baseline.setPasswordOnLogin) return true;
+      if (allowPasswordReset.value !== baseline.allowPasswordReset) return true;
+      if (requireMfaAccount.value !== baseline.requireMfaAccount) return true;
+      if (requireMfaDevice.value !== baseline.requireMfaDevice) return true;
+      if (deviceAdminAll.value !== baseline.deviceAdminAll) return true;
+      if (empId.value !== baseline.empId) return true;
+      if (jobTitle.value !== baseline.jobTitle) return true;
+      if (company.value !== baseline.company) return true;
+      if (manager.value !== baseline.manager) return true;
+      if (department.value !== baseline.department) return true;
+      if (costCenter.value !== baseline.costCenter) return true;
+      if (location.value !== baseline.location) return true;
+      if ((startDate.value?.getTime() ?? null) !== (baseline.startDate?.getTime() ?? null)) return true;
+      if ((endDate.value?.getTime() ?? null) !== (baseline.endDate?.getTime() ?? null)) return true;
+      if (personalFirstName.value !== baseline.personalFirstName) return true;
+      if (personalEmailField.value !== baseline.personalEmailField) return true;
+      if (mobilePhone.value !== baseline.mobilePhone) return true;
+      if (homePhone.value !== baseline.homePhone) return true;
+      if (city.value !== baseline.city) return true;
+      if (state.value !== baseline.state) return true;
+      if (country.value !== baseline.country) return true;
+      if (addressZip.value !== baseline.addressZip) return true;
+      if (homeCountry.value !== baseline.homeCountry) return true;
+      if (!arraysMatchById(selectedUserGroups.value, baseline.selectedUserGroups)) return true;
+      if (!arraysMatchById(selectedDevices.value, baseline.selectedDevices)) return true;
+      if (!arraysMatchById(selectedDirectories.value, baseline.selectedDirectories)) return true;
+      return false;
+    });
+
+    function handleSave() {
+      isSaving.value = true;
+      setTimeout(() => {
+        isSaving.value = false;
+        showSavedConfirmation.value = true;
+        // Advance baseline to current values — isDirty auto-clears via computed
+        Object.assign(baseline, {
+          username: username.value, accountEmail: accountEmail.value,
+          firstName: firstName.value, lastName: lastName.value,
+          displayName: displayName.value, employeeId: employeeId.value,
+          description: description.value, personalEmail: personalEmail.value,
+          alternateEmail: alternateEmail.value, recoveryEmail: recoveryEmail.value,
+          enableUserPortal: enableUserPortal.value,
+          passwordAddress: passwordAddress.value, encryptedEmailRole: encryptedEmailRole.value,
+          setPasswordOnLogin: setPasswordOnLogin.value, allowPasswordReset: allowPasswordReset.value,
+          requireMfaAccount: requireMfaAccount.value, requireMfaDevice: requireMfaDevice.value,
+          deviceAdminAll: deviceAdminAll.value,
+          empId: empId.value, jobTitle: jobTitle.value, company: company.value,
+          manager: manager.value, department: department.value, costCenter: costCenter.value,
+          location: location.value, startDate: startDate.value, endDate: endDate.value,
+          personalFirstName: personalFirstName.value, personalEmailField: personalEmailField.value,
+          mobilePhone: mobilePhone.value, homePhone: homePhone.value,
+          city: city.value, state: state.value, country: country.value,
+          addressZip: addressZip.value, homeCountry: homeCountry.value,
+          selectedUserGroups: [...selectedUserGroups.value],
+          selectedDevices: [...selectedDevices.value],
+          selectedDirectories: [...selectedDirectories.value],
+        });
+        setTimeout(() => { showSavedConfirmation.value = false; }, 2000);
+      }, 1000);
+    }
+
+    function handleDiscard() {
+      // Restore all form fields to baseline — isDirty auto-clears via computed
+      username.value = baseline.username;
+      accountEmail.value = baseline.accountEmail;
+      firstName.value = baseline.firstName;
+      lastName.value = baseline.lastName;
+      displayName.value = baseline.displayName;
+      employeeId.value = baseline.employeeId;
+      description.value = baseline.description;
+      personalEmail.value = baseline.personalEmail;
+      alternateEmail.value = baseline.alternateEmail;
+      recoveryEmail.value = baseline.recoveryEmail;
+      enableUserPortal.value = baseline.enableUserPortal;
+      passwordAddress.value = baseline.passwordAddress;
+      encryptedEmailRole.value = baseline.encryptedEmailRole;
+      setPasswordOnLogin.value = baseline.setPasswordOnLogin;
+      allowPasswordReset.value = baseline.allowPasswordReset;
+      requireMfaAccount.value = baseline.requireMfaAccount;
+      requireMfaDevice.value = baseline.requireMfaDevice;
+      deviceAdminAll.value = baseline.deviceAdminAll;
+      empId.value = baseline.empId;
+      jobTitle.value = baseline.jobTitle;
+      company.value = baseline.company;
+      manager.value = baseline.manager;
+      department.value = baseline.department;
+      costCenter.value = baseline.costCenter;
+      location.value = baseline.location;
+      startDate.value = baseline.startDate;
+      endDate.value = baseline.endDate;
+      personalFirstName.value = baseline.personalFirstName;
+      personalEmailField.value = baseline.personalEmailField;
+      mobilePhone.value = baseline.mobilePhone;
+      homePhone.value = baseline.homePhone;
+      city.value = baseline.city;
+      state.value = baseline.state;
+      country.value = baseline.country;
+      addressZip.value = baseline.addressZip;
+      homeCountry.value = baseline.homeCountry;
+      // Restore bound items
+      selectedUserGroups.value = [...baseline.selectedUserGroups];
+      selectedDevices.value = [...baseline.selectedDevices];
+      selectedDirectories.value = [...baseline.selectedDirectories];
+    }
+
+    // Filtered table data
+    const filteredUserGroupsData = computed(() =>
+      showBoundGroups.value
+        ? userGroupsData.filter((g) => selectedUserGroups.value.some((s) => s.id === g.id))
+        : userGroupsData,
+    );
+    const filteredDevicesData = computed(() =>
+      showBoundDevices.value
+        ? devicesData.filter((d) => selectedDevices.value.some((s) => s.id === d.id))
+        : devicesData,
+    );
+    const filteredDirectoriesData = computed(() =>
+      showBoundDirectories.value
+        ? directoriesData.filter((d) => selectedDirectories.value.some((s) => s.id === d.id))
+        : directoriesData,
+    );
 
     const roleOptions = [
       { label: 'Admin', value: 'admin' },
@@ -423,6 +627,7 @@ const UserDetailPage = defineComponent({
       statusOptions,
       activeTab,
       userStatus,
+      showSidebar,
       // Highlights
       highlightsDevicesData,
       highlightsDevicesColumns,
@@ -473,19 +678,20 @@ const UserDetailPage = defineComponent({
       countryOptions,
       managerOptions,
       // User Groups
-      userGroupsData,
+      filteredUserGroupsData,
       userGroupsColumns,
       selectedUserGroups,
       showBoundGroups,
       // Devices
-      devicesData,
+      filteredDevicesData,
       devicesColumns,
       selectedDevices,
       showBoundDevices,
       // Directories
-      directoriesData,
+      filteredDirectoriesData,
       directoriesColumns,
       selectedDirectories,
+      showBoundDirectories,
       // Sidebar menus
       passwordMenu,
       protectMenu,
@@ -497,12 +703,18 @@ const UserDetailPage = defineComponent({
       personalCollapsed,
       customAttrsCollapsed,
       publicKeysCollapsed,
+      // PageSaveBar
+      isDirty,
+      isSaving,
+      showSavedConfirmation,
+      handleSave,
+      handleDiscard,
       // Icons
       UserIcon: markRaw(UserIcon),
     };
   },
   template: `
-    <div class="flex h-screen overflow-hidden">
+    <div id="app" class="flex h-screen overflow-hidden">
       <AppNavigation
         :menuItems="menuItems"
         :profileMenuItems="profileMenuItems"
@@ -548,10 +760,11 @@ const UserDetailPage = defineComponent({
         </PageHeader>
 
         <div class="flex-1 overflow-hidden flex flex-col">
-          <div class="flex-1 overflow-auto bg-neutral-surface">
+          <div class="flex-1 flex flex-col min-h-0">
 
             <!-- ============ TAB: HIGHLIGHTS ============ -->
-            <DetailPageLayout v-if="activeTab === 'highlights'" class="w-full! h-full!">
+            <div v-if="activeTab === 'highlights'" class="flex-1 overflow-auto bg-neutral-surface">
+            <DetailPageLayout class="w-full! h-full!" :max-width="showSidebar ? '1440' : '1280'" :show-sidebar="showSidebar">
               <div class="flex flex-col gap-6">
 
                 <CollapsiblePanel header="Devices (1)">
@@ -567,7 +780,7 @@ const UserDetailPage = defineComponent({
                       <PvButton label="All Groups" variant="outlined" severity="secondary" size="small" />
                     </template>
                     <div class="flex flex-col gap-1">
-                      <a v-for="group in groupsList" :key="group" class="text-body-md text-primary-base cursor-pointer hover:underline">{{ group }}</a>
+                      <LinkText v-for="group in groupsList" :key="group" href="#" :showIcon="false">{{ group }}</LinkText>
                     </div>
                   </CollapsiblePanel>
 
@@ -576,7 +789,7 @@ const UserDetailPage = defineComponent({
                       <PvButton label="All Applications" variant="outlined" severity="secondary" size="small" />
                     </template>
                     <div class="flex flex-col gap-1">
-                      <a v-for="app in applicationsList" :key="app" class="text-body-md text-primary-base cursor-pointer hover:underline">{{ app }}</a>
+                      <LinkText v-for="app in applicationsList" :key="app" href="#" :showIcon="false">{{ app }}</LinkText>
                     </div>
                   </CollapsiblePanel>
                 </div>
@@ -585,27 +798,12 @@ const UserDetailPage = defineComponent({
                   <template #actions>
                     <PvButton label="All Accounts" variant="outlined" severity="secondary" size="small" />
                   </template>
-                  <div class="grid grid-cols-3 gap-y-4 gap-x-8">
-                    <div>
-                      <dt class="text-body-sm text-neutral-subtle">Discovered Accounts</dt>
-                      <dd class="text-body-md text-neutral-base mt-1">318 Accounts</dd>
-                    </div>
-                    <div>
-                      <dt class="text-body-sm text-neutral-subtle">Apps in Use</dt>
-                      <dd class="text-body-md text-neutral-base mt-1">82 Apps</dd>
-                    </div>
-                    <div>
-                      <dt class="text-body-sm text-neutral-subtle">Shared Accounts</dt>
-                      <dd class="text-body-md text-neutral-base mt-1">0 Accounts</dd>
-                    </div>
-                    <div>
-                      <dt class="text-body-sm text-neutral-subtle">Licensed Apps</dt>
-                      <dd class="text-body-md text-neutral-base mt-1">9 Apps</dd>
-                    </div>
-                    <div>
-                      <dt class="text-body-sm text-neutral-subtle">License Costs (Estimate)</dt>
-                      <dd class="text-body-md text-neutral-base mt-1">38 USD · +1 See All</dd>
-                    </div>
+                  <div class="grid grid-cols-3 gap-y-3 gap-x-8">
+                    <KeyValue label="Discovered Accounts" value="318 Accounts" />
+                    <KeyValue label="Apps in Use" value="82 Apps" />
+                    <KeyValue label="Shared Accounts" value="0 Accounts" />
+                    <KeyValue label="Licensed Apps" value="9 Apps" />
+                    <KeyValue label="License Costs (Estimate)" value="38 USD · +1 See All" />
                   </div>
                 </CollapsiblePanel>
 
@@ -625,7 +823,7 @@ const UserDetailPage = defineComponent({
 
               </div>
 
-              <template #sidebar>
+              <template v-if="showSidebar" #sidebar>
                 <div class="flex flex-col gap-6">
                   <div class="flex flex-col gap-4">
                     <h3 class="text-heading-3 text-neutral-base">Security Status</h3>
@@ -670,13 +868,13 @@ const UserDetailPage = defineComponent({
                   <div class="flex flex-col gap-4">
                     <h3 class="text-heading-3 text-neutral-base">Identity Management</h3>
                     <div class="flex flex-col gap-3">
-                      <DetailsKeyValue label="Password Address" value="burak.basci+afc@jumpcloud.com" />
-                      <DetailsKeyValue label="Encrypted Email Role" value="Admin" />
-                      <DetailsKeyValue label="Password Reset" value="Allowed" />
-                      <DetailsKeyValue label="MFA (Account)" value="Required" />
-                      <DetailsKeyValue label="MFA (Device)" value="Not required" />
-                      <DetailsKeyValue label="Security Key" value="Not configured" />
-                      <DetailsKeyValue label="Device Administrator" value="No" />
+                      <KeyValue label="Password Address" value="burak.basci+afc@jumpcloud.com" />
+                      <KeyValue label="Encrypted Email Role" value="Admin" />
+                      <KeyValue label="Password Reset" value="Allowed" />
+                      <KeyValue label="MFA (Account)" value="Required" />
+                      <KeyValue label="MFA (Device)" value="Not required" />
+                      <KeyValue label="Security Key" value="Not configured" />
+                      <KeyValue label="Device Administrator" value="No" />
                     </div>
                   </div>
 
@@ -685,21 +883,23 @@ const UserDetailPage = defineComponent({
                   <div class="flex flex-col gap-4">
                     <h3 class="text-heading-3 text-neutral-base">Details</h3>
                     <div class="flex flex-col gap-3">
-                      <DetailsKeyValue label="Email" value="burak.basci+afc@jumpcloud.com" />
-                      <DetailsKeyValue label="Job Title" value="Staff Product Designer" />
-                      <DetailsKeyValue label="Department" value="Design Team" />
-                      <DetailsKeyValue label="Company" value="JumpCloud" />
-                      <DetailsKeyValue label="Employee ID" value="EMP-001" />
-                      <DetailsKeyValue label="Location" value="Istanbul, Turkey" />
-                      <DetailsKeyValue label="Manager" :value="null" />
+                      <KeyValue label="Email" value="burak.basci+afc@jumpcloud.com" />
+                      <KeyValue label="Job Title" value="Staff Product Designer" />
+                      <KeyValue label="Department" value="Design Team" />
+                      <KeyValue label="Company" value="JumpCloud" />
+                      <KeyValue label="Employee ID" value="EMP-001" />
+                      <KeyValue label="Location" value="Istanbul, Turkey" />
+                      <KeyValue label="Manager" :value="null" />
                     </div>
                   </div>
                 </div>
               </template>
             </DetailPageLayout>
+            </div>
 
             <!-- ============ TAB: DETAILS ============ -->
-            <ConfigPageLayout v-if="activeTab === 'details'" class="w-full! h-full!">
+            <div v-if="activeTab === 'details'" class="flex-1 overflow-auto bg-neutral-surface">
+            <ConfigPageLayout class="w-full! h-full!">
               <div class="flex flex-col gap-6">
 
                 <CollapsiblePanel header="User Information">
@@ -869,12 +1069,12 @@ const UserDetailPage = defineComponent({
                     </FormField>
                     <FormField label="Start Date">
                       <template #default="{ inputId }">
-                        <PvInputText :id="inputId" v-model="startDate" class="w-full" placeholder="YYYY-MM-DD" />
+                        <PvDatePicker :id="inputId" v-model="startDate" dateFormat="yy-mm-dd" class="w-full" />
                       </template>
                     </FormField>
                     <FormField label="End Date">
                       <template #default="{ inputId }">
-                        <PvInputText :id="inputId" v-model="endDate" class="w-full" placeholder="YYYY-MM-DD" />
+                        <PvDatePicker :id="inputId" v-model="endDate" dateFormat="yy-mm-dd" class="w-full" />
                       </template>
                     </FormField>
                   </div>
@@ -962,7 +1162,7 @@ const UserDetailPage = defineComponent({
                   <template #toggleicon="iconProps">
                     <ChevronRightIcon :class="iconProps.class" />
                   </template>
-                  <div class="bg-neutral-base rounded border border-neutral-default_solid p-3 mb-4">
+                  <div class="bg-neutral-base rounded shadow-e100 p-3 mb-4">
                     <code class="text-body-sm text-neutral-base break-all">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC6+NFTO+kSk...</code>
                   </div>
                   <PvButton label="Add Public Key" severity="secondary" size="small" />
@@ -970,106 +1170,140 @@ const UserDetailPage = defineComponent({
 
               </div>
             </ConfigPageLayout>
+            </div>
 
             <!-- ============ TAB: USER GROUPS ============ -->
-            <div v-if="activeTab === 'user-groups'" class="p-6 flex flex-col gap-4">
-              <p class="text-body-md text-neutral-base">Burak Başcı is a member of the selected User Groups:</p>
-
-              <div class="flex flex-col gap-0 -mt-4">
-                <DataTableToolbar
-                  searchPlaceholder="Search user groups..."
-                  :showAddButton="false"
-                  :showFilterButton="false"
-                  :showRefreshButton="false"
-                  :showColumnsButton="false"
-                  :showDownloadButton="false"
-                >
-                  <template #saved-views>
-                    <div class="flex items-center gap-4 px-2 py-1.5 text-body-md">
-                      <CheckboxWithLabel v-model="showBoundGroups" :binary="true">
-                        <template #label>show bound user groups (3)</template>
-                      </CheckboxWithLabel>
-                      <div class="border-l border-neutral-default_solid h-5 shrink-0" />
-                      <p class="text-body-md text-neutral-base whitespace-nowrap">
-                        <span class="font-semibold">3 of 46</span> user groups bound
-                      </p>
-                    </div>
-                  </template>
-                </DataTableToolbar>
-
+            <div v-if="activeTab === 'user-groups'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface relative">
+              <ListPageLayout class="w-full! h-full!">
                 <CircuitDataTable
                   :columns="userGroupsColumns"
-                  :data="userGroupsData"
+                  :data="filteredUserGroupsData"
+                  dataKey="id"
                   selectionMode="multiple"
-                  :selection="selectedUserGroups"
-                  @update:selection="selectedUserGroups = $event"
-                />
-              </div>
+                  v-model:selection="selectedUserGroups"
+                  :card="true"
+                  :scrollable="true"
+                  scrollHeight="flex"
+                  :paginator="true"
+                  :rows="15"
+                >
+                  <template #toolbar>
+                    <DataTableToolbar
+                      searchPlaceholder="Search user groups..."
+                      :showAddButton="false"
+                      :showFilterButton="false"
+                      :showRefreshButton="true"
+                      :showColumnsButton="false"
+                      :showDownloadButton="false"
+                      :showSaveViewButton="false"
+                    >
+                      <template #saved-views>
+                        <PvButton variant="outlined" severity="secondary">
+                          <FunnelIcon class="size-5" />
+                          <span class="px-1">Filter</span>
+                        </PvButton>
+                        <CheckboxWithLabel v-model="showBoundGroups" :binary="true" class="ml-2">
+                          <template #label>Show bound user groups ({{ selectedUserGroups.length }})</template>
+                        </CheckboxWithLabel>
+                      </template>
+                    </DataTableToolbar>
+                  </template>
+                </CircuitDataTable>
+              </ListPageLayout>
             </div>
 
             <!-- ============ TAB: DEVICES ============ -->
-            <div v-if="activeTab === 'devices'" class="p-6 flex flex-col gap-4">
-              <p class="text-body-md text-neutral-base">Burak Başcı has accounts on the selected devices:</p>
-
-              <div class="flex flex-col gap-0 -mt-4">
-                <DataTableToolbar
-                  searchPlaceholder="Search devices..."
-                  :showAddButton="false"
-                  :showFilterButton="false"
-                  :showRefreshButton="false"
-                  :showColumnsButton="false"
-                  :showDownloadButton="false"
-                >
-                  <template #saved-views>
-                    <div class="flex items-center gap-4 px-2 py-1.5 text-body-md">
-                      <CheckboxWithLabel v-model="showBoundDevices" :binary="true">
-                        <template #label>show bound device (1)</template>
-                      </CheckboxWithLabel>
-                      <div class="border-l border-neutral-default_solid h-5 shrink-0" />
-                      <p class="text-body-md text-neutral-base whitespace-nowrap">
-                        <span class="font-semibold">1 of 1</span> devices bound
-                      </p>
-                      <div class="border-l border-neutral-default_solid h-5 shrink-0" />
-                      <PvButton label="Run Users To Devices Report" variant="outlined" severity="secondary" size="small" />
-                    </div>
-                  </template>
-                </DataTableToolbar>
-
+            <div v-if="activeTab === 'devices'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface relative">
+              <ListPageLayout class="w-full! h-full!">
                 <CircuitDataTable
                   :columns="devicesColumns"
-                  :data="devicesData"
+                  :data="filteredDevicesData"
+                  dataKey="id"
                   selectionMode="multiple"
-                  :selection="selectedDevices"
-                  @update:selection="selectedDevices = $event"
-                />
-              </div>
+                  v-model:selection="selectedDevices"
+                  :card="true"
+                  :scrollable="true"
+                  scrollHeight="flex"
+                  :paginator="true"
+                  :rows="15"
+                >
+                  <template #toolbar>
+                    <DataTableToolbar
+                      searchPlaceholder="Search devices..."
+                      :showAddButton="false"
+                      :showFilterButton="false"
+                      :showRefreshButton="true"
+                      :showColumnsButton="false"
+                      :showDownloadButton="false"
+                      :showSaveViewButton="false"
+                    >
+                      <template #saved-views>
+                        <PvButton variant="outlined" severity="secondary">
+                          <FunnelIcon class="size-5" />
+                          <span class="px-1">Filter</span>
+                        </PvButton>
+                        <CheckboxWithLabel v-model="showBoundDevices" :binary="true" class="ml-2">
+                          <template #label>Show bound devices ({{ selectedDevices.length }})</template>
+                        </CheckboxWithLabel>
+                        <div class="border-l border-neutral-default_solid h-5 shrink-0 mx-2" />
+                        <PvButton label="Run Users To Devices Report" variant="outlined" severity="secondary" />
+                      </template>
+                    </DataTableToolbar>
+                  </template>
+                </CircuitDataTable>
+              </ListPageLayout>
             </div>
 
             <!-- ============ TAB: DIRECTORIES ============ -->
-            <div v-if="activeTab === 'directories'" class="p-6 flex flex-col gap-4">
-              <div class="flex items-center justify-between">
-                <p class="text-body-md text-neutral-base">Burak Başcı has the selected directories enabled:</p>
-                <p class="text-body-md text-neutral-base whitespace-nowrap">
-                  <span class="font-semibold">2 of 5</span> directories bound
-                </p>
-              </div>
-
-              <CircuitDataTable
-                :columns="directoriesColumns"
-                :data="directoriesData"
-                selectionMode="multiple"
-                :selection="selectedDirectories"
-                @update:selection="selectedDirectories = $event"
-              />
+            <div v-if="activeTab === 'directories'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface relative">
+              <ListPageLayout class="w-full! h-full!">
+                <CircuitDataTable
+                  :columns="directoriesColumns"
+                  :data="filteredDirectoriesData"
+                  dataKey="id"
+                  selectionMode="multiple"
+                  v-model:selection="selectedDirectories"
+                  :card="true"
+                  :scrollable="true"
+                  scrollHeight="flex"
+                  :paginator="true"
+                  :rows="15"
+                >
+                  <template #toolbar>
+                    <DataTableToolbar
+                      searchPlaceholder="Search directories..."
+                      :showAddButton="false"
+                      :showFilterButton="false"
+                      :showRefreshButton="true"
+                      :showColumnsButton="false"
+                      :showDownloadButton="false"
+                      :showSaveViewButton="false"
+                    >
+                      <template #saved-views>
+                        <PvButton variant="outlined" severity="secondary">
+                          <FunnelIcon class="size-5" />
+                          <span class="px-1">Filter</span>
+                        </PvButton>
+                        <CheckboxWithLabel v-model="showBoundDirectories" :binary="true" class="ml-2">
+                          <template #label>Show bound directories ({{ selectedDirectories.length }})</template>
+                        </CheckboxWithLabel>
+                      </template>
+                    </DataTableToolbar>
+                  </template>
+                </CircuitDataTable>
+              </ListPageLayout>
             </div>
 
           </div>
 
-          <!-- Footer -->
-          <div class="shrink-0 flex items-center justify-end gap-3 px-6 py-3 border-t border-neutral-default_solid bg-neutral-base">
-            <PvButton label="Cancel" severity="secondary" variant="text" />
-            <PvButton label="Save User" />
-          </div>
+          <PageSaveBar
+            :visible="isDirty"
+            :saving="isSaving"
+            :saved="showSavedConfirmation"
+            message="You have unsaved changes"
+            @save="handleSave"
+            @discard="handleDiscard"
+          />
         </div>
       </div>
     </div>

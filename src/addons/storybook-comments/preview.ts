@@ -1,4 +1,4 @@
-import type { Preview } from '@storybook/vue3';
+import type { Preview } from '@storybook/vue3-vite';
 import { GLOBAL_ANNOTATE_MODE } from './constants';
 import { withAnnotations } from './preview/withAnnotations';
 

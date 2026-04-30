@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { DataTable as CircuitDataTable, DataTableToolbar, FormField } from '@jumpcloud/circuit/components';
+import { DataTable as CircuitDataTable, DataTableToolbar, FormField, ListPageLayout } from '@jumpcloud/circuit/components';
 import Dialog from 'primevue/dialog';
 import MultiSelect from 'primevue/multiselect';
 import Button from 'primevue/button';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
-import ListPageLayout from '@/components/layout/page-layouts/ListPageLayout.vue';
 
 const props = defineProps<{
   filteredProfilesData: unknown[];

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref, markRaw, defineComponent, computed } from 'vue';
 import {
   AppNavigation,
@@ -13,6 +13,8 @@ import {
   DataTableCellText,
   DataTableCellLink,
   DataTableCellStatus,
+  KeyValue,
+  DetailPageLayout,
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
@@ -38,8 +40,6 @@ import {
 } from '@heroicons/vue/24/outline';
 
 import AdminTopBar from '@/components/AdminTopBar.vue';
-import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
-import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
 
 import {
   DeviceManagementIcon,
@@ -452,7 +452,7 @@ const DevicesPage = defineComponent({
     CircuitDataTable,
     DataTableToolbar,
     AdminTopBar,
-    DetailsKeyValue,
+    KeyValue,
     DetailPageLayout,
     ExportDropdown,
     MagnifyingGlassIcon,
@@ -660,7 +660,7 @@ const DevicesPage = defineComponent({
 
               <template #sidebar>
                 <div class="flex flex-col gap-3">
-                  <DetailsKeyValue
+                  <KeyValue
                     v-for="item in deviceSidebarInfo"
                     :key="item.label"
                     :label="item.label"

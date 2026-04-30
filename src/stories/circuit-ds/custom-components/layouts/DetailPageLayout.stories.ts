@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { defineComponent } from 'vue';
-import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
+import { DetailPageLayout } from '@jumpcloud/circuit/components';
 
 const meta: Meta<typeof DetailPageLayout> = {
-  title: 'Circuit DS/Custom Components/Layouts/DetailPageLayout',
+  title: 'Circuit DS/Layouts/DetailPageLayout',
   component: DetailPageLayout,
   parameters: {
     layout: 'fullscreen',

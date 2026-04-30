@@ -1,15 +1,5 @@
-<script setup lang="ts">
-import Button from 'primevue/button';
-
-defineOptions({ name: 'PageSection' });
-
-export interface PageSectionProps {
-  title?: string;
-}
-
-withDefaults(defineProps<PageSectionProps>(), {
-  title: 'Section Header',
-});
+<script lang="ts">
+export { PageSection as default } from '@jumpcloud/circuit/components';
 </script>
 
 <template>
@@ -38,3 +28,4 @@ withDefaults(defineProps<PageSectionProps>(), {
     </div>
   </section>
 </template>
+

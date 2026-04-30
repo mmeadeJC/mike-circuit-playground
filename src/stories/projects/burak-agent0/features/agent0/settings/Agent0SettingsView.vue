@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { FormField } from '@jumpcloud/circuit/components';
+import { FormField, ConfigPageLayout, PageSection } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import SelectButton from 'primevue/selectbutton';
 import { EyeIcon, EyeSlashIcon, TrashIcon } from '@heroicons/vue/24/outline';
-import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
-import PageSection from '@/components/PageSection.vue';
 import type { LlmProvider, AgentInstruction } from '../shared/types';
 
 const props = defineProps<{

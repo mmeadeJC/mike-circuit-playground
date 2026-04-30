@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref } from 'vue';
 import { SelectWithSlots } from '@jumpcloud/circuit/components';
 import { Cog6ToothIcon } from '@heroicons/vue/24/outline';

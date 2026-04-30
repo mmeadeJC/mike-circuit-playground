@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { markRaw, defineComponent, ref, computed, watch } from 'vue';
 import {
   AppNavigation,
@@ -7,6 +7,7 @@ import {
   ToggleSwitch,
   MessageNotification,
   LinkText,
+  ConfigPageLayout,
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
@@ -36,7 +37,6 @@ import {
 } from '@heroicons/vue/24/outline';
 
 import AdminTopBar from '@/components/AdminTopBar.vue';
-import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
 
 import {
   DeviceManagementIcon,

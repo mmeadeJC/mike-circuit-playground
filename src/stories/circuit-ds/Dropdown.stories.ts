@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { Dropdown } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import { EllipsisVerticalIcon } from '@heroicons/vue/24/outline';

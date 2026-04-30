@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { defineComponent } from 'vue';
-import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
+import { ConfigPageLayout } from '@jumpcloud/circuit/components';
 
 const meta: Meta<typeof ConfigPageLayout> = {
-  title: 'Circuit DS/Custom Components/Layouts/ConfigPageLayout',
+  title: 'Circuit DS/Layouts/ConfigPageLayout',
   component: ConfigPageLayout,
   parameters: {
     layout: 'fullscreen',

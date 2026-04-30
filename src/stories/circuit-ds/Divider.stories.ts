@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import Divider from 'primevue/divider';
 
 const meta: Meta<typeof Divider> = {

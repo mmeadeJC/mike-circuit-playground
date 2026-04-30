@@ -3,8 +3,7 @@ import { nextTick, watch, type ComponentPublicInstance } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import { PlusIcon, XMarkIcon } from '@heroicons/vue/24/outline';
-import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
-import PageSection from '@/components/PageSection.vue';
+import { ConfigPageLayout, PageSection } from '@jumpcloud/circuit/components';
 import type { RedirectURLDraftRow } from './Agent0RedirectURLSettings';
 
 defineOptions({ name: 'Agent0RedirectURLSettingsView' });

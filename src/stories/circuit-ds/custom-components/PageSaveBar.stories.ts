@@ -1,12 +1,12 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref, defineComponent, watch } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import { FormField } from '@jumpcloud/circuit/components';
-import PageSaveBar from '@/components/PageSaveBar.vue';
+import { PageSaveBar } from '@jumpcloud/circuit/components';
 
 const meta: Meta<typeof PageSaveBar> = {
-  title: 'Circuit DS/Custom Components/PageSaveBar',
+  title: 'Circuit DS/PageSaveBar',
   component: PageSaveBar,
   parameters: {
     layout: 'fullscreen',

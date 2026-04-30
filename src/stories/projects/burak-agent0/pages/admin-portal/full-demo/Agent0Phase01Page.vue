@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { markRaw, reactive, ref } from 'vue';
-import { AppNavigation, PageHeader, ToastNotification } from '@jumpcloud/circuit/components';
+import { AppNavigation, PageHeader, ToastNotification, PageSaveBar } from '@jumpcloud/circuit/components';
 import { Cog6ToothIcon, CpuChipIcon } from '@heroicons/vue/24/outline';
 import Button from 'primevue/button';
 import AdminTopBar from '@/components/AdminTopBar.vue';
-import PageSaveBar from '@/components/PageSaveBar.vue';
 import Agent0ServersView from '../../../features/agent0/servers/Agent0ServersView.vue';
 import Agent0ActivityView from '../../../features/agent0/activity/Agent0ActivityView.vue';
 import Agent0RedirectURLSettingsView from '../../../features/agent0/redirect-url-settings/Agent0RedirectURLSettingsView.vue';

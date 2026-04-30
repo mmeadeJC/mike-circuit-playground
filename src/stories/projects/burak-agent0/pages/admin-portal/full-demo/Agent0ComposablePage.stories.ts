@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import Agent0ComposablePage from './Agent0ComposablePage.vue';
 
 const meta: Meta<typeof Agent0ComposablePage> = {

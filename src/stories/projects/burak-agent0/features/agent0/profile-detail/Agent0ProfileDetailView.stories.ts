@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { defineComponent, ref } from 'vue';
 import Button from 'primevue/button';
 import Agent0ProfileDetailView from './Agent0ProfileDetailView.vue';

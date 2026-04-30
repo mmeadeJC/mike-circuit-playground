@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { AiInputChat } from '@jumpcloud/circuit/components';
 import { DocumentIcon, ServerIcon, UserGroupIcon, ShieldCheckIcon } from '@heroicons/vue/24/outline';
 import { markRaw } from 'vue';

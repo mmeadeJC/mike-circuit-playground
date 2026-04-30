@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref, computed, markRaw, defineComponent } from 'vue';
 import {
   AppNavigation,
@@ -12,6 +12,9 @@ import {
   DataTableCellText,
   DataTableCellLink,
   DataTableCellStatus,
+  KeyValue,
+  DetailPageLayout,
+  ConfigPageLayout,
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
@@ -50,9 +53,6 @@ import {
 } from '@heroicons/vue/24/outline';
 
 import AdminTopBar from '@/components/AdminTopBar.vue';
-import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
-import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
-import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
 
 import {
   DeviceManagementIcon,
@@ -558,7 +558,7 @@ const SsoApplicationsPage = defineComponent({
     PvDivider: Divider,
     PvMenu: Menu,
     AdminTopBar,
-    DetailsKeyValue,
+    KeyValue,
     DetailPageLayout,
     ConfigPageLayout,
     ArrowLeftIcon,

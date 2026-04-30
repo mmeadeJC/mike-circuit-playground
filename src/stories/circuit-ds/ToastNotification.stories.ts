@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ToastNotification } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';

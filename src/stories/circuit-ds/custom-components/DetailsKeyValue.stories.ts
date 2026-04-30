@@ -1,11 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { defineComponent } from 'vue';
 import { CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline';
-import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
+import { KeyValue } from '@jumpcloud/circuit/components';
 
-const meta: Meta<typeof DetailsKeyValue> = {
-  title: 'Circuit DS/Custom Components/DetailsKeyValue',
-  component: DetailsKeyValue,
+const meta: Meta<typeof KeyValue> = {
+  title: 'Circuit DS/KeyValue',
+  component: KeyValue,
   argTypes: {
     label: {
       control: 'text',
@@ -24,7 +24,7 @@ const meta: Meta<typeof DetailsKeyValue> = {
 
 export default meta;
 
-type Story = StoryObj<typeof DetailsKeyValue>;
+type Story = StoryObj<typeof KeyValue>;
 
 export const Default: Story = {
   args: {
@@ -52,7 +52,7 @@ export const WithIcon: Story = {
 export const Multiple: Story = {
   render: () =>
     defineComponent({
-      components: { DetailsKeyValue },
+      components: { KeyValue },
       setup() {
         const items = [
           { label: 'Display Name', value: 'Burak\'s MacBook Pro' },
@@ -68,7 +68,7 @@ export const Multiple: Story = {
       },
       template: `
         <div class="flex flex-col gap-3 p-6">
-          <DetailsKeyValue
+          <KeyValue
             v-for="(item, index) in items"
             :key="index"
             :label="item.label"

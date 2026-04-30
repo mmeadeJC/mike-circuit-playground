@@ -18,3 +18,9 @@ public/fonts/
 .aws-sam/
 backend/static/*
 !backend/static/.gitkeep
+.claude/
+
+debug-storybook.log
+server/data/*.db
+server/data/*.db-shm
+server/data/*.db-wal

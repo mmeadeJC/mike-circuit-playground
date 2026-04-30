@@ -1,4 +1,4 @@
-import type { Decorator } from '@storybook/vue3';
+import type { Decorator } from '@storybook/vue3-vite';
 import AnnotationShell from './AnnotationShell.vue';
 
 /**

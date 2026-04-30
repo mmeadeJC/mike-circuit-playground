@@ -1,14 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { DataTable as CircuitDataTable, DataTableToolbar, CollapsiblePanel, CheckboxWithLabel, FormField, CopyButton } from '@jumpcloud/circuit/components';
+import { DataTable as CircuitDataTable, DataTableToolbar, CollapsiblePanel, CheckboxWithLabel, FormField, CopyButton, DashboardPageLayout, ListPageLayout, PageSaveBar } from '@jumpcloud/circuit/components';
 import Chart from 'primevue/chart';
 import Dialog from 'primevue/dialog';
 import MultiSelect from 'primevue/multiselect';
 import SelectButton from 'primevue/selectbutton';
 import Button from 'primevue/button';
-import DashboardPageLayout from '@/components/layout/page-layouts/DashboardPageLayout.vue';
-import ListPageLayout from '@/components/layout/page-layouts/ListPageLayout.vue';
-import PageSaveBar from '@/components/PageSaveBar.vue';
 import DashboardStatCard from '../dashboard/DashboardStatCard.vue';
 import DashboardTopList from '../dashboard/DashboardTopList.vue';
 import DashboardRecentActivity from '../dashboard/DashboardRecentActivity.vue';

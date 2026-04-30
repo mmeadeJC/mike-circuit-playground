@@ -5,13 +5,13 @@ import {
   DataTable as CircuitDataTable,
   DataTableToolbar,
   FormField,
+  ListPageLayout,
 } from '@jumpcloud/circuit/components';
 import type { Action, SelectedItem } from '@jumpcloud/circuit/components';
 import Dialog from 'primevue/dialog';
 import MultiSelect from 'primevue/multiselect';
 import Button from 'primevue/button';
 import { XMarkIcon, TrashIcon } from '@heroicons/vue/24/outline';
-import ListPageLayout from '@/components/layout/page-layouts/ListPageLayout.vue';
 import { getAllowedAiClientColumns } from '../shared/columns';
 import type { AllowedAiClient, AllowedAiClientSubmitPayload } from '../shared/types';
 import type { AllowedAiClientFilterChip } from '../shared/composables/useAllowedAiClientFilters';

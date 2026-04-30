@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { computed, defineComponent, ref } from 'vue';
 import Button from 'primevue/button';
 import Agent0ServerDetailView from './Agent0ServerDetailView.vue';

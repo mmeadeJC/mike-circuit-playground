@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
-import { ref, markRaw, defineComponent, computed } from 'vue';
+import { ref, markRaw, defineComponent, computed, watch } from 'vue';
 import {
   AppNavigation,
   PageHeader,
@@ -21,7 +21,6 @@ import Textarea from 'primevue/textarea';
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
-import Dialog from 'primevue/dialog';
 import Divider from 'primevue/divider';
 import Menu from 'primevue/menu';
 import IconField from 'primevue/iconfield';
@@ -343,8 +342,6 @@ const userGroupColumns = [
   { field: 'numUsers', header: 'Number of Users', sortable: true, component: markRaw(DataTableCellText), componentProps: (sp: { data: Record<string, unknown> }) => ({ label: String(sp.data.numUsers) }) },
 ];
 
-// ─── Component ─────────────────────────────────────────────────────
-
 type PolicyType = 'device' | 'user';
 type ViewState = 'list' | 'detail' | 'new-policy';
 
@@ -354,11 +351,11 @@ const UserScopedPoliciesPage = defineComponent({
     AppNavigation, PageHeader, CollapsiblePanel, CircuitDataTable, DataTableToolbar,
     CheckboxWithLabel, FormField, MessageNotification, LinkText,
     PvButton: Button, PvTag: Tag, PvInputText: InputText, PvTextarea: Textarea,
-    PvTabs: Tabs, PvTabList: TabList, PvTab: Tab, PvDialog: Dialog, PvDivider: Divider, PvMenu: Menu,
+    PvTabs: Tabs, PvTabList: TabList, PvTab: Tab, PvDivider: Divider, PvMenu: Menu,
     PvIconField: IconField, PvInputIcon: InputIcon,
-    TopBar, DetailPageLayout, SparklesIcon, ComputerDesktopIcon, DevicePhoneMobileIcon,
+    TopBar, DetailPageLayout, UsersIcon, ComputerDesktopIcon, DevicePhoneMobileIcon,
     ChevronRightIcon, XMarkIcon, ShieldCheckIcon,
-    Cog6ToothIcon, UserIcon, FunnelIcon, ArrowPathIcon, MagnifyingGlassIcon, PlusIcon, WindowsIcon, AppleIcon,
+    Cog6ToothIcon, UserIcon, UserGroupIcon, FunnelIcon, ArrowPathIcon, MagnifyingGlassIcon, PlusIcon, WindowsIcon, AppleIcon,
   },
   setup() {
     const currentView = ref<ViewState>('list');
@@ -371,6 +368,7 @@ const UserScopedPoliciesPage = defineComponent({
     const listFirst = ref(0);
     const listRows = ref(100);
     const showSuccessToast = ref(false);
+    const successToastMessage = ref('');
     const addNewMenuRef = ref();
 
     const addNewMenuItems = ref([
@@ -390,10 +388,13 @@ const UserScopedPoliciesPage = defineComponent({
 
     // ── Detail view state ──
     const detailTab = ref('details');
+    const detailPolicyTitle = ref('Allow The Use of Biometrics');
+    const detailCardHeader = ref('Windows User Policy');
+    const detailIsEditFlow = ref(false);
     const policyName = ref('Allow the use of biometrics');
+    const initialPolicyName = ref('Allow the use of biometrics');
     const policyNotes = ref('');
     const allowBiometrics = ref(false);
-    const showSaveWithoutBindingDialog = ref(false);
 
     // User binding
     const selectedBindingUsers = ref<typeof bindingUsersData>([]);
@@ -422,6 +423,32 @@ const UserScopedPoliciesPage = defineComponent({
     const showBoundUserGroups = ref(false);
     const boundUserGroupCount = computed(() => selectedUserGroups.value.length);
 
+    function normalizeSelection<T extends { id: number }>(selected: T[], source: T[]): T[] {
+      const ids = new Set(selected.map(s => s.id));
+      return source.filter(item => ids.has(item.id));
+    }
+
+    watch(selectedPolicyGroups, (val) => {
+      const normalized = normalizeSelection(val, policyGroupsData);
+      if (normalized.length !== val.length) selectedPolicyGroups.value = normalized;
+    });
+    watch(selectedDeviceGroups, (val) => {
+      const normalized = normalizeSelection(val, deviceGroupsData);
+      if (normalized.length !== val.length) selectedDeviceGroups.value = normalized;
+    });
+    watch(selectedUserGroups, (val) => {
+      const normalized = normalizeSelection(val, userGroupsData);
+      if (normalized.length !== val.length) selectedUserGroups.value = normalized;
+    });
+    watch(selectedBindingUsers, (val) => {
+      const normalized = normalizeSelection(val, bindingUsersData);
+      if (normalized.length !== val.length) selectedBindingUsers.value = normalized;
+    });
+    watch(selectedBindingDevices, (val) => {
+      const normalized = normalizeSelection(val, bindingDevicesData);
+      if (normalized.length !== val.length) selectedBindingDevices.value = normalized;
+    });
+
     const isUserPolicy = computed(() => policyType.value === 'user');
     const isDevicePolicy = computed(() => policyType.value === 'device');
 
@@ -436,6 +463,22 @@ const UserScopedPoliciesPage = defineComponent({
     });
 
     const detailTagLabel = computed(() => isUserPolicy.value ? 'User' : 'Device');
+
+    const showSettingsCard = computed(() => !detailIsEditFlow.value);
+
+    const policyNameChanged = computed(() => policyName.value !== initialPolicyName.value);
+
+    const isSaveDisabled = computed(() => {
+      if (!detailIsEditFlow.value && detailTab.value === 'details') return true;
+      if (detailTab.value === 'policy-groups') return selectedPolicyGroups.value.length === 0;
+      if (detailTab.value === 'user-groups') return selectedUserGroups.value.length === 0;
+      if (detailTab.value === 'device-groups') return selectedDeviceGroups.value.length === 0;
+      if (detailTab.value === 'users') return selectedBindingUsers.value.length === 0;
+      if (detailTab.value === 'devices') return selectedBindingDevices.value.length === 0;
+      if (detailTab.value !== 'details') return false;
+      if (policyNameChanged.value || policyNotes.value.trim() !== '') return false;
+      return true;
+    });
 
     const newPolicyTabs = computed(() => {
       const tabs = [
@@ -477,29 +520,46 @@ const UserScopedPoliciesPage = defineComponent({
       newPolicyOsTab.value = 'windows';
     }
 
-    function openDetail(type?: PolicyType) {
-      if (type) policyType.value = type;
-      currentView.value = 'detail';
+    function resetDetailState(isEdit: boolean) {
       detailTab.value = 'details';
-      policyName.value = 'Allow the use of biometrics';
       policyNotes.value = '';
       allowBiometrics.value = false;
       selectedBindingUsers.value = [];
       showBoundUsers.value = false;
       selectedBindingDevices.value = [];
       showBoundDevices.value = false;
-      selectedPolicyGroups.value = policyGroupsData.filter(g => g.bound);
+      selectedPolicyGroups.value = isEdit ? policyGroupsData.filter(g => g.bound) : [];
       showBoundPolicyGroups.value = false;
-      selectedDeviceGroups.value = deviceGroupsData.filter(g => g.bound);
+      selectedDeviceGroups.value = isEdit ? deviceGroupsData.filter(g => g.bound) : [];
       showBoundDeviceGroups.value = false;
-      selectedUserGroups.value = userGroupsData.filter(g => g.bound);
+      selectedUserGroups.value = isEdit ? userGroupsData.filter(g => g.bound) : [];
       showBoundUserGroups.value = false;
+    }
+
+    function openDetail(type?: PolicyType) {
+      if (type) policyType.value = type;
+      detailIsEditFlow.value = false;
+      detailPolicyTitle.value = 'Allow The Use of Biometrics';
+      detailCardHeader.value = isUserPolicy.value ? 'Windows User Policy' : 'Windows Device Policy';
+      policyName.value = 'Allow the use of biometrics';
+      initialPolicyName.value = 'Allow the use of biometrics';
+      resetDetailState(false);
+      currentView.value = 'detail';
     }
 
     function openDetailFromRow(event: { data: Record<string, unknown> }) {
       const row = event.data;
       policyType.value = row.policyLevel === 'User' ? 'user' : 'device';
-      openDetail();
+      detailIsEditFlow.value = true;
+      const osMap: Record<string, string> = { windows: 'Windows', mac: 'Mac', ios: 'iOS', android: 'Android', linux: 'Linux' };
+      const osLabel = osMap[row.os as string] || 'Windows';
+      const levelLabel = row.policyLevel === 'User' ? 'User' : 'Device';
+      detailPolicyTitle.value = row.name as string;
+      detailCardHeader.value = `${osLabel} ${levelLabel} Policy`;
+      policyName.value = (row.name as string).toLowerCase();
+      initialPolicyName.value = policyName.value;
+      resetDetailState(true);
+      currentView.value = 'detail';
     }
 
     function goToList() {
@@ -507,27 +567,16 @@ const UserScopedPoliciesPage = defineComponent({
     }
 
     function handleSave() {
-      if (detailTab.value === 'users' || detailTab.value === 'devices') {
+      if (detailTab.value === 'users' || detailTab.value === 'devices' || (detailTab.value === 'details' && detailIsEditFlow.value)) {
+        successToastMessage.value = `The policy "${detailPolicyTitle.value}" has been saved.`;
         currentView.value = 'list';
         setTimeout(() => {
           showSuccessToast.value = true;
           setTimeout(() => { showSuccessToast.value = false; }, 4000);
         }, 1000);
-      } else {
-        showSaveWithoutBindingDialog.value = true;
       }
     }
 
-    function confirmSaveWithoutBinding() {
-      showSaveWithoutBindingDialog.value = false;
-    }
-
-    function stopCheckboxRowClick(event: MouseEvent) {
-      const target = event.target as HTMLElement;
-      if (target.closest('[data-pc-name="checkbox"]') || target.closest('[data-pc-section="input"]')) {
-        event.stopPropagation();
-      }
-    }
 
     return {
       menuItems, profileMenuItems,
@@ -540,19 +589,19 @@ const UserScopedPoliciesPage = defineComponent({
       userGroupsData, userGroupColumns,
       currentView, policyType,
       showRecommendations, recommendationsCollapsed, selectedPolicies,
-      listFirst, listRows, showSuccessToast,
+      listFirst, listRows, showSuccessToast, successToastMessage,
       addNewMenuRef, addNewMenuItems, toggleAddMenu,
       newPolicyOsTab, newPolicyTitle,
-      detailTab, policyName, policyNotes, allowBiometrics,
-      showSaveWithoutBindingDialog,
+      detailTab, detailPolicyTitle, detailCardHeader, detailIsEditFlow, showSettingsCard,
+      policyName, policyNotes, allowBiometrics,
       selectedBindingUsers, showBoundUsers, boundUserCount, totalUserCount,
       selectedBindingDevices, showBoundDevices, boundDeviceCount, totalDeviceCount,
       selectedPolicyGroups, showBoundPolicyGroups, boundPolicyGroupCount,
       selectedDeviceGroups, showBoundDeviceGroups, boundDeviceGroupCount,
       selectedUserGroups, showBoundUserGroups, boundUserGroupCount,
-      isUserPolicy, isDevicePolicy, detailSubtitle, detailTagLabel,
+      isUserPolicy, isDevicePolicy, detailSubtitle, detailTagLabel, isSaveDisabled,
       newPolicyTabs, detailTabs,
-      openNewPolicy, openDetail, openDetailFromRow, goToList, handleSave, confirmSaveWithoutBinding, stopCheckboxRowClick,
+      openNewPolicy, openDetail, openDetailFromRow, goToList, handleSave,
     };
   },
   template: `
@@ -573,7 +622,7 @@ const UserScopedPoliciesPage = defineComponent({
           leave-to-class="opacity-0 translate-x-[20px]"
         >
           <div v-if="showSuccessToast" class="absolute top-[52px] right-6 z-50 w-[360px]">
-            <MessageNotification severity="success" title="Success" detail="The policy has been saved." :closable="true" class="[&_span]:whitespace-normal [&_span]:overflow-visible" @close="showSuccessToast = false" />
+            <MessageNotification severity="success" title="Success" :detail="successToastMessage" :closable="true" class="[&_span]:whitespace-normal [&_span]:overflow-visible" @close="showSuccessToast = false" />
           </div>
         </Transition>
 
@@ -596,7 +645,7 @@ const UserScopedPoliciesPage = defineComponent({
               <div class="grid grid-cols-3 gap-4">
                 <div class="border border-neutral-default_solid rounded-lg p-4 flex flex-col gap-3 bg-neutral-base">
                   <div class="flex items-center gap-2">
-                    <SparklesIcon class="w-5 h-5 text-neutral-base shrink-0" />
+                    <UsersIcon class="w-5 h-5 text-neutral-base shrink-0" />
                     <span class="text-body-md-bold text-neutral-base">User-Scoped Policies Now Available</span>
                     <PvTag value="New" severity="success" />
                   </div>
@@ -761,10 +810,10 @@ const UserScopedPoliciesPage = defineComponent({
     <div v-else-if="currentView === 'detail'" class="flex h-screen overflow-hidden">
       <AppNavigation :menuItems="menuItems" :profileMenuItems="profileMenuItems" activeItem="device management" :collapsible="true" :topNavToggle="true" />
       <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        <TopBar showBackButton backButtonLabel="Windows" @back="goToList" />
+        <TopBar showBackButton :backButtonLabel="detailIsEditFlow ? 'Policy Management' : 'Windows'" @back="goToList" />
 
         <PageHeader
-          title="Allow The Use of Biometrics"
+          :title="detailPolicyTitle"
           :icon="$options.shieldIcon"
           :tabs="detailTabs"
           :activeTab="detailTab"
@@ -790,7 +839,7 @@ const UserScopedPoliciesPage = defineComponent({
           <!-- ───── Details Tab ───── -->
           <div v-if="detailTab === 'details'" class="py-6 flex justify-center">
             <div class="w-[940px] flex flex-col gap-6">
-              <CollapsiblePanel :header="isUserPolicy ? 'Windows User Policy' : 'Windows Device Policy'">
+              <CollapsiblePanel :header="detailCardHeader">
                 <div class="flex flex-col gap-5">
                   <FormField label="Policy Name">
                     <template #default="{ inputId }">
@@ -827,7 +876,7 @@ const UserScopedPoliciesPage = defineComponent({
                 </div>
               </CollapsiblePanel>
 
-              <CollapsiblePanel header="Settings">
+              <CollapsiblePanel v-if="showSettingsCard" header="Settings">
                 <CheckboxWithLabel v-model="allowBiometrics" inputId="allowBiometrics" :binary="true">
                   <template #label>Allow the use of biometrics</template>
                 </CheckboxWithLabel>
@@ -854,6 +903,7 @@ const UserScopedPoliciesPage = defineComponent({
               selectionMode="multiple"
               v-model:selection="selectedPolicyGroups"
               dataKey="id"
+              compareSelectionBy="dataKey"
             />
           </div>
 
@@ -876,6 +926,7 @@ const UserScopedPoliciesPage = defineComponent({
               selectionMode="multiple"
               v-model:selection="selectedDeviceGroups"
               dataKey="id"
+              compareSelectionBy="dataKey"
             />
           </div>
 
@@ -898,6 +949,7 @@ const UserScopedPoliciesPage = defineComponent({
               selectionMode="multiple"
               v-model:selection="selectedUserGroups"
               dataKey="id"
+              compareSelectionBy="dataKey"
             />
           </div>
 
@@ -914,21 +966,19 @@ const UserScopedPoliciesPage = defineComponent({
                 <template #label><span class="text-body-md">Show bound devices ({{ boundDeviceCount }})</span></template>
               </CheckboxWithLabel>
             </div>
-            <div @click.capture="stopCheckboxRowClick">
-              <CircuitDataTable
-                :columns="bindingDevicesColumns"
-                :data="showBoundDevices ? selectedBindingDevices : bindingDevicesData"
-                v-model:selection="selectedBindingDevices"
-                selectionMode="multiple"
-                dataKey="id"
-                compareSelectionBy="dataKey"
-                :paginator="true"
-                :rows="50"
-                :totalRecords="totalDeviceCount"
-                scrollable
-                scrollHeight="flex"
-              />
-            </div>
+            <CircuitDataTable
+              :columns="bindingDevicesColumns"
+              :data="showBoundDevices ? selectedBindingDevices : bindingDevicesData"
+              v-model:selection="selectedBindingDevices"
+              selectionMode="multiple"
+              dataKey="id"
+              compareSelectionBy="dataKey"
+              :paginator="true"
+              :rows="50"
+              :totalRecords="totalDeviceCount"
+              scrollable
+              scrollHeight="flex"
+            />
           </div>
 
           <!-- ───── Users Tab (User Policy only) ───── -->
@@ -944,63 +994,29 @@ const UserScopedPoliciesPage = defineComponent({
                 <template #label><span class="text-body-md">Show bound users ({{ boundUserCount }})</span></template>
               </CheckboxWithLabel>
             </div>
-            <div @click.capture="stopCheckboxRowClick">
-              <CircuitDataTable
-                :columns="bindingUsersColumns"
-                :data="showBoundUsers ? selectedBindingUsers : bindingUsersData"
-                v-model:selection="selectedBindingUsers"
-                selectionMode="multiple"
-                dataKey="id"
-                compareSelectionBy="dataKey"
-                :paginator="true"
-                :rows="50"
-                :totalRecords="totalUserCount"
-                scrollable
-                scrollHeight="flex"
-              />
-            </div>
+            <CircuitDataTable
+              :columns="bindingUsersColumns"
+              :data="showBoundUsers ? selectedBindingUsers : bindingUsersData"
+              v-model:selection="selectedBindingUsers"
+              selectionMode="multiple"
+              dataKey="id"
+              compareSelectionBy="dataKey"
+              :paginator="true"
+              :rows="50"
+              :totalRecords="totalUserCount"
+              scrollable
+              scrollHeight="flex"
+            />
           </div>
         </div>
 
         <!-- Footer with Cancel/Save -->
         <div class="flex items-center justify-end gap-3 px-6 py-3 border-t border-neutral-default_solid bg-neutral-base shrink-0">
           <PvButton label="Cancel" severity="secondary" variant="text" @click="goToList" />
-          <PvButton label="Save" @click="handleSave" />
+          <PvButton :label="detailIsEditFlow ? 'Save' : 'Create Policy'" :disabled="isSaveDisabled" @click="handleSave" />
         </div>
       </div>
 
-      <!-- Save Without Binding Dialog -->
-      <PvDialog
-        v-model:visible="showSaveWithoutBindingDialog"
-        :draggable="false"
-        modal
-        header="Save Without Binding?"
-        :style="{ width: '480px' }"
-        :pt="{ pcCloseButton: { root: { class: 'p-1.5 rounded transition-colors-shadow duration-168 outline-none text-button-text-secondary-base bg-button-text-secondary-base shadow-button-text-default hover:bg-button-text-secondary-hover active:bg-button-text-secondary-pressed [&>svg]:h-5' } } }"
-      >
-        <template #closeicon><XMarkIcon class="w-5 h-5" /></template>
-
-        <div class="flex flex-col gap-3">
-          <MessageNotification
-            severity="warn"
-            :detail="'Are you sure you want to save this policy configuration without binding it to ' + (isUserPolicy ? 'User Groups or Users' : 'Device Groups or Devices') + '?'"
-            :closable="false"
-            class="text-notification-warn-content [&_span]:whitespace-normal [&_span]:overflow-visible"
-          />
-          <p class="text-body-md text-neutral-base">
-            To bind this policy, select {{ isUserPolicy ? 'User Groups or Users' : 'Device Groups or Devices' }}
-            in the tab bar, then select your target for binding and click save.
-          </p>
-        </div>
-
-        <template #footer>
-          <div class="flex items-center w-full"></div>
-          <div class="flex gap-sm">
-            <PvButton label="Cancel" severity="secondary" variant="text" @click="showSaveWithoutBindingDialog = false" />
-            <PvButton label="Ok" @click="confirmSaveWithoutBinding" />
-          </div>
-        </template>
-      </PvDialog>
     </div>
   `,
   shieldIcon: markRaw(ShieldCheckIcon),

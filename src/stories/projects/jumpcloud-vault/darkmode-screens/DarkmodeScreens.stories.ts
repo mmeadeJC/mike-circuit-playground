@@ -38,7 +38,7 @@ import {
   JumpCloudIcon,
 } from '@jumpcloud/icons';
 
-import TopBar from '../../../../components/TopBar.vue';
+import TopBar from '../../../../components/AdminTopBar.vue';
 
 // ─── Stat Card Component ──────────────────────────────────────────
 

@@ -55,7 +55,7 @@ import {
 } from '@heroicons/vue/24/outline';
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/vue/24/solid';
 
-import TopBar from '../../../../components/TopBar.vue';
+import TopBar from '../../../../components/AdminTopBar.vue';
 import DetailPageLayout from '../../../../components/layout/page-layouts/DetailPageLayout.vue';
 
 const StatusTag = defineComponent({

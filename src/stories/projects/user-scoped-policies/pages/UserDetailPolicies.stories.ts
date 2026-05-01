@@ -47,7 +47,7 @@ import {
   PasswordManagerIcon,
 } from '@jumpcloud/icons';
 
-import TopBar from '../../../../components/TopBar.vue';
+import TopBar from '../../../../components/AdminTopBar.vue';
 
 // ─── Icon Components ───────────────────────────────────────────────
 

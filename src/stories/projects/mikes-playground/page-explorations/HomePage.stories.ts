@@ -27,7 +27,7 @@ import {
   PasswordManagerIcon,
   WorkflowIcon,
 } from '@jumpcloud/icons';
-import TopBar from '@/components/TopBar.vue';
+import TopBar from '@/components/AdminTopBar.vue';
 import HomePage from './HomePage.vue';
 
 const menuItems = [

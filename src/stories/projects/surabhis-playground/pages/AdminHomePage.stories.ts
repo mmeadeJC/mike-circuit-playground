@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { markRaw, defineComponent } from 'vue';
 import { AppNavigation, PageHeader } from '@jumpcloud/circuit/components';
 import {
@@ -27,7 +27,7 @@ import {
   PasswordManagerIcon,
   WorkflowIcon,
 } from '@jumpcloud/icons';
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 import AdminHomePage from './AdminHomePage.vue';
 
 const menuItems = [
@@ -133,7 +133,7 @@ const AdminHomePageStory = defineComponent({
   components: {
     AppNavigation,
     PageHeader,
-    TopBar,
+    AdminTopBar,
     AdminHomePage,
     HomeIcon,
   },
@@ -150,7 +150,7 @@ const AdminHomePageStory = defineComponent({
         :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-        <TopBar />
+        <AdminTopBar />
         <PageHeader
           title="Home"
           subtitleText="Overview of your organization"

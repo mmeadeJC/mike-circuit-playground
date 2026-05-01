@@ -1,5 +1,8 @@
 node_modules
 dist
+
+# Cursor IDE debug/session logs (not for version control)
+.cursor/debug*.log
 .DS_Store
 storybook-static
 *.tgz
@@ -7,3 +10,17 @@ storybook-static
 .env
 .env.*
 api-reference/
+dist-demos/
+.generated-demos/
+.demo-*.html
+.wrangler/
+public/fonts/
+.aws-sam/
+backend/static/*
+!backend/static/.gitkeep
+.claude/
+
+debug-storybook.log
+server/data/*.db
+server/data/*.db-shm
+server/data/*.db-wal

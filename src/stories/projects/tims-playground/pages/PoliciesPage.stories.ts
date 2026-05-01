@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref, markRaw, defineComponent, computed } from 'vue';
 import {
   AppNavigation,
@@ -56,7 +56,7 @@ import {
 
 import { CheckCircleIcon as CheckCircleSolidIcon, ShieldCheckIcon as ShieldCheckSolidIcon } from '@heroicons/vue/24/solid';
 
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 
 import {
   DeviceManagementIcon,
@@ -302,7 +302,7 @@ const PoliciesPage = defineComponent({
     RadioButtonWithLabel, CheckboxWithLabel, FormField, LinkText, Paginator,
     PvButton: Button, PvTag: Tag, PvInputText: InputText, PvTextarea: Textarea,
     PvTabs: Tabs, PvTabList: TabList, PvTab: Tab, PvIconField: IconField, PvDialog: Dialog,
-    TopBar, SparklesIcon, ComputerDesktopIcon, DevicePhoneMobileIcon,
+    AdminTopBar, SparklesIcon, ComputerDesktopIcon, DevicePhoneMobileIcon,
     ChevronRightIcon, XMarkIcon, ShieldCheckIcon, CheckCircleSolidIcon,
     ShieldCheckSolidIcon, MagnifyingGlassIcon, Cog6ToothIcon, ArrowLeftIcon, ArrowRightIcon,
     DocumentDuplicateIcon, CardButton,
@@ -632,13 +632,13 @@ const PoliciesPage = defineComponent({
     <div v-if="currentView === 'detail'" class="flex h-screen overflow-hidden">
       <AppNavigation :menuItems="menuItems" :profileMenuItems="profileMenuItems" activeItem="device management" :collapsible="true" :topNavToggle="true" />
       <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <TopBar>
+        <AdminTopBar>
           <template #search-icon>
             <PvButton label="Policies" severity="secondary" variant="outlined" size="small" class="mr-3" @click="closeDetail">
               <template #icon><ArrowLeftIcon class="w-4 h-4" /></template>
             </PvButton>
           </template>
-        </TopBar>
+        </AdminTopBar>
 
         <PageHeader
           :title="detailPolicyName"
@@ -782,7 +782,7 @@ const PoliciesPage = defineComponent({
     <div v-else-if="currentView === 'list'" class="flex h-screen overflow-hidden">
       <AppNavigation :menuItems="menuItems" :profileMenuItems="profileMenuItems" activeItem="device management" :collapsible="true" :topNavToggle="true" />
       <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-        <TopBar />
+        <AdminTopBar />
         <PageHeader title="Policy Management" :icon="$options.shieldIcon" />
 
         <div class="flex-1 overflow-auto bg-neutral-surface">

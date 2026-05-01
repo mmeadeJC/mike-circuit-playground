@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { computed, defineComponent, markRaw, ref } from 'vue';
 import {
   ActionsToolbar,
@@ -53,7 +53,7 @@ import {
   WorkflowIcon,
 } from '@jumpcloud/icons';
 
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 import ListPageLayout from '@/components/layout/page-layouts/ListPageLayout.vue';
 
 // ─── Navigation ───
@@ -318,7 +318,7 @@ const ISPMCampaignsPage = defineComponent({
     DataTableToolbar,
     MessageNotification,
     PageHeader,
-    TopBar,
+    AdminTopBar,
     ListPageLayout,
     PvButton: Button,
     PvDialog: Dialog,
@@ -493,7 +493,7 @@ const ISPMCampaignsPage = defineComponent({
         :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-        <TopBar />
+        <AdminTopBar />
 
         <!-- Campaign List View -->
         <template v-if="currentView === 'list'">

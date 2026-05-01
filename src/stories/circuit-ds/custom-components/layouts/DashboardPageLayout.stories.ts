@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { defineComponent } from 'vue';
-import DashboardPageLayout from '@/components/layout/page-layouts/DashboardPageLayout.vue';
+import { DashboardPageLayout } from '@jumpcloud/circuit/components';
 
 const meta: Meta<typeof DashboardPageLayout> = {
-  title: 'Circuit DS/Custom Components/Layouts/DashboardPageLayout',
+  title: 'Circuit DS/Layouts/DashboardPageLayout',
   component: DashboardPageLayout,
   parameters: {
     layout: 'fullscreen',

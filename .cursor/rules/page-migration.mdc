@@ -24,7 +24,7 @@ Every page MUST use this standard shell structure:
 <div class="flex h-screen overflow-hidden">
   <AppNavigation :menuItems="menuItems" ... />
   <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-    <TopBar />
+    <AdminTopBar />
     <PageHeader ... />
     <!-- Page content using a layout component -->
   </div>
@@ -34,21 +34,33 @@ Every page MUST use this standard shell structure:
 | Component | Source | Purpose |
 |---|---|---|
 | `AppNavigation` | `@jumpcloud/circuit/components` | Left sidebar navigation |
-| `TopBar` | `src/components/TopBar.vue` | Top bar with search, icons, AI assistant |
+| `AdminTopBar` | `src/components/AdminTopBar.vue` | Admin console top bar: search, icons, AI assistant |
+| `UserTopBar` | `src/components/UserTopBar.vue` | User portal: external links only (e.g. Launch Admin Portal) |
 | `PageHeader` | `@jumpcloud/circuit/components` | Page title, subtitle, icon, tabs, actions |
 
 ## 3. Page Layout Components — Choose the Right One
 
-After the page shell, the tab/page content MUST use one of our page layout components from `src/components/layout/page-layouts/`. **Never build custom layout structures with raw `div`s when a layout component fits.**
+After the page shell, the tab/page content MUST use page layout components from **Circuit DS** (`@jumpcloud/circuit/components`). **Never** import layouts from local playground paths such as `src/components/layout/page-layouts/` — those files only re-export Circuit; always import the layout from Circuit directly. **Never build custom layout structures with raw `div`s when a layout component fits.**
 
 ### Available Layouts
 
-| Layout | Path | Use When |
+| Layout | Import from | Use When |
 |---|---|---|
-| `DetailPageLayout` | `src/components/layout/page-layouts/DetailPageLayout.vue` | Detail/overview pages with panels and an optional sidebar (e.g., device detail highlights, entity overview). Supports `maxWidth` prop and `#sidebar` slot. |
-| `ListPageLayout` | `src/components/layout/page-layouts/ListPageLayout.vue` | Full-width list/table pages with an optional sidebar. No max-width constraint. |
-| `ConfigPageLayout` | `src/components/layout/page-layouts/ConfigPageLayout.vue` | Configuration/settings pages with form sections and an optional sidebar. Supports `maxWidth` prop and `#sidebar` slot. |
-| `DashboardPageLayout` | `src/components/layout/page-layouts/DashboardPageLayout.vue` | Dashboard pages with widgets/cards and an optional sidebar. Supports `maxWidth` prop and `#sidebar` slot. |
+| `DetailPageLayout` | `@jumpcloud/circuit/components` | Detail/overview pages with panels and an optional sidebar (e.g., device detail highlights, entity overview). Supports `maxWidth` prop and `#sidebar` slot. |
+| `ListPageLayout` | `@jumpcloud/circuit/components` | Full-width list/table pages with an optional sidebar. No max-width constraint. |
+| `ConfigPageLayout` | `@jumpcloud/circuit/components` | Configuration/settings pages with form sections and an optional sidebar. Supports `maxWidth` prop and `#sidebar` slot. |
+| `DashboardPageLayout` | `@jumpcloud/circuit/components` | Dashboard pages with widgets/cards and an optional sidebar. Supports `maxWidth` prop and `#sidebar` slot. |
+
+### Import pattern
+
+```ts
+import {
+  DetailPageLayout,
+  ListPageLayout,
+  ConfigPageLayout,
+  DashboardPageLayout,
+} from '@jumpcloud/circuit/components';
+```
 
 ### How to Choose
 
@@ -62,9 +74,13 @@ Analyze the image content and match:
 
 ### Layout Integration Notes
 
-- All layouts use `w-screen h-screen` by default. When embedding inside a page shell (after AppNavigation + TopBar + PageHeader), override with `class="w-full! h-full!"` so they fit within the existing container.
+- All layouts use `w-screen h-screen` by default. When embedding inside a page shell (after AppNavigation + `AdminTopBar` or `UserTopBar` + PageHeader), override with `class="w-full! h-full!"` so they fit within the existing container.
 - All layouts support an optional `#sidebar` slot. If the image shows a right sidebar, use it.
 - The default slot is the main content area.
+
+### Editable pages — PageSaveBar
+
+If the page lets users change settings or form fields that should be **saved**, use **`PageSaveBar`** from `@jumpcloud/circuit/components`. Track a **baseline** (last saved / initial values), set **dirty** when current ≠ baseline, bind `:visible` to dirty only, handle **`@save`** by persisting then updating baseline, and **`@discard`** by copying baseline back into the form. Do not use a custom sticky Save/Cancel row. See **Section 7** of the Circuit DS rules file.
 
 ## 4. Content Components — Map Image Elements to Circuit DS
 
@@ -91,6 +107,9 @@ When analyzing the image, map every visual element to the correct Circuit DS com
 | Toast message | `ToastNotification` |
 | OTP input | `InputOtp` |
 | Select with custom slots | `SelectWithSlots` |
+| Label + value / metadata / facts anywhere on the page | `KeyValue` — required for paired key/value display (Circuit DS Section 3i); import from `@jumpcloud/circuit/components` |
+| Save / discard for unsaved edits on a page | `PageSaveBar` — show only when dirty; save updates baseline; discard restores baseline (Circuit DS Section 7) |
+| Titled subsection **inside** the page body (not the top page title) | `PageSection` — `title` + optional `#subtitle` / `#actions`; body in default slot (Circuit DS Section 3h) |
 
 **Circuit DS Primitive Components** (`import X from 'primevue/x'`) — these ARE Circuit DS components. Circuit owns and styles them via passthrough (PT) configs at `@jumpcloud/circuit/src/primevue-primitives/`. They are imported from `primevue/*` but they are part of Circuit DS:
 
@@ -110,12 +129,12 @@ When analyzing the image, map every visual element to the correct Circuit DS com
 | Context menu | `TieredMenu` | `primevue/tieredmenu` |
 | Avatar | `Avatar` | `primevue/avatar` |
 
-**Project-Specific Components** (local to this repo):
+**Project-Specific Components** (local to this repo — not exported by Circuit DS):
 
 | Visual Element in Image | Use This Component | Import From |
 |---|---|---|
-| Key-value pairs in sidebar | `DetailsKeyValue` | `src/components/DetailsKeyValue.vue` |
-| Top bar | `TopBar` | `src/components/TopBar.vue` |
+| Admin top bar | `AdminTopBar` | `src/components/AdminTopBar.vue` |
+| User portal top bar | `UserTopBar` | `src/components/UserTopBar.vue` |
 
 ## 5. CollapsiblePanel — Slots and Usage
 
@@ -210,6 +229,8 @@ These are real mistakes that have been made. **Never repeat them:**
 | Using PrimeVue `<DataTable>` with `<Column>` | Use Circuit's `<DataTable :columns="..." :data="...">` |
 | Using PrimeVue `<Toast>` directly | Use `<ToastNotification>` from Circuit |
 | Building custom flexbox layouts for main+sidebar | Use a page layout component with `#sidebar` slot |
+| Importing `DetailPageLayout` / `ListPageLayout` / etc. from `src/components/layout/page-layouts/` | Import those layouts from `@jumpcloud/circuit/components` |
+| Custom sticky Save/Cancel for unsaved page edits | Use `PageSaveBar` with baseline, dirty-only visibility, and discard → baseline restore (Circuit DS Section 7) |
 | Building custom search bars with `<InputText>` + icons | Use `<DataTableToolbar>` inside `<DataTable>`'s `#toolbar` slot |
 | Placing `<DataTableToolbar>` as a sibling above `<DataTable>` | Put it inside `<DataTable>`'s `#toolbar` slot — see Section 6 of Circuit DS rules |
 | Using custom pagination below the table | Use `<DataTable>`'s built-in `:paginator="true"` prop |
@@ -233,9 +254,10 @@ Never use the shorthand `:toggleable="true"` alone without the full slot pattern
 Before writing any code for a page migration:
 
 1. **Analyze the image** — list all content zones and visual elements.
-2. **Choose the page layout** — pick from `DetailPageLayout`, `ListPageLayout`, `ConfigPageLayout`, or `DashboardPageLayout`.
-3. **Map every element to a Circuit DS component** — check `@jumpcloud/circuit/components` exports first, then PrimeVue primitives. Never build custom duplicates.
-4. **Set up the page shell** — `AppNavigation` + `TopBar` + `PageHeader` with correct props (icon, title, subtitle, tabs, actions).
-5. **Implement tab by tab** — each tab may need a different layout. Choose the best layout component for each.
-6. **Verify all imports** — everything must come from Circuit DS (custom or PT-styled primitive). No raw PrimeVue when a Circuit wrapper exists.
-7. **Check Figma Code Connect** (if Figma URL provided) — use `get_code_connect_map` and `get_design_context` MCP tools to find the correct component mappings.
+2. **Choose the page layout** — pick from `DetailPageLayout`, `ListPageLayout`, `ConfigPageLayout`, or `DashboardPageLayout`, all imported from `@jumpcloud/circuit/components`.
+3. If the page has **persisted edits**, plan **`PageSaveBar`** with baseline / dirty / save / discard (Circuit DS Section 7).
+4. **Map every element to a Circuit DS component** — check `@jumpcloud/circuit/components` exports first, then PrimeVue primitives. Never build custom duplicates.
+5. **Set up the page shell** — `AppNavigation` + `AdminTopBar` or `UserTopBar` + `PageHeader` with correct props (icon, title, subtitle, tabs, actions).
+6. **Implement tab by tab** — each tab may need a different layout. Choose the best layout component for each.
+7. **Verify all imports** — page layouts and other Circuit custom components from `@jumpcloud/circuit/components`; PrimeVue only for approved primitives. No raw PrimeVue when a Circuit wrapper exists.
+8. **Check Figma Code Connect** (if Figma URL provided) — use `get_code_connect_map` and `get_design_context` MCP tools to find the correct component mappings.

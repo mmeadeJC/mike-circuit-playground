@@ -3,7 +3,7 @@ description: Enforces Circuit Design System usage — typography, color tokens, 
 alwaysApply: true
 ---
 
-> **Circuit DS Version: 0.0.99**
+> **Circuit DS Version: 0.0.131**
 
 # Circuit Design System — Mandatory Rules
 
@@ -104,7 +104,9 @@ These wrap or replace PrimeVue primitives with Circuit-specific behavior, stylin
 | `FilterChip` | — | Active filter chip (key/operator/value, removable). |
 | **Navigation & Layout** | | |
 | `AppNavigation` | — | App-level left sidebar navigation with collapsible items. |
-| `PageHeader` | — | Page header with title, subtitle, icon, tabs, `#actions` slot, breadcrumbs. |
+| `PageHeader` | — | **Page-level** chrome: title, subtitle, icon, tabs, `#actions`, breadcrumbs at the top of the screen — not for subdivisions inside the scrollable content. |
+| `PageSection` | — | **In-content section header:** titled blocks inside the main content area (below `PageHeader`). Section title via `title` prop; optional `#subtitle`, `#actions`; default slot for body. See Section 3h. |
+| `PageSaveBar` | — | **Required** for any page/view with editable settings or forms that can be saved. Sticky bar for Save / Discard when there are unsaved changes — see Section 7. |
 | `SaveViewPanel` | — | Panel for saving table views. |
 | **AI Components** | | |
 | `AiAgentButton` | — | AI-themed gradient button for AI assistant. |
@@ -114,6 +116,8 @@ These wrap or replace PrimeVue primitives with Circuit-specific behavior, stylin
 | `Stepper` | `Stepper` | Multi-step workflow indicator. Horizontal/vertical layouts, custom icons, linear mode, built-in Cancel/Previous/Next/Save buttons. Uses `#step-{value}` slots for content. |
 | **Rich Text** | | |
 | `RichText` | — | Renders markdown-like strings (`**bold**`, `*italic*`, `` `code` ``, `[link](url)`) to safe HTML. Sanitised with DOMPurify. Props: `content`, `tag`, `wrapLines`. |
+| **Key / value display** | | |
+| `KeyValue` | — | **Required** whenever the UI shows **paired label + value** data (metadata, properties, device facts, profile fields, etc.) — in the main column, sidebar, or anywhere on the page. Circuit export name: `KeyValue` — see Section 3i. |
 | **Other** | | |
 | `Chip` | `Chip` | Key-value chip with icon, removable. |
 | `ProgressSpinner` | `ProgressSpinner` | Spinner with size variants (`small`, `default`, `large`). |
@@ -126,7 +130,7 @@ import {
   CollapsiblePanel, MessageNotification, CheckboxWithLabel,
   DataTable, DataTableToolbar, DataTableCellText, DataTableCellLink,
   FormField, ActionsToolbar, ToggleSwitch,
-  RadioButtonWithLabel, SelectWithSlots, PageHeader, AppNavigation,
+  RadioButtonWithLabel, SelectWithSlots, PageHeader, PageSection, PageSaveBar, KeyValue, AppNavigation,
   SeverityDialog, Stepper, RichText,
 } from '@jumpcloud/circuit/components';
 
@@ -196,7 +200,7 @@ These patterns come from the official Circuit DS docs. Follow them exactly.
 | `RadioButton` (primitive) | Only use raw `RadioButton` from `primevue/radiobutton` when NO label is needed. For labeled radios, ALWAYS use `RadioButtonWithLabel`. |
 | `RadioButtonGroup` | Horizontal by default. Use `class="flex-col"` for vertical layout. |
 | `Select` (primitive) | Only use raw `Select` from `primevue/select` when NO icon or footer slots are needed. For slots, use `SelectWithSlots`. **Exception:** when you need `#option` slot for custom option rendering (e.g. logos), use raw `Select` since `SelectWithSlots` does not forward `#option`. When using `filter` prop on raw `Select`, you **MUST** provide `#filtericon` with `<MagnifyingGlassIcon />` — see Section 3g. When using `class="w-full"` on raw `Select`, use `class="w-full!"` (important) to override the PT root's fixed `w-63.5` width. |
-| `Dialog` | Always use `#closeicon` with `<XMarkIcon />`, `:draggable="false"`, `modal`. See Section 7. |
+| `Dialog` | Always use `#closeicon` with `<XMarkIcon />`, `:draggable="false"`, `modal`. See Section 8. |
 | `Drawer` | Use `#closebutton` slot with `btnProps.closeCallback`. Sizes: `sm` (288px), `md` (384px), `lg` (480px), `xl` (640px). |
 | `Tabs` | Custom `withPadding` prop adds 24px horizontal padding. Tab descriptions use `text-body-md text-tab-sub-text-base`. |
 | `Tooltip` | This is a **directive**, not a component: `v-tooltip.top="'Text'"`. |
@@ -208,6 +212,9 @@ These patterns come from the official Circuit DS docs. Follow them exactly.
 | `RichText` | Default `tag` is `span`. Use `tag="div"` with `:wrapLines="true"` for multi-paragraph content. Only supports `**bold**`, `*italic*`, `` `code` ``, `[link](url)`. Content is sanitised with DOMPurify. |
 | `ActionMenu` | Toggle via template ref: `menu.value?.toggle(event)`. Use `group` + `groupOrder` for sectioned menus. Use `iconSeverity: 'danger'` for destructive items. Use `menuClass="w-[180px]"` for width control. |
 | `useContainer` | Composable from `@jumpcloud/circuit/composables`. Returns `containerElement` ref. Use to bind `appendTo` on overlays (Dialog, Popover, Menu) in MFE environments. |
+| `PageSaveBar` | **Only show when dirty:** `:visible` must track unsaved changes vs last saved state. **Save:** `@save` persists, then update baseline so the bar hides. **Discard:** `@discard` restores all bound fields from baseline (initial / last saved) — no custom sticky Save/Cancel. See Section 7. |
+| `PageSection` | Use **inside** layout/page body for **section titles** and optional subtitle/actions — not for the global page title (that is `PageHeader`). Stack multiple `PageSection` components for separate titled regions. Do not fake section headers with raw `div` + heading classes. See Section 3h. |
+| `KeyValue` | Use for **every** key/value readout on a page (main content, `#sidebar`, panels). Pass `label` and `value`; optional `icon` / `iconColor` when the design shows a leading icon. Do not build custom two-column label/value layouts with `dl`/`dt`/`dd` or ad-hoc flex rows for the same pattern. See Section 3i. |
 
 ### 3e. Component Not Found?
 
@@ -312,6 +319,85 @@ import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 | Using `class="w-full"` without `!` | Use `class="w-full!"` to override PT's fixed width |
 | Using `text-body-sm` in option/value slots | Use `text-body-md` to match PT's `optionLabel` styling |
 | Using `text-neutral-base` / `text-neutral-subtle` in `#value` slot | Use `text-field-base` / `text-field-placeholder` to match PT's `label` tokens |
+
+### 3h. PageSection — Section headers inside the content area
+
+Use **`PageSection`** from `@jumpcloud/circuit/components` whenever you need a **titled section** inside the **main content** of a page (inside a page layout’s default slot, tab panel, or scrollable body). It provides the standard **section title row** and optional subtitle and header actions.
+
+**Do not confuse with:**
+
+| Component | Role |
+|---|---|
+| `PageHeader` | Single **page** title bar at the top of the app shell (with tabs, breadcrumbs, global actions). |
+| `PageSection` | **Repeated section headings** within the page body — e.g. “General”, “Security”, “Notifications” on a settings page. |
+| `CollapsiblePanel` | Bordered **panel/card** with optional collapse; use when the design is a collapsible card, not a lightweight section strip. |
+
+```ts
+import { PageSection } from '@jumpcloud/circuit/components';
+```
+
+```html
+<PageSection title="Section title">
+  <template #subtitle>
+    <span class="text-body-xs text-neutral-muted">Optional supporting text</span>
+  </template>
+  <template #actions>
+    <Button label="Action" severity="secondary" variant="outlined" size="small" />
+  </template>
+
+  <!-- Section body: forms, tables, copy, etc. -->
+  <div class="flex flex-col gap-md">
+    <!-- content -->
+  </div>
+</PageSection>
+```
+
+**Rules**
+
+- Set the visible section label with the **`title`** prop (section header text).
+- Use **`#subtitle`** for helper or descriptive text under the title when needed.
+- Use **`#actions`** for section-scoped buttons (e.g. “Edit”, overflow menu) — keep secondary/outlined `small` buttons to match header density.
+- Place **body content** in the default slot below the section header.
+- For **multiple** titled regions on one page, stack several `PageSection` blocks (with dividers between them only if the design requires separation — prefer spacing tokens over ad-hoc borders).
+
+| Mistake | Correct approach |
+|---|---|
+| Custom `<h2>` + flex row for “section headers” in content | Use `PageSection` with `title` |
+| Using `PageHeader` for each subsection inside the page | `PageHeader` once per page; subsections use `PageSection` |
+| Using `PageSection` for the top-of-page title next to nav | Use `PageHeader` |
+
+### 3i. KeyValue — Key / value data on the page
+
+Whenever the design shows **label + value** pairs (read-only facts, entity properties, status lines, “Operating system”, “Last seen”, etc.), use **`KeyValue`** from `@jumpcloud/circuit/components`. That applies **anywhere** on the page: detail sidebars, overview columns, forms shown as read-only metadata, or stacked lists of attributes.
+
+```ts
+import { KeyValue } from '@jumpcloud/circuit/components';
+```
+
+```html
+<KeyValue label="Operating System" value="macOS 15.3 Sequoia" />
+<KeyValue label="Serial Number" :value="serial ?? undefined" />
+<KeyValue
+  label="Status"
+  value="Active"
+  :icon="CheckCircleIcon"
+  icon-color="text-success-base"
+/>
+```
+
+**Naming:** Circuit DS exports this component as **`KeyValue`**. This playground may expose a local file named `DetailsKeyValue.vue` that re-exports the same component — prefer importing **`KeyValue`** from `@jumpcloud/circuit/components` in new code.
+
+**Rules**
+
+- One `<KeyValue>` per logical row (one label, one value).
+- Repeat with `v-for` when rendering a list of attributes.
+- Empty / missing values are handled by the component (e.g. placeholder); do not invent a second empty-state pattern unless product requires it.
+
+| Mistake | Correct approach |
+|---|---|
+| Custom flex/grid with separate label and value text styles | Use `KeyValue` |
+| Raw `<dl>`, `<dt>`, `<dd>` for design-system detail rows | Use `KeyValue` |
+| Using `Chip` or plain text for simple attribute lines | Use `KeyValue` when the pattern is label + value |
 
 ## 4. Figma Code Connect — Finding the Right Component
 
@@ -490,7 +576,48 @@ On **list/table pages**, the primary "Add" action (e.g. "Add Asset", "Add Applic
 | Using custom pagination below the table | Use `DataTable`'s built-in `:paginator="true"` prop |
 | Using custom empty state divs outside the table | Use `#empty` and `#initialEmpty` slots inside `DataTable` |
 
-## 7. Dialog — Circuit DS Primitive Usage
+## 7. PageSaveBar — Editable Pages with Save / Discard (Mandatory)
+
+Any page or view where the user can edit settings, forms, or other state that should be **persisted** MUST use **`PageSaveBar`** from `@jumpcloud/circuit/components`. Do not build a custom fixed footer, floating strip, or ad‑hoc Save/Cancel buttons for this pattern.
+
+```ts
+import { PageSaveBar } from '@jumpcloud/circuit/components';
+```
+
+### Intended behavior
+
+1. **Baseline (last saved state)** — Keep a snapshot of the editable values representing what was last successfully saved (or the initial load if nothing was saved yet).
+2. **Dirty detection** — Compare current field values to the baseline whenever the user edits. The page is **dirty** when anything differs from baseline.
+3. **Visibility** — Bind `:visible` to **`true` only when dirty**. When current values match baseline, the bar must not show (`:visible="false"`).
+4. **Save (`@save`)** — Persist changes (API, store, etc.). Set `:saving="true"` while the async operation runs. On success: update the **baseline** to match the current values, clear dirty state, optionally use `:saved` for a brief confirmation if supported, then the bar hides because there are no unsaved changes.
+5. **Discard (`@discard`)** — Reset all editable fields from **baseline** back into the UI so the user sees exactly the last saved / initial version again. Clear dirty state so the bar hides. No requirement to call the server unless the product explicitly needs it.
+
+### Reference wiring
+
+```html
+<PageSaveBar
+  :visible="isDirty"
+  :saving="isSaving"
+  :saved="showSavedConfirmation"
+  message="You have unsaved changes"
+  @save="handleSave"
+  @discard="handleDiscard"
+/>
+```
+
+Wire `isDirty` from comparing edited model(s) to baseline. Implement `handleDiscard` by copying baseline values back into the reactive form state.
+
+### Common mistakes
+
+| Mistake | Correct approach |
+|---|---|
+| Custom sticky Save/Cancel bar | Use `PageSaveBar` |
+| Bar always visible regardless of edits | `:visible` must reflect dirty-only |
+| Discard resets to empty defaults instead of last saved | Restore from **baseline**, not hardcoded empties |
+| Save succeeds but baseline not updated | After successful save, set baseline = current so dirty clears |
+| Duplicate Save in `PageHeader` for the same form | Primary unsaved-change UX belongs on `PageSaveBar` |
+
+## 8. Dialog — Circuit DS Primitive Usage
 
 `Dialog` is a **Circuit DS primitive component** — it is PrimeVue's `Dialog` styled by Circuit's passthrough (PT) configuration. Always import from `primevue/dialog`. Circuit's PT provides styled header (`text-heading-3`), content padding (`p-md`), footer layout (`flex gap-md`), close button, overlay backdrop, and transitions automatically.
 
@@ -611,7 +738,7 @@ For fullscreen dialogs, use the `maximizable` prop with the `fullscreenInnerWidt
 | Using `@hide` to close | Use `v-model:visible` with a `ref` |
 | Not using `#closeicon` slot | Use `<XMarkIcon />` for the close icon |
 
-## 8. SeverityDialog — Destructive Action Dialogs
+## 9. SeverityDialog — Destructive Action Dialogs
 
 `SeverityDialog` is a **Circuit custom component** for risky or destructive actions. It wraps `Dialog` and adds severity-specific styling, message banners, markdown content, and confirmation safeguards. **Always use `SeverityDialog` instead of building custom destructive confirmation dialogs.**
 
@@ -685,7 +812,7 @@ import { SeverityDialog } from '@jumpcloud/circuit/components';
 
 Use `actionHandler` when you need async behavior. It receives a `close()` callback; return `false` to keep the dialog open and call `close()` manually after async work completes.
 
-## 9. Stepper — Multi-Step Workflows
+## 10. Stepper — Multi-Step Workflows
 
 `Stepper` is a **Circuit custom component** that wraps PrimeVue's Stepper primitive with built-in navigation buttons, state management, and Circuit styling.
 
@@ -762,7 +889,7 @@ const steps = [
 | Middle steps | Cancel + Previous + Next |
 | Last step | Cancel + Previous + Save |
 
-## 10. Composables
+## 11. Composables
 
 Circuit DS exports composables from `@jumpcloud/circuit/composables`.
 
@@ -780,7 +907,7 @@ const { containerElement } = useContainer();
 <Dialog :appendTo="containerElement" ... />
 ```
 
-## 11. Pre-Implementation Checklist
+## 12. Pre-Implementation Checklist
 
 Before writing any UI code, always:
 1. Look up current Circuit typography tokens from the Tailwind preset.
@@ -791,3 +918,6 @@ Before writing any UI code, always:
 6. If no matching component exists in Circuit DS at all, ask the user before creating a new one.
 7. For destructive actions, use `SeverityDialog` — never build custom confirmation dialogs.
 8. For multi-step workflows, use `Stepper` — never build custom step indicators.
+9. For editable pages or settings views with persisted changes, use `PageSaveBar` with baseline/dirty/save/discard behavior — see Section 7.
+10. For titled blocks inside the page body (not the global page title), use `PageSection` — see Section 3h.
+11. For any label + value (metadata / facts) on the page, use `KeyValue` — see Section 3i.

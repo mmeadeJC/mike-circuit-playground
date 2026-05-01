@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref, markRaw, defineComponent, h } from 'vue';
 import {
   AppNavigation,
@@ -33,7 +33,7 @@ import {
   ExclamationCircleIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 
 import {
   DeviceManagementIcon,
@@ -368,7 +368,7 @@ const DeviceListPage = defineComponent({
     CircuitDataTable: DataTable,
     DataTableToolbar,
     PvButton: Button,
-    TopBar,
+    AdminTopBar,
     Cog6ToothIcon,
   },
   setup() {
@@ -414,7 +414,7 @@ const DeviceListPage = defineComponent({
         :topNavToggle="true"
       />
       <div class="main flex-[1_1_0] flex flex-col min-w-0 w-full h-full self-stretch">
-        <TopBar />
+        <AdminTopBar />
 
         <div class="page-content flex-[1_1_0] flex flex-col min-h-0 h-full w-full">
           <PageHeader

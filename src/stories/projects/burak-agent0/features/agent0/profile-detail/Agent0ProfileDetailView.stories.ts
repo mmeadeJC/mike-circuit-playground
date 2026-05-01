@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { defineComponent, ref } from 'vue';
 import Button from 'primevue/button';
 import Agent0ProfileDetailView from './Agent0ProfileDetailView.vue';
@@ -12,7 +12,7 @@ import { profileServerColumns, profileUserGroupColumns } from '../shared/columns
 import { useProfileDetailBindings } from '../shared/composables';
 
 const meta: Meta<typeof Agent0ProfileDetailView> = {
-  title: 'Projects/Burak - AI Connector/Parts/Profile',
+  title: 'AI Gateway - Burak/Admin Portal/Concept Parts/Profile',
   component: Agent0ProfileDetailView,
   parameters: {
     layout: 'fullscreen',

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { markRaw, defineComponent, ref, computed, watch } from 'vue';
 import {
   AppNavigation,
@@ -6,6 +6,7 @@ import {
   PageHeader,
   ToggleSwitch,
   MessageNotification,
+  ConfigPageLayout,
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
@@ -31,8 +32,7 @@ import {
   ChevronRightIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '@/components/TopBar.vue';
-import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 
 import {
   DeviceManagementIcon,
@@ -170,7 +170,7 @@ const AiSettingsOptionB = defineComponent({
     PvButton: Button,
     PvTag: Tag,
     PvDivider: Divider,
-    TopBar,
+    AdminTopBar,
     PageHeader,
     ConfigPageLayout,
     CollapsiblePanel,
@@ -283,7 +283,7 @@ const AiSettingsOptionB = defineComponent({
         :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-        <TopBar />
+        <AdminTopBar />
         <PageHeader
           title="Settings"
           :icon="$options.components.SparklesIcon"

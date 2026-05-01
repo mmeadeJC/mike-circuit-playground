@@ -1,11 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { h } from 'vue';
-import PageSection from '@/components/PageSection.vue';
+import { PageSection } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import { EllipsisHorizontalIcon } from '@heroicons/vue/24/outline';
 
 const meta: Meta<typeof PageSection> = {
-  title: 'Circuit DS/Custom Components/PageSection',
+  title: 'Circuit DS/PageSection',
   component: PageSection,
   parameters: {
     layout: 'padded',

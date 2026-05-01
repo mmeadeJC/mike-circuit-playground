@@ -21,7 +21,7 @@
 //  • The Security nav item is ONE entry, not three
 // ──────────────────────────────────────────────────────────────────────────────
 
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { computed, defineComponent, markRaw, ref } from 'vue';
 import {
   ActionsToolbar,
@@ -79,7 +79,7 @@ import {
   SsoIcon,
 } from '@jumpcloud/icons';
 
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
 import ListPageLayout from '@/components/layout/page-layouts/ListPageLayout.vue';
 
@@ -571,7 +571,7 @@ const ISPMPage = defineComponent({
     DataTableToolbar,
     MessageNotification,
     PageHeader,
-    TopBar,
+    AdminTopBar,
     DetailsKeyValue,
     ListPageLayout,
     PvButton: Button,
@@ -814,7 +814,7 @@ const ISPMPage = defineComponent({
         :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-        <TopBar />
+        <AdminTopBar />
 
         <!-- Page Header — posture score always visible regardless of active tab -->
         <PageHeader

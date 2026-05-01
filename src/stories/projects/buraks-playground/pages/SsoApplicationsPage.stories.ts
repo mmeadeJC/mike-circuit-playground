@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref, computed, markRaw, defineComponent } from 'vue';
 import {
   AppNavigation,
@@ -12,6 +12,9 @@ import {
   DataTableCellText,
   DataTableCellLink,
   DataTableCellStatus,
+  KeyValue,
+  DetailPageLayout,
+  ConfigPageLayout,
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
@@ -49,10 +52,7 @@ import {
   LinkIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '@/components/TopBar.vue';
-import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
-import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
-import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 
 import {
   DeviceManagementIcon,
@@ -557,8 +557,8 @@ const SsoApplicationsPage = defineComponent({
     PvSelect: Select,
     PvDivider: Divider,
     PvMenu: Menu,
-    TopBar,
-    DetailsKeyValue,
+    AdminTopBar,
+    KeyValue,
     DetailPageLayout,
     ConfigPageLayout,
     ArrowLeftIcon,
@@ -741,8 +741,8 @@ const SsoApplicationsPage = defineComponent({
           </PvButton>
         </div>
 
-        <!-- TopBar (list view only) -->
-        <TopBar v-if="currentView === 'list'" />
+        <!-- AdminTopBar (list view only) -->
+        <AdminTopBar v-if="currentView === 'list'" />
 
         <PageHeader
           :title="pageTitle"

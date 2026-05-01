@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { defineComponent } from 'vue';
 import Agent0DashboardView from './Agent0DashboardView.vue';
 import Agent0DashboardViewAlt02 from './Agent0DashboardViewAlt02.vue';
@@ -20,7 +20,7 @@ const sharedArgs = {
 };
 
 const meta: Meta<typeof Agent0DashboardView> = {
-  title: 'Projects/Burak - AI Connector/Parts/Dashboard',
+  title: 'AI Gateway - Burak/Admin Portal/Concept Parts/Dashboard',
   component: Agent0DashboardView,
   args: sharedArgs,
   parameters: {

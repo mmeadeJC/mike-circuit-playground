@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { defineComponent, ref } from 'vue';
 import Agent0SettingsView from './Agent0SettingsView.vue';
 import { llmProviders, defaultInstructions } from '../shared/data';
 
 const meta: Meta<typeof Agent0SettingsView> = {
-  title: 'Projects/Burak - AI Connector/Parts',
+  title: 'AI Gateway - Burak/Admin Portal/Concept Parts',
   component: Agent0SettingsView,
   parameters: {
     layout: 'fullscreen',

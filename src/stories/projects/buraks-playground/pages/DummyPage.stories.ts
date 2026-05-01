@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { markRaw, defineComponent } from 'vue';
 import { AppNavigation, CollapsiblePanel } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
@@ -27,7 +27,7 @@ import {
   ArrowRightIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 
 // JumpCloud custom icons
 import {
@@ -170,7 +170,7 @@ const DummyPage = defineComponent({
     AppNavigation,
     PvButton: Button,
     PvTag: Tag,
-    TopBar,
+    AdminTopBar,
     RectangleStackIcon,
     EllipsisHorizontalIcon,
     ArrowDownIcon,
@@ -213,8 +213,8 @@ const DummyPage = defineComponent({
         :topNavToggle="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-        <!-- Top Bar -->
-        <TopBar />
+        <!-- AdminTopBar -->
+        <AdminTopBar />
 
         <!-- Page Header -->
         <div class="border-b border-neutral-default_solid bg-neutral-base shrink-0">

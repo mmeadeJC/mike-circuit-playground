@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { defineComponent } from 'vue';
 import Agent0ActivityView from './Agent0ActivityView.vue';
 import { activityLogColumns } from '../shared/columns';
@@ -6,7 +6,7 @@ import { activityLogData } from '../shared/data';
 import { useActivityFilters } from '../shared/composables';
 
 const meta: Meta<typeof Agent0ActivityView> = {
-  title: 'Projects/Burak - AI Connector/Parts',
+  title: 'AI Gateway - Burak/Admin Portal/Phase 01 Parts/Recent Activity',
   component: Agent0ActivityView,
   parameters: {
     layout: 'fullscreen',

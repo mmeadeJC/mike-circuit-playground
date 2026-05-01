@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import Badge from 'primevue/badge';
 
 const meta: Meta<typeof Badge> = {

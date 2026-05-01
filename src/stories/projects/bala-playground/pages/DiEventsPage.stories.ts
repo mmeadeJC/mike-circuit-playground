@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref, markRaw, defineComponent, h, computed } from 'vue';
 import {
   AppNavigation,
@@ -65,7 +65,7 @@ import {
   WorkflowIcon,
 } from '@jumpcloud/icons';
 
-import TopBar from '../../../../components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 
 // ── Navigation ──
 const menuItems = [
@@ -336,7 +336,7 @@ const DiEventsPage = defineComponent({
     RadioButtonGroup,
     LinkText,
     FormField,
-    TopBar,
+    AdminTopBar,
     PvButton: Button,
     PvDialog: Dialog,
     PvDivider: Divider,
@@ -475,7 +475,7 @@ const DiEventsPage = defineComponent({
       />
 
       <div class="flex-[1_1_0] flex flex-col min-w-0 w-full h-full self-stretch">
-        <TopBar />
+        <AdminTopBar />
 
         <div class="flex-[1_1_0] flex flex-col min-h-0 h-full w-full">
 

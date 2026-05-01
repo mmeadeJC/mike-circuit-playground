@@ -1,38 +1,42 @@
 {
   "name": "@jumpcloud/circuit-playground",
-  "version": "0.0.108",
+  "version": "0.0.133",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:demos": "bash scripts/build-demos.sh",
+    "dev:demos": "vite --config vite.config.demos.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "deploy-storybook": "pnpm run build-storybook && pnpm exec gh-pages -d storybook-static --cname circuit-playground.jumpcloud.io",
-    "run-s": "pnpm run storybook & pnpm run build-storybook"
+    "dev:all": "pnpm run storybook & pnpm run dev:demos",
+    "run-s": "pnpm run storybook & pnpm run build-storybook",
+    "postinstall": "mkdir -p public/fonts && cp node_modules/@jumpcloud/circuit/dist/fonts/*.ttf public/fonts/"
   },
   "dependencies": {
-    "@jumpcloud/circuit": "^0.0.108",
+    "@jumpcloud/circuit": "^0.0.133",
     "@jumpcloud/icons": "^0.0.4",
     "chart.js": "^4.5.1",
     "primevue": "^4.4.0",
-    "vue": "^3.5.13"
+    "vue": "^3.5.13",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@heroicons/vue": "^2.2.0",
-    "@storybook/addon-essentials": "^8.6.0",
-    "@storybook/addon-links": "^8.6.0",
-    "@storybook/addon-themes": "^8.6.15",
-    "@storybook/blocks": "^8.6.0",
-    "@storybook/vue3": "^8.6.0",
-    "@storybook/vue3-vite": "^8.6.0",
+    "@storybook/addon-links": "10.3.6",
+    "@storybook/addon-themes": "10.3.6",
+    "@storybook/vue3-vite": "10.3.6",
     "@tailwindcss/vite": "^4.1.4",
     "@vitejs/plugin-vue": "^5.2.3",
     "gh-pages": "^6.3.0",
-    "storybook": "^8.6.0",
+    "storybook": "10.3.6",
     "tailwindcss": "^4.1.3",
     "typescript": "~5.8.3",
     "vite": "^6.1.0",
-    "vue-tsc": "^3.0.1"
-  }
+    "vue-tsc": "^3.0.1",
+    "@storybook/addon-docs": "10.3.6"
+  },
+  "packageManager": "pnpm@8.15.9+sha512.499434c9d8fdd1a2794ebf4552b3b25c0a633abcee5bb15e7b5de90f32f47b513aca98cd5cfd001c31f0db454bc3804edccd578501e4ca293a6816166bbd9f81"
 }

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref, markRaw, defineComponent } from 'vue';
 import {
   AppNavigation,
@@ -47,7 +47,7 @@ import {
     PencilIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '../../../../components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 
 import {
   DeviceManagementIcon,
@@ -206,7 +206,7 @@ const WorkflowDetailPage = defineComponent({
     PvDialog: Dialog,
     PvIconField: IconField,
     PvInputIcon: InputIcon,
-    TopBar,
+    AdminTopBar,
     BoltIcon,
     PlayIcon,
     XMarkIcon,
@@ -443,7 +443,7 @@ const WorkflowDetailPage = defineComponent({
         :collapsible="true"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <TopBar showBackButton backButtonLabel="Back" />
+        <AdminTopBar showBackButton backButtonLabel="Back" />
 
         <!-- Page Header with actions -->
         <PageHeader

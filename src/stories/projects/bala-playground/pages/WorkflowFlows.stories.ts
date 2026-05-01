@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref, markRaw, defineComponent, h, computed, watch, onMounted } from 'vue';
 import {
   AppNavigation,
@@ -72,7 +72,7 @@ import {
 } from '@heroicons/vue/24/outline';
 import { TrashIcon as TrashIconSolid } from '@heroicons/vue/24/solid';
 
-import TopBar from '../../../../components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 import { getApiActions, API_ACTION_GROUPS } from '../api-actions';
 import type { ApiAction, ActionField } from '../api-actions';
 
@@ -347,7 +347,7 @@ const WorkflowFlows = defineComponent({
     RadioButtonWithLabel,
     RadioButtonGroup,
     FormField,
-    TopBar,
+    AdminTopBar,
     PvButton: Button,
     PvDialog: Dialog,
     PvInputText: InputText,
@@ -831,7 +831,7 @@ const WorkflowFlows = defineComponent({
 
       <!-- ── List view ─────────────────────────────────────────────────────── -->
       <div v-if="activeView === 'list'" class="flex-[1_1_0] flex flex-col min-w-0 w-full h-full self-stretch">
-        <TopBar />
+        <AdminTopBar />
 
         <div class="flex-[1_1_0] flex flex-col min-h-0 h-full w-full">
           <PageHeader
@@ -948,7 +948,7 @@ const WorkflowFlows = defineComponent({
       <!-- ── Detail view ───────────────────────────────────────────────────── -->
       <div v-else-if="activeView === 'detail'" class="flex-[1_1_0] flex flex-col min-w-0 w-full h-full">
 
-        <TopBar showBackButton backButtonLabel="Back" />
+        <AdminTopBar showBackButton backButtonLabel="Back" />
 
         <!-- Title + actions row -->
         <div class="flex items-center justify-between px-6 py-3 border-b border-neutral-default_solid bg-neutral-base shrink-0">

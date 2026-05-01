@@ -1,7 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref, computed, markRaw, defineComponent, h } from 'vue';
 import {
-  AppNavigation,
   PageHeader,
   CollapsiblePanel,
   DataTable as CircuitDataTable,
@@ -23,8 +22,6 @@ import Avatar from 'primevue/avatar';
 import { useToast } from 'primevue/usetoast';
 
 import {
-  ArrowRightStartOnRectangleIcon,
-  ArrowTopRightOnSquareIcon,
   ArrowLeftIcon,
   ComputerDesktopIcon,
   CpuChipIcon,
@@ -40,50 +37,13 @@ import {
   ClockIcon,
 } from '@heroicons/vue/24/outline';
 
-import {
-  SsoIcon,
-  AccessIcon,
-  CheckListIcon,
-  PasswordManagerIcon,
-} from '@jumpcloud/icons';
-
 // @ts-expect-error Vue SFC import
 import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
 // @ts-expect-error Vue SFC import
 import DetailPageLayout from '@/components/layout/page-layouts/DetailPageLayout.vue';
-
-// ─── User Portal Navigation Data (flat, no nested items) ───
-
-const menuItems = [
-  { label: 'All Applications', leftIcon: markRaw(SsoIcon) },
-  { label: 'Requests', leftIcon: markRaw(AccessIcon) },
-  { label: 'Tasks', leftIcon: markRaw(CheckListIcon) },
-  { label: 'My Assets', leftIcon: markRaw(CubeIcon), isNew: true },
-  { label: 'Security', leftIcon: markRaw(PasswordManagerIcon) },
-];
-
-const profileMenuItems = [
-  {
-    label: 'Barış Ermut',
-    itemType: 'profile_compact',
-    initials: 'BE',
-    name: 'Barış Ermut',
-    items: [
-      {
-        label: 'Barış Ermut',
-        itemType: 'profile_large',
-        name: 'Barış Ermut',
-        email: 'baris.ermut@company.com',
-        initials: 'BE',
-      },
-      { separator: true },
-      { label: 'Logout', rightIcon: markRaw(ArrowRightStartOnRectangleIcon) },
-      { separator: true },
-      { label: 'Change Password' },
-      { label: 'Go to Admin Portal', rightIcon: markRaw(ArrowTopRightOnSquareIcon) },
-    ],
-  },
-];
+// @ts-expect-error Vue SFC import
+import UserDemoNav from '@/components/Nav/UserDemoNav.vue';
+import { userPortalNavMenuItems } from '@/components/Nav/userPortalNavData';
 
 // ─── UserAsset Type Definition ───
 
@@ -272,7 +232,7 @@ const UserPortalAssetsPage = defineComponent({
     variant: { type: String as () => 'default' | 'optionA' | 'optionB' | 'optionD', default: 'default' },
   },
   components: {
-    AppNavigation,
+    UserDemoNav,
     PageHeader,
     CollapsiblePanel,
     CircuitDataTable,
@@ -490,7 +450,7 @@ const UserPortalAssetsPage = defineComponent({
     }
 
     const computedMenuItems = computed(() =>
-      menuItems.map(item => ({
+      userPortalNavMenuItems.map(item => ({
         ...item,
         ...(item.label === 'Tasks' && props.variant === 'optionB' && taskCount.value > 0
           ? { label: `Tasks (${taskCount.value})`, command: () => { currentView.value = 'tasks'; selectedAsset.value = null; } }
@@ -536,7 +496,6 @@ const UserPortalAssetsPage = defineComponent({
       variant,
       computedMenuItems,
       activeNavItem,
-      profileMenuItems,
       currentView,
       selectedAsset,
       assets,
@@ -580,12 +539,9 @@ const UserPortalAssetsPage = defineComponent({
   template: `
     <div class="flex h-screen overflow-hidden">
       <ToastNotification />
-      <AppNavigation
-        :menuItems="computedMenuItems"
-        :profileMenuItems="profileMenuItems"
-        :activeItem="activeNavItem"
-        :collapsible="true"
-        :topNavToggle="true"
+      <UserDemoNav
+        :menu-items="computedMenuItems"
+        :active-item="activeNavItem"
       />
       <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 

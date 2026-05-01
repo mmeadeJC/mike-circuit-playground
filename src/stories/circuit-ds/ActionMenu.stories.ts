@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref, markRaw } from 'vue';
 // TODO: ActionMenu is not yet exported from @jumpcloud/circuit/components.
 // Uncomment the import below once it's added to package exports:

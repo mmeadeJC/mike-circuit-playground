@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref, computed, markRaw, defineComponent, h } from 'vue';
 import {
   AppNavigation,
@@ -38,7 +38,7 @@ import {
   ChevronRightIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '../../../../components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 
 import {
   DeviceManagementIcon,
@@ -453,7 +453,7 @@ const WorkflowExecutionHistory = defineComponent({
     CollapsiblePanel,
     LinkText,
     MessageNotification,
-    TopBar,
+    AdminTopBar,
     PvButton: Button,
     PvDivider: Divider,
     PvTag: Tag,
@@ -535,7 +535,7 @@ const WorkflowExecutionHistory = defineComponent({
       />
 
       <div class="flex-[1_1_0] flex flex-col min-w-0 w-full h-full">
-        <TopBar
+        <AdminTopBar
           showBackButton
           backButtonLabel="Back"
           searchPlaceholder="Search"

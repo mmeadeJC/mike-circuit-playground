@@ -1,4 +1,19 @@
-export type { Server, Profile, UserGroup, ActivityLogEntry, AgentInstruction, LlmProvider } from '../types';
+import type {
+  AllowedAiClient,
+  AllowedAiClientDialogSnapshot,
+  AllowedAiClientOriginKind,
+} from '../types';
+import { computeOriginPreview } from '../../allowed-ai-clients/allowedAiClientOrigin';
+
+export type {
+  Server,
+  Profile,
+  UserGroup,
+  ActivityLogEntry,
+  AgentInstruction,
+  LlmProvider,
+  AllowedAiClient,
+} from '../types';
 
 export const mainTabs = [
   { label: 'Dashboard', value: 'dashboard' },
@@ -55,9 +70,9 @@ export const serversData: Server[] = [
     id: 4,
     name: 'Atlassian',
     slug: 'jira',
-    url: 'https://mcp.atlassian.com/v1/sse',
-    connectionType: 'SSE',
-    connectionTypeSeverity: 'accent-moss',
+    url: 'https://mcp.atlassian.com/v1/mcp',
+    connectionType: 'OAuth',
+    connectionTypeSeverity: 'accent-aster',
     status: 'Connected',
     statusConnected: true,
     createdAt: '2/10/2026',
@@ -269,7 +284,12 @@ export const defaultInstructions: AgentInstruction[] = [
 export const authStyleOptions = [
   { label: 'OAuth', value: 'OAuth' },
   { label: 'API Token', value: 'API Token' },
-  { label: 'SSE', value: 'SSE' },
+];
+
+/** Phase 01 server dialog — segmented auth control */
+export const phase01AuthStyleOptions = [
+  { label: 'OAuth', value: 'OAuth' },
+  { label: 'API Token', value: 'API Token' },
 ];
 
 export const activityLogData: ActivityLogEntry[] = [
@@ -598,6 +618,172 @@ export const alt02MainTabs = [
   { label: 'Servers', value: 'servers' },
   { label: 'Activity Log', value: 'activity' },
 ];
+
+export const phase01MainTabs = [
+  { label: 'Servers', value: 'servers' },
+  { label: 'Activity Log', value: 'activity' },
+];
+
+function emptySnapshotBase(): Omit<
+  AllowedAiClientDialogSnapshot,
+  'mode' | 'protocol' | 'singleHost' | 'singlePort' | 'patternValue' | 'customProtocolName' | 'customDomainValue' | 'note'
+> {
+  return {
+    localPreset: 'localhost',
+    localCustom: '',
+  };
+}
+
+function snapSingle(
+  protocol: 'http' | 'https',
+  singleHost: string,
+  note = '',
+): AllowedAiClientDialogSnapshot {
+  return {
+    mode: 'single_domain',
+    protocol,
+    singleHost,
+    singlePort: '',
+    patternValue: '',
+    ...emptySnapshotBase(),
+    customProtocolName: '',
+    customDomainValue: '',
+    note,
+  };
+}
+
+function snapLocal(localPreset: 'localhost' | '127', note = ''): AllowedAiClientDialogSnapshot {
+  return {
+    mode: 'local_dev',
+    protocol: 'http',
+    singleHost: '',
+    singlePort: '',
+    patternValue: '',
+    ...emptySnapshotBase(),
+    localPreset,
+    customProtocolName: '',
+    customDomainValue: '',
+    note,
+  };
+}
+
+function snapPattern(protocol: 'https', patternValue: string, note = ''): AllowedAiClientDialogSnapshot {
+  return {
+    mode: 'pattern',
+    protocol,
+    singleHost: '',
+    singlePort: '',
+    patternValue,
+    ...emptySnapshotBase(),
+    customProtocolName: '',
+    customDomainValue: '',
+    note,
+  };
+}
+
+function snapCustom(protocolName: string, domainValue: string, note = ''): AllowedAiClientDialogSnapshot {
+  return {
+    mode: 'custom_protocol',
+    protocol: 'https',
+    singleHost: '',
+    singlePort: '',
+    patternValue: '',
+    ...emptySnapshotBase(),
+    customProtocolName: protocolName,
+    customDomainValue: domainValue,
+    note,
+  };
+}
+
+/** Product default allowed AI clients (HTTP / HTTPS / custom protocol). */
+const defaultAllowedAiClientSnapshots: Array<{
+  kind: AllowedAiClientOriginKind;
+  snapshot: AllowedAiClientDialogSnapshot;
+  note?: string;
+}> = [
+  {
+    kind: 'local_dev',
+    snapshot: snapLocal('127', 'Loopback address for local Agent0 and API testing.'),
+  },
+  {
+    kind: 'local_dev',
+    snapshot: snapLocal('localhost', 'Hostname alias for local development servers.'),
+  },
+  {
+    kind: 'pattern',
+    snapshot: snapPattern('https', '*.api.staging.example.com', 'Pattern example for staging API subdomains.'),
+  },
+  {
+    kind: 'pattern',
+    snapshot: snapPattern('https', 'tenant-*.widgets.app', 'Pattern example for multi-tenant SaaS hosts.'),
+  },
+  {
+    kind: 'custom_protocol',
+    snapshot: snapCustom('acme-desktop', 'auth-callback', 'Custom protocol example for desktop OAuth return.'),
+  },
+  {
+    kind: 'single_domain',
+    snapshot: snapSingle('https', 'app.writer.com', 'Primary Writer web application.'),
+  },
+  {
+    kind: 'single_domain',
+    snapshot: snapSingle('https', 'chatgpt.com', 'OpenAI ChatGPT browser client.'),
+  },
+  {
+    kind: 'single_domain',
+    snapshot: snapSingle('https', 'claude.ai', 'Anthropic Claude consumer domain.'),
+  },
+  {
+    kind: 'single_domain',
+    snapshot: snapSingle('https', 'claude.com', 'Anthropic Claude alternate domain.'),
+  },
+  {
+    kind: 'single_domain',
+    snapshot: snapSingle('https', 'integrations.zoom.us', 'Zoom integration OAuth and embed flows.'),
+  },
+  {
+    kind: 'single_domain',
+    snapshot: snapSingle('https', 'figma-gov.com', 'Figma GovCloud design and review.'),
+  },
+  {
+    kind: 'single_domain',
+    snapshot: snapSingle('https', 'global.consent.azure-apim.net', 'Azure APIM consent and policy redirects.'),
+  },
+  {
+    kind: 'single_domain',
+    snapshot: snapSingle('https', 'api.devin.ai', 'Devin AI browser and tooling origin.'),
+  },
+  {
+    kind: 'pattern',
+    snapshot: snapPattern('https', '*.apps.dynatrace.com', 'Wildcard for Dynatrace SaaS app hosts.'),
+  },
+  { kind: 'pattern', snapshot: snapPattern('https', '*.azuredatabricks.net') },
+  { kind: 'pattern', snapshot: snapPattern('https', '*.databricks.com') },
+  { kind: 'pattern', snapshot: snapPattern('https', '*.resolve.ai') },
+  { kind: 'single_domain', snapshot: snapSingle('https', 'vertexaisearch.cloud.google.com') },
+  { kind: 'single_domain', snapshot: snapSingle('https', 'lovable.dev') },
+  { kind: 'single_domain', snapshot: snapSingle('https', 'mcp.docker.com') },
+  { kind: 'single_domain', snapshot: snapSingle('https', 'callback.mistral.ai') },
+  { kind: 'single_domain', snapshot: snapSingle('https', 'oauth.pstmn.io') },
+  { kind: 'single_domain', snapshot: snapSingle('https', 'token.botframework.com') },
+  { kind: 'single_domain', snapshot: snapSingle('https', 'vscode.dev') },
+  { kind: 'single_domain', snapshot: snapSingle('https', 'us-east-1.quicksight.aws.amazon.com') },
+  { kind: 'single_domain', snapshot: snapSingle('https', 'www.canva.com') },
+  { kind: 'custom_protocol', snapshot: snapCustom('cursor', 'cursor.mcp') },
+  { kind: 'custom_protocol', snapshot: snapCustom('raycast', 'oauth') },
+];
+
+export const allowedAiClientsData: AllowedAiClient[] = defaultAllowedAiClientSnapshots.map((row, index) => {
+  const mergedNote = row.note?.trim() || row.snapshot.note?.trim() || undefined;
+  return {
+    id: index + 1,
+    kind: row.kind,
+    origin: computeOriginPreview(row.snapshot),
+    note: mergedNote,
+    createdAt: `2026-01-${String((index % 28) + 1).padStart(2, '0')}T${String(8 + (index % 12)).padStart(2, '0')}:${String(index % 60).padStart(2, '0')}:00.000Z`,
+    snapshot: row.snapshot,
+  };
+});
 
 export function getServerActivityLogData(serverSlug: string): ActivityLogEntry[] {
   const server = serversData.find((s) => s.slug === serverSlug);

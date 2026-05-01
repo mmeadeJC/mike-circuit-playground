@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref, markRaw, defineComponent, h, computed } from 'vue';
 import {
   AppNavigation,
@@ -37,7 +37,7 @@ import {
   DocumentDuplicateIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '../../../../components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 
 import {
   DeviceManagementIcon,
@@ -296,7 +296,7 @@ const WorkflowListPage = defineComponent({
     RadioButtonWithLabel,
     RadioButtonGroup,
     FormField,
-    TopBar,
+    AdminTopBar,
     PvButton: Button,
     PvDialog: Dialog,
     PvInputText: InputText,
@@ -395,7 +395,7 @@ const WorkflowListPage = defineComponent({
       />
 
       <div class="flex-[1_1_0] flex flex-col min-w-0 w-full h-full self-stretch">
-        <TopBar />
+        <AdminTopBar />
 
         <div class="flex-[1_1_0] flex flex-col min-h-0 h-full w-full">
           <PageHeader

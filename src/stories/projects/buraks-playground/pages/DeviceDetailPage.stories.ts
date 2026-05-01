@@ -1,11 +1,16 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref, markRaw, defineComponent } from 'vue';
 import {
   AppNavigation,
   PageHeader,
+  DetailPageLayout,
+  CollapsiblePanel,
+  KeyValue,
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
+import Menu from 'primevue/menu';
+import Divider from 'primevue/divider';
 
 import {
   RocketLaunchIcon,
@@ -23,12 +28,16 @@ import {
   ArrowRightStartOnRectangleIcon,
   ArrowTopRightOnSquareIcon,
   ComputerDesktopIcon,
-  CheckCircleIcon,
   LockClosedIcon,
   EllipsisHorizontalIcon,
+  ChevronDownIcon,
+  CpuChipIcon,
+  GlobeAltIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '@/components/TopBar.vue';
+import { CheckCircleIcon } from '@heroicons/vue/24/solid';
+
+import AdminTopBar from '@/components/AdminTopBar.vue';
 
 import {
   DeviceManagementIcon,
@@ -196,25 +205,50 @@ const DeviceDetailPage = defineComponent({
   components: {
     AppNavigation,
     PageHeader,
+    DetailPageLayout,
+    CollapsiblePanel,
+    KeyValue,
     PvButton: Button,
     PvTag: Tag,
-    TopBar,
+    PvMenu: Menu,
+    PvDivider: Divider,
+    AdminTopBar,
     ComputerDesktopIcon,
     CommandLineIcon,
     ChartBarSquareIcon,
     LockClosedIcon,
     EllipsisHorizontalIcon,
     CheckCircleIcon,
+    ChevronDownIcon,
+    CpuChipIcon,
+    GlobeAltIcon,
   },
   setup() {
     const activeTab = ref('details');
+    const showSidebar = ref(true);
+
+    const agentMenu = ref();
+    const mdmMenu = ref();
+    const agentMenuItems = [
+      { label: 'Restart Agent' },
+      { label: 'Unmanage Device' },
+    ];
+    const mdmMenuItems = [
+      { label: 'Unenroll from MDM' },
+      { label: 'Wipe Device' },
+    ];
 
     return {
       menuItems,
       profileMenuItems,
       tabs,
       activeTab,
+      showSidebar,
       deviceInfo,
+      agentMenu,
+      mdmMenu,
+      agentMenuItems,
+      mdmMenuItems,
       AppleIcon: markRaw(AppleIcon),
     };
   },
@@ -227,8 +261,8 @@ const DeviceDetailPage = defineComponent({
         :collapsible="true"
         :topNavToggle="true"
       />
-      <div class="flex-1 flex flex-col min-w-0 overflow-auto">
-        <TopBar />
+      <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <AdminTopBar />
 
         <PageHeader
           :title="deviceInfo.deviceName"
@@ -264,76 +298,131 @@ const DeviceDetailPage = defineComponent({
           </template>
         </PageHeader>
 
-        <div class="flex-1 overflow-auto bg-neutral-surface">
-          <div v-if="activeTab === 'details'" class="p-6 flex flex-col gap-6">
+        <div class="flex-1 overflow-hidden flex flex-col">
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div class="bg-neutral-base rounded-lg border border-neutral-default_solid p-6">
-                <h3 class="text-heading-4 text-neutral-base mb-4">Device Information</h3>
-                <dl class="grid grid-cols-2 gap-y-3 gap-x-4">
-                  <dt class="text-body-sm text-neutral-subtle">Status</dt>
-                  <dd>
-                    <PvTag :value="deviceInfo.status" severity="success">
-                      <template #icon>
-                        <CheckCircleIcon class="size-4" />
-                      </template>
-                    </PvTag>
-                  </dd>
-                  <dt class="text-body-sm text-neutral-subtle">Operating System</dt>
-                  <dd class="text-body-sm text-neutral-base">{{ deviceInfo.os }}</dd>
-                  <dt class="text-body-sm text-neutral-subtle">Model</dt>
-                  <dd class="text-body-sm text-neutral-base">{{ deviceInfo.model }}</dd>
-                  <dt class="text-body-sm text-neutral-subtle">Serial Number</dt>
-                  <dd class="text-body-sm text-neutral-base">{{ deviceInfo.serialNumber }}</dd>
-                  <dt class="text-body-sm text-neutral-subtle">Agent Version</dt>
-                  <dd class="text-body-sm text-neutral-base">{{ deviceInfo.agentVersion }}</dd>
-                  <dt class="text-body-sm text-neutral-subtle">Last Contact</dt>
-                  <dd class="text-body-sm text-neutral-base">{{ deviceInfo.lastContact }}</dd>
-                  <dt class="text-body-sm text-neutral-subtle">MDM Status</dt>
-                  <dd>
-                    <PvTag :value="deviceInfo.mdmStatus" severity="success">
-                      <template #icon>
-                        <CheckCircleIcon class="size-4" />
-                      </template>
-                    </PvTag>
-                  </dd>
-                </dl>
+          <DetailPageLayout v-if="activeTab === 'details'" class="w-full! h-full!" :max-width="showSidebar ? '1440' : '1280'" :show-sidebar="showSidebar">
+            <div class="flex flex-col gap-6">
+
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <CollapsiblePanel header="Device Information">
+                  <template #titleicon="iconProps">
+                    <ComputerDesktopIcon :class="iconProps.class" />
+                  </template>
+                  <div class="flex flex-col gap-3">
+                    <KeyValue label="Status" :value="deviceInfo.status" />
+                    <KeyValue label="Operating System" :value="deviceInfo.os" />
+                    <KeyValue label="Model" :value="deviceInfo.model" />
+                    <KeyValue label="Serial Number" :value="deviceInfo.serialNumber" />
+                    <KeyValue label="Agent Version" :value="deviceInfo.agentVersion" />
+                    <KeyValue label="Last Contact" :value="deviceInfo.lastContact" />
+                    <KeyValue label="MDM Status" :value="deviceInfo.mdmStatus" />
+                  </div>
+                </CollapsiblePanel>
+
+                <CollapsiblePanel header="Hardware">
+                  <template #titleicon="iconProps">
+                    <CpuChipIcon :class="iconProps.class" />
+                  </template>
+                  <div class="flex flex-col gap-3">
+                    <KeyValue label="Processor" :value="deviceInfo.processor" />
+                    <KeyValue label="Memory" :value="deviceInfo.memory" />
+                    <KeyValue label="Storage" :value="deviceInfo.storage" />
+                  </div>
+                </CollapsiblePanel>
               </div>
 
-              <div class="bg-neutral-base rounded-lg border border-neutral-default_solid p-6">
-                <h3 class="text-heading-4 text-neutral-base mb-4">Hardware</h3>
-                <dl class="grid grid-cols-2 gap-y-3 gap-x-4">
-                  <dt class="text-body-sm text-neutral-subtle">Processor</dt>
-                  <dd class="text-body-sm text-neutral-base">{{ deviceInfo.processor }}</dd>
-                  <dt class="text-body-sm text-neutral-subtle">Memory</dt>
-                  <dd class="text-body-sm text-neutral-base">{{ deviceInfo.memory }}</dd>
-                  <dt class="text-body-sm text-neutral-subtle">Storage</dt>
-                  <dd class="text-body-sm text-neutral-base">{{ deviceInfo.storage }}</dd>
-                </dl>
+              <CollapsiblePanel header="Network">
+                <template #titleicon="iconProps">
+                  <GlobeAltIcon :class="iconProps.class" />
+                </template>
+                <div class="flex flex-col gap-3">
+                  <KeyValue label="Primary User" :value="deviceInfo.primaryUser" />
+                  <KeyValue label="IP Address" :value="deviceInfo.ipAddress" />
+                  <KeyValue label="MAC Address" :value="deviceInfo.macAddress" />
+                  <KeyValue label="Device ID" :value="deviceInfo.deviceId" />
+                </div>
+              </CollapsiblePanel>
+
+            </div>
+
+            <template v-if="showSidebar" #sidebar>
+              <div class="flex flex-col gap-6">
+
+                <div class="flex flex-col gap-4">
+                  <h3 class="text-heading-3 text-neutral-base">Device Status</h3>
+                  <div class="flex flex-col gap-3">
+                    <div class="flex items-center gap-2">
+                      <span class="w-48 shrink-0 text-body-md-semi-bold text-neutral-base">Agent</span>
+                      <PvTag :value="deviceInfo.status" severity="success">
+                        <template #icon><CheckCircleIcon class="size-4" /></template>
+                      </PvTag>
+                      <PvButton variant="text" severity="secondary" size="small" @click="agentMenu.toggle($event)">
+                        <template #icon>
+                          <ChevronDownIcon class="size-4" />
+                        </template>
+                      </PvButton>
+                      <PvMenu ref="agentMenu" :model="agentMenuItems" :popup="true" />
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="w-48 shrink-0 text-body-md-semi-bold text-neutral-base">MDM</span>
+                      <PvTag :value="deviceInfo.mdmStatus" severity="success">
+                        <template #icon><CheckCircleIcon class="size-4" /></template>
+                      </PvTag>
+                      <PvButton variant="text" severity="secondary" size="small" @click="mdmMenu.toggle($event)">
+                        <template #icon>
+                          <ChevronDownIcon class="size-4" />
+                        </template>
+                      </PvButton>
+                      <PvMenu ref="mdmMenu" :model="mdmMenuItems" :popup="true" />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                  <h3 class="text-heading-3 text-neutral-base">Quick Actions</h3>
+                  <div class="flex items-center gap-2">
+                    <PvButton label="Run Command" severity="secondary" size="small" />
+                    <PvButton label="Lock Device" variant="outlined" severity="secondary" size="small" />
+                  </div>
+                </div>
+
+                <PvDivider />
+
+                <div class="flex flex-col gap-4">
+                  <h3 class="text-heading-3 text-neutral-base">Device Summary</h3>
+                  <div class="flex flex-col gap-3">
+                    <KeyValue label="Primary User" :value="deviceInfo.primaryUser" class="w-full" />
+                    <KeyValue label="Last Contact" :value="deviceInfo.lastContact" class="w-full" />
+                    <KeyValue label="Agent Version" :value="deviceInfo.agentVersion" class="w-full" />
+                    <KeyValue label="Operating System" :value="deviceInfo.os" class="w-full" />
+                    <KeyValue label="Model" :value="deviceInfo.model" class="w-full" />
+                    <KeyValue label="Serial Number" :value="deviceInfo.serialNumber" class="w-full" />
+                  </div>
+                </div>
+
+                <PvDivider />
+
+                <div class="flex flex-col gap-4">
+                  <h3 class="text-heading-3 text-neutral-base">Hardware</h3>
+                  <div class="flex flex-col gap-3">
+                    <KeyValue label="Processor" :value="deviceInfo.processor" class="w-full" />
+                    <KeyValue label="Memory" :value="deviceInfo.memory" class="w-full" />
+                    <KeyValue label="Storage" :value="deviceInfo.storage" class="w-full" />
+                    <KeyValue label="IP Address" :value="deviceInfo.ipAddress" class="w-full" />
+                    <KeyValue label="MAC Address" :value="deviceInfo.macAddress" class="w-full" />
+                  </div>
+                </div>
+
               </div>
-            </div>
-
-            <div class="bg-neutral-base rounded-lg border border-neutral-default_solid p-6">
-              <h3 class="text-heading-4 text-neutral-base mb-4">Network</h3>
-              <dl class="grid grid-cols-2 md:grid-cols-4 gap-y-3 gap-x-4">
-                <dt class="text-body-sm text-neutral-subtle">Primary User</dt>
-                <dd class="text-body-sm text-neutral-base">{{ deviceInfo.primaryUser }}</dd>
-                <dt class="text-body-sm text-neutral-subtle">IP Address</dt>
-                <dd class="text-body-sm text-neutral-base">{{ deviceInfo.ipAddress }}</dd>
-                <dt class="text-body-sm text-neutral-subtle">MAC Address</dt>
-                <dd class="text-body-sm text-neutral-base">{{ deviceInfo.macAddress }}</dd>
-                <dt class="text-body-sm text-neutral-subtle">Device ID</dt>
-                <dd class="text-body-sm text-neutral-base break-all">{{ deviceInfo.deviceId }}</dd>
-              </dl>
-            </div>
-
-          </div>
+            </template>
+          </DetailPageLayout>
 
           <div v-if="activeTab !== 'details'" class="p-6">
-            <div class="bg-neutral-base rounded-lg border border-neutral-default_solid p-8 text-center">
+            <div class="bg-neutral-base rounded-lg shadow-e100 p-8 text-center">
               <p class="text-body-lg text-neutral-subtle">{{ activeTab.charAt(0).toUpperCase() + activeTab.slice(1).replace('-', ' & ') }} content coming soon</p>
             </div>
           </div>
+
         </div>
       </div>
     </div>

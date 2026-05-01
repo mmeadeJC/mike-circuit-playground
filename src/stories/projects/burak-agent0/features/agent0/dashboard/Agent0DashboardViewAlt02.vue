@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { CollapsiblePanel } from '@jumpcloud/circuit/components';
+import { CollapsiblePanel, DashboardPageLayout } from '@jumpcloud/circuit/components';
 import Chart from 'primevue/chart';
 import { ChartBarSquareIcon } from '@heroicons/vue/24/outline';
-import DashboardPageLayout from '@/components/layout/page-layouts/DashboardPageLayout.vue';
 import DashboardStatCard from './DashboardStatCard.vue';
 import DashboardTopList from './DashboardTopList.vue';
 import DashboardRecentActivity from './DashboardRecentActivity.vue';

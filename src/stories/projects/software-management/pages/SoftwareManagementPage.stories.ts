@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref, markRaw, defineComponent, h, computed, watch, onMounted } from 'vue';
 import {
   AppNavigation,
@@ -63,7 +63,7 @@ import {
   CloudArrowUpIcon,
 } from '@heroicons/vue/24/outline';
 
-import TopBar from '@/components/TopBar.vue';
+import AdminTopBar from '@/components/AdminTopBar.vue';
 import ConfigPageLayout from '@/components/layout/page-layouts/ConfigPageLayout.vue';
 import DetailsKeyValue from '@/components/DetailsKeyValue.vue';
 
@@ -1040,7 +1040,7 @@ const SoftwareManagementPage = defineComponent({
     IconField,
     InputIcon,
     Dropdown,
-    TopBar,
+    AdminTopBar,
     CubeIcon,
     Cog6ToothIcon,
     InformationCircleIcon,
@@ -1847,7 +1847,7 @@ const SoftwareManagementPage = defineComponent({
             </template>
           </PvButton>
         </div>
-        <TopBar v-if="currentView === 'list' && !showPrivateRepoForm && !showMicrosoftStoreForm" />
+        <AdminTopBar v-if="currentView === 'list' && !showPrivateRepoForm && !showMicrosoftStoreForm" />
 
         <PageHeader
           :title="pageTitle"

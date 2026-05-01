@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
+import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import Tag from 'primevue/tag';
 
 const meta: Meta<typeof Tag> = {

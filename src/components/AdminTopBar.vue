@@ -63,7 +63,6 @@ function handleIconButtonClick(button: AdminTopBarIconButton) {
       <Button
         size="small"
         severity="secondary"
-        variant="outlined"
         :label="backButtonLabel"
         @click="emit('back')"
       >

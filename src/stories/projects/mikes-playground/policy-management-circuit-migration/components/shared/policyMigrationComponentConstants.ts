@@ -25,3 +25,48 @@ export const sampleSidebarMessageDetail =
   'Review the policy behavior and activation requirements before assigning this policy to device groups.';
 
 export { ComputerDesktopIcon };
+
+export const certificateTypeOptions = [
+  { label: 'ROOT', value: 'ROOT' },
+  { label: 'CA', value: 'CA' },
+  { label: 'MY', value: 'MY' },
+  { label: 'SYSTEM', value: 'SYSTEM' },
+];
+
+export const targetOsVersionOptions = [
+  { label: 'macOS 14 Sonoma', value: '14' },
+  { label: 'macOS 15 Sequoia', value: '15' },
+];
+
+export const systemUpdateModeOptions = [
+  { label: 'Always', value: 'always' },
+  { label: 'Scheduled', value: 'scheduled' },
+  { label: 'Never', value: 'never' },
+];
+
+export const kioskAppTypeOptions = [
+  { label: 'Company Added', value: 'company-added' },
+  { label: 'System', value: 'system' },
+];
+
+export const timezoneLabel = 'UTC';
+
+export const sampleAppList = [
+  { id: '1', name: 'Calculator' },
+  { id: '2', name: 'Calendar' },
+  { id: '3', name: 'Camera' },
+  { id: '4', name: 'Clock' },
+  { id: '5', name: 'Contacts' },
+  { id: '6', name: 'Files' },
+  { id: '7', name: 'Mail' },
+  { id: '8', name: 'Maps' },
+  { id: '9', name: 'Messages' },
+  { id: '10', name: 'Music' },
+  { id: '11', name: 'Notes' },
+  { id: '12', name: 'Photos' },
+];
+
+export const certificateSupportedFormats = '.cer, .pem, .p12, .der, .crt';
+
+export const samplePolicyPayload =
+  '{"PayloadType":"Configuration","PayloadVersion":1,"PayloadIdentifier":"com.jumpcloud.custom"}';

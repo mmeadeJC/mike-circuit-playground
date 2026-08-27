@@ -1,0 +1,1 @@
+import{k as t,S as n}from"./iframe-wHZiWscM.js";const s=Symbol("dataTableSize");function u(e){const a=n(s,t(()=>"default"));return e!==void 0?t(()=>e):a}function l(e){const a=u(e);return t(()=>a.value==="small")}export{s as D,l as u};

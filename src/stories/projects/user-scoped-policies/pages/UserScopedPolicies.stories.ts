@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
-import { ref, markRaw, defineComponent, computed, watch } from 'vue';
+import { ref, markRaw, defineComponent, computed, watch, onMounted } from 'vue';
 import {
   AppNavigation,
   PageHeader,
@@ -13,6 +13,8 @@ import {
   FormField,
   MessageNotification,
   LinkText,
+  DetailPageLayout,
+  KeyValue,
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
@@ -39,8 +41,6 @@ import {
   CommandLineIcon,
   ClipboardDocumentListIcon,
   ClipboardDocumentCheckIcon,
-  ArrowRightStartOnRectangleIcon,
-  ArrowTopRightOnSquareIcon,
   ComputerDesktopIcon,
   DevicePhoneMobileIcon,
   ChevronRightIcon,
@@ -54,9 +54,19 @@ import {
   ExclamationCircleIcon,
 } from '@heroicons/vue/24/outline';
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/vue/24/solid';
+import { DeviceManagementIcon } from '@jumpcloud/icons';
 
 import TopBar from '../../../../components/AdminTopBar.vue';
-import DetailPageLayout from '../../../../components/layout/page-layouts/DetailPageLayout.vue';
+import {
+  filterDevicePolicyTemplates,
+  type DevicePolicyTemplate,
+} from '@/stories/projects/mikes-playground/policy-management-circuit-migration/demo/devicePolicyCatalog';
+import { usePolicyMigrationNav, readPolicyMigrationView, readStoredPolicyMigrationContext, writePolicyMigrationView, writeStoredPolicyMigrationContext } from '@/stories/projects/mikes-playground/policy-management-circuit-migration/demo/policyMigrationNav';
+import {
+  menuItems,
+  profileMenuItems,
+} from '@/stories/projects/mikes-playground/policy-management-circuit-migration/demo/policyMigrationMenuItems';
+import { getPolicyMigrationRouter } from '@/stories/projects/mikes-playground/policy-management-circuit-migration/demo/policyMigrationRouter';
 
 const StatusTag = defineComponent({
   props: { statusLabel: { type: String, default: 'Active' } },
@@ -74,109 +84,6 @@ const StatusTag = defineComponent({
     </PvTag>
   `,
 });
-
-import {
-  DeviceManagementIcon,
-  AccessIcon,
-  DeviceListsIcon,
-  DeviceGroupsIcon,
-  SsoIcon,
-  SaasManagementIcon,
-  PasswordManagerIcon,
-} from '@jumpcloud/icons';
-
-// ─── Navigation Data ───────────────────────────────────────────────
-
-const menuItems = [
-  { label: 'Get Started', leftIcon: markRaw(RocketLaunchIcon) },
-  { label: 'Home', leftIcon: markRaw(HomeIcon) },
-  { label: 'Alert', leftIcon: markRaw(BellIcon), count: 23 },
-  {
-    label: 'User Management',
-    leftIcon: markRaw(UserGroupIcon),
-    items: [
-      { label: 'Users', leftIcon: markRaw(UserIcon) },
-      { label: 'User Groups', leftIcon: markRaw(UsersIcon) },
-      { separator: true },
-      { label: 'Active Directory' },
-      { label: 'Cloud Directories' },
-      { label: 'HR Directories' },
-      { label: 'Identity Providers' },
-    ],
-  },
-  {
-    label: 'Device Management',
-    leftIcon: markRaw(DeviceManagementIcon),
-    items: [
-      { label: 'Devices', leftIcon: markRaw(DeviceListsIcon) },
-      { label: 'Device Groups', leftIcon: markRaw(DeviceGroupsIcon) },
-      { label: 'Commands', leftIcon: markRaw(CommandLineIcon) },
-      { label: 'Asset Management', leftIcon: markRaw(ClipboardDocumentListIcon), isNew: true },
-      { separator: true },
-      { label: 'Policy Management' },
-      { label: 'Patch Management' },
-      { label: 'Policy Groups' },
-      { label: 'Software Management' },
-      { label: 'MDM' },
-    ],
-  },
-  {
-    label: 'Access',
-    leftIcon: markRaw(AccessIcon),
-    items: [
-      { label: 'SSO Applications', leftIcon: markRaw(SsoIcon) },
-      { label: 'Access Requests', leftIcon: markRaw(ClipboardDocumentCheckIcon) },
-      { label: 'AI & SaaS Management', leftIcon: markRaw(SaasManagementIcon) },
-      { label: 'Vault', leftIcon: markRaw(PasswordManagerIcon), isNew: true },
-      { separator: true },
-      { label: 'LDAP' },
-      { label: 'RADIUS' },
-    ],
-  },
-  {
-    label: 'Security',
-    leftIcon: markRaw(ShieldCheckIcon),
-    items: [
-      { label: 'Conditional Access Policies' },
-      { label: 'Conditional Lists' },
-      { label: 'Certificate Authority', isNew: true },
-      { label: 'MFA Configurations' },
-      { label: 'Device Trust' },
-      { label: 'Password Policies' },
-    ],
-  },
-  {
-    label: 'Insights',
-    leftIcon: markRaw(ChartBarSquareIcon),
-    items: [
-      { label: 'Reports' },
-      { label: 'Directory Insights' },
-    ],
-  },
-  { label: 'Settings', leftIcon: markRaw(Cog6ToothIcon) },
-];
-
-const profileMenuItems = [
-  {
-    label: 'Admin IT',
-    itemType: 'profile_compact',
-    initials: 'AT',
-    name: 'Admin IT',
-    items: [
-      { label: 'Admin IT', itemType: 'profile_large', name: 'Admin IT', email: 'admin_it@company.com', initials: 'AT' },
-      { separator: true },
-      { label: 'Logout', rightIcon: markRaw(ArrowRightStartOnRectangleIcon) },
-      { separator: true },
-      { label: 'Change Password' },
-      { label: 'Launch User Portal', rightIcon: markRaw(ArrowTopRightOnSquareIcon) },
-      { separator: true },
-      { label: 'Billing' },
-      { label: 'My API Key' },
-      { separator: true },
-      { label: 'Use Old Navigation', itemType: 'button' },
-    ],
-  },
-];
 
 // ─── Icon Components ───────────────────────────────────────────────
 
@@ -249,9 +156,9 @@ const exportOptions = [
   { id: 'json', label: 'Export as JSON' },
 ];
 
-// ─── Policy Template Data ──────────────────────────────────────────
+// ─── User policy template data (legacy placeholders) ───────────────
 
-const policyTemplates = [
+const legacyUserPolicyTemplates = [
   { id: 1, name: 'Advanced: Custom Registry K...', nameDesc: 'Enterprise Settings, Configuration', type: 'Agent', description: 'Utilize custom policies to enforce configurations onto your fleet of systems that JumpCloud may not offer in our standard policies' },
   { id: 2, name: 'Allow the use of Biometrics', nameDesc: 'Enterprise Settings, Configuration', type: 'MDM', description: 'This policy defines a list of applications that are explicitly denied from running on the MDM managed devices.' },
   { id: 3, name: 'Advanced: Custom Registry K...', nameDesc: 'Enterprise Settings, Configuration', type: 'Agent', description: 'Utilize custom policies to enforce configurations onto your fleet of systems that JumpCloud may not offer in our standard policies' },
@@ -345,6 +252,18 @@ const userGroupColumns = [
 type PolicyType = 'device' | 'user';
 type ViewState = 'list' | 'detail' | 'new-policy';
 
+type PlatformDetailSection = {
+  platform: string;
+  minVersion: string;
+  enrollmentTypes: string[];
+};
+
+const defaultEnrollmentTypes = [
+  'User-Enrolled Devices',
+  'Device-Enrolled Devices',
+  'Auto-Enrolled Devices',
+];
+
 const UserScopedPoliciesPage = defineComponent({
   name: 'UserScopedPoliciesPage',
   components: {
@@ -353,11 +272,13 @@ const UserScopedPoliciesPage = defineComponent({
     PvButton: Button, PvTag: Tag, PvInputText: InputText, PvTextarea: Textarea,
     PvTabs: Tabs, PvTabList: TabList, PvTab: Tab, PvDivider: Divider, PvMenu: Menu,
     PvIconField: IconField, PvInputIcon: InputIcon,
-    TopBar, DetailPageLayout, UsersIcon, ComputerDesktopIcon, DevicePhoneMobileIcon,
+    TopBar, DetailPageLayout, KeyValue, UsersIcon, ComputerDesktopIcon, DevicePhoneMobileIcon,
     ChevronRightIcon, XMarkIcon, ShieldCheckIcon,
     Cog6ToothIcon, UserIcon, UserGroupIcon, FunnelIcon, ArrowPathIcon, MagnifyingGlassIcon, PlusIcon, WindowsIcon, AppleIcon,
+    CheckCircleIconSolid,
   },
   setup() {
+    const policyMigrationNav = usePolicyMigrationNav();
     const currentView = ref<ViewState>('list');
     const policyType = ref<PolicyType>('user');
 
@@ -366,7 +287,7 @@ const UserScopedPoliciesPage = defineComponent({
     const recommendationsCollapsed = ref(false);
     const selectedPolicies = ref([]);
     const listFirst = ref(0);
-    const listRows = ref(100);
+    const listRows = ref(10);
     const showSuccessToast = ref(false);
     const successToastMessage = ref('');
     const addNewMenuRef = ref();
@@ -378,6 +299,7 @@ const UserScopedPoliciesPage = defineComponent({
 
     // ── New Policy view state ──
     const newPolicyOsTab = ref('windows');
+    const newPolicySearch = ref('');
 
     const newPolicyTitle = computed(() => {
       const osLabel = newPolicyOsTab.value.charAt(0).toUpperCase() + newPolicyOsTab.value.slice(1);
@@ -390,6 +312,7 @@ const UserScopedPoliciesPage = defineComponent({
     const detailTab = ref('details');
     const detailPolicyTitle = ref('Allow The Use of Biometrics');
     const detailCardHeader = ref('Windows User Policy');
+    const detailOs = ref('windows');
     const detailIsEditFlow = ref(false);
     const policyName = ref('Allow the use of biometrics');
     const initialPolicyName = ref('Allow the use of biometrics');
@@ -466,6 +389,56 @@ const UserScopedPoliciesPage = defineComponent({
 
     const showSettingsCard = computed(() => !detailIsEditFlow.value);
 
+    const isActivationLockPolicy = computed(() => detailPolicyTitle.value === 'Allow Activation Lock');
+
+    const policyDescriptionText = computed(() => {
+      if (isActivationLockPolicy.value) {
+        return 'Allows Activation Lock on enrolled Apple devices, helping prevent unauthorized users from activating or erasing a device without the owner\'s credentials.';
+      }
+      return 'Help strengthen authentication and guard against potential spoofing by using fingerprint matching provided by the Windows Hello service.';
+    });
+
+    const policyBehaviorText = computed(() => {
+      if (isActivationLockPolicy.value) {
+        return 'Lets you allow or restrict Activation Lock on managed iOS, iPadOS, and macOS devices. When enabled, a device remains linked to the organization until Activation Lock is cleared.';
+      }
+      return 'lets you remotely allow or restrict the user from logging in to a managed system using biometrics. NOTE: JumpCloud does not allow the use of Multi-Factor Authentication (MFA) and biometrics simultaneously. For example, if you enable MFA in JumpCloud, users can\'t log in to their managed system with their fingerprint.';
+    });
+
+    const policyActivationText = computed(() => 'After you save the policy it takes effect immediately.');
+
+    const detailPlatformSections = computed<PlatformDetailSection[]>(() => {
+      if (detailTab.value !== 'details' || !isDevicePolicy.value) return [];
+
+      if (isActivationLockPolicy.value) {
+        if (detailOs.value === 'mac') {
+          return [{
+            platform: 'macOS',
+            minVersion: 'macOS 11.0 or later',
+            enrollmentTypes: ['Device-Enrolled Devices', 'Auto-Enrolled Devices'],
+          }];
+        }
+        if (detailOs.value === 'windows') {
+          return [{
+            platform: 'Windows',
+            minVersion: 'Windows 10 or later',
+            enrollmentTypes: ['Device-Enrolled Devices'],
+          }];
+        }
+        return [
+          { platform: 'iOS', minVersion: 'iOS 14.0 or later', enrollmentTypes: defaultEnrollmentTypes },
+          { platform: 'iPadOS', minVersion: 'iPadOS 14.0 or later', enrollmentTypes: defaultEnrollmentTypes },
+        ];
+      }
+
+      return [
+        { platform: 'iOS', minVersion: 'iOS 14.0 or later', enrollmentTypes: defaultEnrollmentTypes },
+        { platform: 'iPadOS', minVersion: 'iPadOS 14.0 or later', enrollmentTypes: defaultEnrollmentTypes },
+      ];
+    });
+
+    const showDetailSidebar = computed(() => detailPlatformSections.value.length > 0);
+
     const policyNameChanged = computed(() => policyName.value !== initialPolicyName.value);
 
     const isSaveDisabled = computed(() => {
@@ -508,6 +481,16 @@ const UserScopedPoliciesPage = defineComponent({
       return tabs;
     });
 
+    const filteredPolicyTemplates = computed(() => {
+      if (isDevicePolicy.value) {
+        return filterDevicePolicyTemplates({
+          osTab: newPolicyOsTab.value,
+          search: newPolicySearch.value,
+        });
+      }
+      return legacyUserPolicyTemplates;
+    });
+
     // ── Actions ──
 
     function toggleAddMenu(event: Event) {
@@ -516,8 +499,37 @@ const UserScopedPoliciesPage = defineComponent({
 
     function openNewPolicy(type: PolicyType) {
       policyType.value = type;
-      currentView.value = 'new-policy';
       newPolicyOsTab.value = 'windows';
+      newPolicySearch.value = '';
+      currentView.value = 'new-policy';
+
+      if (policyMigrationNav) {
+        policyMigrationNav.goToNewPolicy({ policyType: type, osTab: 'windows' });
+      } else {
+        writeStoredPolicyMigrationContext({ policyType: type, osTab: 'windows' });
+        writePolicyMigrationView('new-policy');
+      }
+    }
+
+    function onNewPolicyOsTabChange(tab: string) {
+      newPolicyOsTab.value = tab;
+      writeStoredPolicyMigrationContext({
+        policyType: policyType.value,
+        osTab: tab,
+      });
+      writePolicyMigrationView('new-policy');
+
+      const router = getPolicyMigrationRouter();
+      if (router && router.currentRoute.value.path === '/policy-management') {
+        void router.replace({
+          path: '/policy-management',
+          query: {
+            view: 'new-policy',
+            type: policyType.value,
+            os: tab,
+          },
+        });
+      }
     }
 
     function resetDetailState(isEdit: boolean) {
@@ -539,6 +551,7 @@ const UserScopedPoliciesPage = defineComponent({
     function openDetail(type?: PolicyType) {
       if (type) policyType.value = type;
       detailIsEditFlow.value = false;
+      detailOs.value = 'windows';
       detailPolicyTitle.value = 'Allow The Use of Biometrics';
       detailCardHeader.value = isUserPolicy.value ? 'Windows User Policy' : 'Windows Device Policy';
       policyName.value = 'Allow the use of biometrics';
@@ -551,19 +564,66 @@ const UserScopedPoliciesPage = defineComponent({
       const row = event.data;
       policyType.value = row.policyLevel === 'User' ? 'user' : 'device';
       detailIsEditFlow.value = true;
+      detailOs.value = (row.os as string) || 'windows';
       const osMap: Record<string, string> = { windows: 'Windows', mac: 'Mac', ios: 'iOS', android: 'Android', linux: 'Linux' };
       const osLabel = osMap[row.os as string] || 'Windows';
       const levelLabel = row.policyLevel === 'User' ? 'User' : 'Device';
       detailPolicyTitle.value = row.name as string;
       detailCardHeader.value = `${osLabel} ${levelLabel} Policy`;
-      policyName.value = (row.name as string).toLowerCase();
+      policyName.value = row.name as string;
       initialPolicyName.value = policyName.value;
       resetDetailState(true);
       currentView.value = 'detail';
     }
 
+    function syncFromRouteQuery() {
+      const router = getPolicyMigrationRouter();
+      const route = router?.currentRoute.value;
+      if (!route || route.path !== '/policy-management') return;
+
+      const storedContext = readStoredPolicyMigrationContext();
+      const storedView = readPolicyMigrationView();
+      const queryNewPolicy = route.query.view === 'new-policy';
+
+      if (storedView === 'new-policy' || queryNewPolicy) {
+        currentView.value = 'new-policy';
+        if (storedContext) {
+          policyType.value = storedContext.policyType;
+          newPolicyOsTab.value = storedContext.osTab;
+        } else if (route.query.type === 'user') {
+          policyType.value = 'user';
+        } else if (route.query.type === 'device') {
+          policyType.value = 'device';
+        }
+        if (typeof route.query.os === 'string' && route.query.os.length > 0) {
+          newPolicyOsTab.value = route.query.os;
+        }
+        return;
+      }
+
+      currentView.value = 'list';
+    }
+
+    onMounted(() => {
+      syncFromRouteQuery();
+    });
+
+    const demoRouter = getPolicyMigrationRouter();
+    if (demoRouter) {
+      watch(
+        () => demoRouter.currentRoute.value.fullPath,
+        () => syncFromRouteQuery(),
+        { immediate: true },
+      );
+    }
+
     function goToList() {
       currentView.value = 'list';
+      writePolicyMigrationView('list');
+      const router = getPolicyMigrationRouter();
+      if (router) {
+        void router.replace({ path: '/policy-management', query: {} });
+      }
     }
 
     function handleSave() {
@@ -577,11 +637,23 @@ const UserScopedPoliciesPage = defineComponent({
       }
     }
 
+    function configureTemplate(tpl: DevicePolicyTemplate | (typeof legacyUserPolicyTemplates)[number]) {
+      if ('path' in tpl && tpl.path && policyMigrationNav) {
+        policyMigrationNav.goToPolicy(tpl.path, {
+          policyType: policyType.value,
+          osTab: newPolicyOsTab.value,
+        });
+        return;
+      }
+      if (tpl.id === 2) openDetail();
+    }
+
 
     return {
       menuItems, profileMenuItems,
       policyData, policyColumns, exportOptions,
-      policyTemplates,
+      legacyUserPolicyTemplates,
+      filteredPolicyTemplates,
       bindingUsersData, bindingUsersColumns,
       bindingDevicesData, bindingDevicesColumns,
       policyGroupsData, policyGroupColumns,
@@ -591,8 +663,10 @@ const UserScopedPoliciesPage = defineComponent({
       showRecommendations, recommendationsCollapsed, selectedPolicies,
       listFirst, listRows, showSuccessToast, successToastMessage,
       addNewMenuRef, addNewMenuItems, toggleAddMenu,
-      newPolicyOsTab, newPolicyTitle,
+      newPolicyOsTab, newPolicyTitle, newPolicySearch,
       detailTab, detailPolicyTitle, detailCardHeader, detailIsEditFlow, showSettingsCard,
+      policyDescriptionText, policyBehaviorText, policyActivationText,
+      detailPlatformSections, showDetailSidebar, isActivationLockPolicy,
       policyName, policyNotes, allowBiometrics,
       selectedBindingUsers, showBoundUsers, boundUserCount, totalUserCount,
       selectedBindingDevices, showBoundDevices, boundDeviceCount, totalDeviceCount,
@@ -601,7 +675,8 @@ const UserScopedPoliciesPage = defineComponent({
       selectedUserGroups, showBoundUserGroups, boundUserGroupCount,
       isUserPolicy, isDevicePolicy, detailSubtitle, detailTagLabel, isSaveDisabled,
       newPolicyTabs, detailTabs,
-      openNewPolicy, openDetail, openDetailFromRow, goToList, handleSave,
+      openNewPolicy, openDetail, openDetailFromRow, goToList, handleSave, configureTemplate,
+      onNewPolicyOsTabChange,
     };
   },
   template: `
@@ -626,9 +701,9 @@ const UserScopedPoliciesPage = defineComponent({
           </div>
         </Transition>
 
-        <div class="flex-1 overflow-auto bg-neutral-surface">
+        <div class="flex-1 flex flex-col min-h-0 overflow-hidden bg-neutral-surface">
           <!-- Recommended Policies Panel -->
-          <div v-if="showRecommendations" class="px-6 pt-6">
+          <div v-if="showRecommendations" class="px-md pt-md shrink-0">
             <CollapsiblePanel v-model:collapsed="recommendationsCollapsed" toggleable header="Recommended Policies">
               <template #toggleicon="iconProps"><ChevronRightIcon :class="iconProps.class" /></template>
               <template #actions>
@@ -684,8 +759,8 @@ const UserScopedPoliciesPage = defineComponent({
           </div>
 
           <!-- Policy Table -->
-          <div class="flex flex-col h-full relative px-6 pb-6" :class="showRecommendations ? 'pt-2' : 'pt-6'">
-            <div class="flex items-center gap-2 mb-1">
+          <div class="flex-1 flex flex-col min-h-0 p-md gap-md">
+            <div class="flex items-center gap-2 shrink-0">
               <PvButton label="Add New" @click="toggleAddMenu">
                 <template #icon="iconProps"><PlusIcon :class="iconProps.class" /></template>
               </PvButton>
@@ -694,7 +769,7 @@ const UserScopedPoliciesPage = defineComponent({
                 <PvInputIcon class="flex items-center justify-center"><MagnifyingGlassIcon class="w-4 h-4" /></PvInputIcon>
                 <PvInputText placeholder="Search" class="w-full" />
               </PvIconField>
-              <div class="flex-1 [&_[data-pc-name=iconfield]]:hidden">
+              <div class="flex-1 flex items-center min-w-0 [&_[data-pc-name=iconfield]]:hidden [&>div]:pb-0">
                 <DataTableToolbar
                   :showAddButton="false"
                   :showFilterButton="true"
@@ -707,10 +782,12 @@ const UserScopedPoliciesPage = defineComponent({
             </div>
 
             <CircuitDataTable
+              class="flex-1 min-h-0 h-full w-full"
               :data="policyData"
               :columns="policyColumns"
               selectionMode="multiple"
               v-model:selection="selectedPolicies"
+              :card="true"
               :paginator="true"
               :rows="listRows"
               :first="listFirst"
@@ -718,6 +795,13 @@ const UserScopedPoliciesPage = defineComponent({
               :lazy="true"
               scrollable
               scrollHeight="flex"
+              :rowsPerPageOptions="[
+                { label: '10 Items per page', value: 10 },
+                { label: '20 Items per page', value: 20 },
+                { label: '50 Items per page', value: 50 },
+              ]"
+              :showRowsPerPageOptions="true"
+              :showPageReport="true"
               dataKey="id"
               @row-click="openDetailFromRow"
             />
@@ -737,7 +821,7 @@ const UserScopedPoliciesPage = defineComponent({
           :icon="$options.shieldIcon"
           :tabs="newPolicyTabs"
           :activeTab="newPolicyOsTab"
-          @update:activeTab="newPolicyOsTab = $event"
+          @update:activeTab="onNewPolicyOsTabChange"
         >
           <template #subtitle>
             <div class="flex items-center">
@@ -760,7 +844,7 @@ const UserScopedPoliciesPage = defineComponent({
           <div class="flex items-center gap-3 mb-4">
             <PvIconField class="w-[460px]">
               <PvInputIcon class="flex items-center justify-center"><MagnifyingGlassIcon class="w-4 h-4" /></PvInputIcon>
-              <PvInputText placeholder="Search" class="w-full" />
+              <PvInputText v-model="newPolicySearch" placeholder="Search" class="w-full" />
             </PvIconField>
             <PvButton severity="secondary" variant="text" rounded aria-label="Filter">
               <template #icon><FunnelIcon class="w-5 h-5" /></template>
@@ -779,9 +863,14 @@ const UserScopedPoliciesPage = defineComponent({
           </div>
 
           <!-- Configuration cards -->
-          <div class="flex flex-col gap-2">
+          <div v-if="filteredPolicyTemplates.length === 0" class="flex flex-col items-center justify-center py-16 text-neutral-subtle">
+            <span class="text-body-md">No policies match your search</span>
+            <span class="text-body-sm mt-1">Try adjusting your search criteria</span>
+          </div>
+
+          <div v-else class="flex flex-col gap-2">
             <div
-              v-for="tpl in policyTemplates"
+              v-for="tpl in filteredPolicyTemplates"
               :key="tpl.id"
               class="flex items-center px-6 h-[92px] bg-neutral-base rounded-lg shadow-e100"
             >
@@ -796,7 +885,7 @@ const UserScopedPoliciesPage = defineComponent({
                 <p class="text-body-md text-neutral-base line-clamp-2">{{ tpl.description }}</p>
               </div>
               <div class="w-[120px] shrink-0 flex justify-end">
-                <PvButton label="Configure" severity="primary" variant="outlined" size="small" @click="tpl.id === 2 ? openDetail() : null">
+                <PvButton label="Configure" severity="primary" variant="outlined" size="small" @click="configureTemplate(tpl)">
                   <template #icon><Cog6ToothIcon class="w-4 h-4" /></template>
                 </PvButton>
               </div>
@@ -810,7 +899,7 @@ const UserScopedPoliciesPage = defineComponent({
     <div v-else-if="currentView === 'detail'" class="flex h-screen overflow-hidden">
       <AppNavigation :menuItems="menuItems" :profileMenuItems="profileMenuItems" activeItem="device management" :collapsible="true" :topNavToggle="true" />
       <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        <TopBar showBackButton :backButtonLabel="detailIsEditFlow ? 'Policy Management' : 'Windows'" @back="goToList" />
+        <TopBar showBackButton backButtonLabel="Policy Management" @back="goToList" />
 
         <PageHeader
           :title="detailPolicyTitle"
@@ -837,52 +926,84 @@ const UserScopedPoliciesPage = defineComponent({
 
         <div class="flex-1 overflow-auto bg-neutral-surface">
           <!-- ───── Details Tab ───── -->
-          <div v-if="detailTab === 'details'" class="py-6 flex justify-center">
-            <div class="w-[940px] flex flex-col gap-6">
+          <DetailPageLayout
+            v-if="detailTab === 'details'"
+            class="w-full! h-full!"
+            :max-width="showDetailSidebar ? '1440' : '1024'"
+            :show-sidebar="showDetailSidebar"
+          >
+            <div class="flex flex-col gap-md">
               <CollapsiblePanel :header="detailCardHeader">
-                <div class="flex flex-col gap-5">
+                <template #titleicon="iconProps">
+                  <ShieldCheckIcon :class="iconProps.class" />
+                </template>
+                <div class="flex flex-col gap-md">
                   <FormField label="Policy Name">
                     <template #default="{ inputId }">
-                      <PvInputText :id="inputId" v-model="policyName" class="w-[550px]" />
+                      <PvInputText :id="inputId" v-model="policyName" class="w-full" />
                     </template>
                   </FormField>
 
                   <FormField label="Policy Notes">
                     <template #default="{ inputId }">
-                      <PvTextarea :id="inputId" v-model="policyNotes" rows="3" autoResize class="w-[550px]" />
+                      <PvTextarea :id="inputId" v-model="policyNotes" rows="3" autoResize class="w-full" />
                     </template>
                   </FormField>
 
-                  <div class="flex flex-col gap-1">
+                  <div class="flex flex-col gap-xs">
                     <h4 class="text-body-md-bold text-neutral-base">Policy Description</h4>
-                    <p class="text-body-md text-neutral-subtle">
-                      Help strengthen authentication and guard against potential spoofing by using fingerprint matching provided by the Windows Hello service.
-                    </p>
+                    <p class="text-body-md text-neutral-subtle">{{ policyDescriptionText }}</p>
                   </div>
 
-                  <div class="flex flex-col gap-1">
+                  <div class="flex flex-col gap-xs">
                     <h4 class="text-body-md-bold text-neutral-base">Policy Behavior</h4>
-                    <p class="text-body-md text-neutral-subtle">
-                      lets you remotely allow or restrict the user from logging in to a managed system using biometrics.
-                      NOTE: JumpCloud does not allow the use of Multi-Factor Authentication (MFA) and biometrics simultaneously.
-                      For example, if you enable MFA in JumpCloud, users can't log in to their managed system with their fingerprint.
-                    </p>
+                    <p class="text-body-md text-neutral-subtle">{{ policyBehaviorText }}</p>
                   </div>
 
-                  <div class="flex flex-col gap-1">
+                  <div class="flex flex-col gap-xs">
                     <h4 class="text-body-md-bold text-neutral-base">Policy Activation</h4>
-                    <p class="text-body-md text-neutral-subtle">After you save the policy it takes effect immediately.</p>
+                    <p class="text-body-md text-neutral-subtle">{{ policyActivationText }}</p>
                   </div>
                 </div>
               </CollapsiblePanel>
 
               <CollapsiblePanel v-if="showSettingsCard" header="Settings">
+                <template #titleicon="iconProps">
+                  <Cog6ToothIcon :class="iconProps.class" />
+                </template>
                 <CheckboxWithLabel v-model="allowBiometrics" inputId="allowBiometrics" :binary="true">
-                  <template #label>Allow the use of biometrics</template>
+                  <template #label>{{ isActivationLockPolicy ? 'Allow Activation Lock' : 'Allow the use of biometrics' }}</template>
                 </CheckboxWithLabel>
               </CollapsiblePanel>
             </div>
-          </div>
+
+            <template v-if="showDetailSidebar" #sidebar>
+              <div class="flex flex-col gap-lg">
+                <div
+                  v-for="(section, index) in detailPlatformSections"
+                  :key="section.platform"
+                  class="flex flex-col gap-md"
+                >
+                  <h3 class="text-heading-3 text-neutral-base">{{ section.platform }}</h3>
+                  <KeyValue label="Minimum Supported Version" :value="section.minVersion" />
+                  <div class="flex flex-col gap-sm">
+                    <span class="text-body-md-semi-bold text-neutral-base">Supported Enrollment Types</span>
+                    <ul class="flex flex-col gap-xs">
+                      <li
+                        v-for="enrollmentType in section.enrollmentTypes"
+                        :key="enrollmentType"
+                        class="flex items-center gap-sm"
+                      >
+                        <CheckCircleIconSolid class="size-4 shrink-0 text-success-base" />
+                        <span class="text-body-md text-neutral-base">{{ enrollmentType }}</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <PvDivider v-if="index < detailPlatformSections.length - 1" />
+                </div>
+              </div>
+            </template>
+          </DetailPageLayout>
 
           <!-- ───── Policy Groups Tab ───── -->
           <div v-if="detailTab === 'policy-groups'" class="p-6 pr-4 flex flex-col gap-4">
@@ -1022,6 +1143,8 @@ const UserScopedPoliciesPage = defineComponent({
   shieldIcon: markRaw(ShieldCheckIcon),
 });
 
+
+export { UserScopedPoliciesPage };
 const meta: Meta<typeof UserScopedPoliciesPage> = {
   title: "Projects/Mike's Playground/User Scoped Policies/Pages/Policy Management",
   component: UserScopedPoliciesPage,

@@ -421,7 +421,7 @@ const InstallCertificatePage = defineComponent({
 export { InstallCertificatePage };
 
 const meta: Meta<typeof InstallCertificatePage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Install Certificate",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Install Certificate",
   component: InstallCertificatePage,
   parameters: {
     layout: 'fullscreen',

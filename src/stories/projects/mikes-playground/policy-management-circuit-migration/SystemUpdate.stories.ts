@@ -657,7 +657,7 @@ const SystemUpdatePage = defineComponent({
 export { SystemUpdatePage };
 
 const meta: Meta<typeof SystemUpdatePage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/System Update",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/System Update",
   component: SystemUpdatePage,
   parameters: {
     layout: 'fullscreen',

@@ -480,7 +480,7 @@ const PolicyDetailsTabPage = defineComponent({
 export { PolicyDetailsTabPage };
 
 const meta: Meta<typeof PolicyDetailsTabPage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Policy Details Tab",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Policy Details Tab",
   component: PolicyDetailsTabPage,
   parameters: {
     layout: 'fullscreen',

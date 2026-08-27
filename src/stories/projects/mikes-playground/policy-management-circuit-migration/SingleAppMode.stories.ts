@@ -846,7 +846,7 @@ const SingleAppModePage = defineComponent({
 export { SingleAppModePage };
 
 const meta: Meta<typeof SingleAppModePage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Single App Mode",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Single App Mode",
   component: SingleAppModePage,
   parameters: {
     layout: 'fullscreen',

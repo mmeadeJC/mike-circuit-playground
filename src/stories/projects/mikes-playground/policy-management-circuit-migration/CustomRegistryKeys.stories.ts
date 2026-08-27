@@ -479,7 +479,7 @@ const CustomRegistryKeysPage = defineComponent({
 export { CustomRegistryKeysPage };
 
 const meta: Meta<typeof CustomRegistryKeysPage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Advanced: Custom Registry Keys",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Advanced: Custom Registry Keys",
   component: CustomRegistryKeysPage,
   parameters: {
     layout: 'fullscreen',

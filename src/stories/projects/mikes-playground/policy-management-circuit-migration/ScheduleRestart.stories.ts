@@ -436,7 +436,7 @@ const ScheduleRestartPage = defineComponent({
 export { ScheduleRestartPage };
 
 const meta: Meta<typeof ScheduleRestartPage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Schedule Restart",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Schedule Restart",
   component: ScheduleRestartPage,
   parameters: {
     layout: 'fullscreen',

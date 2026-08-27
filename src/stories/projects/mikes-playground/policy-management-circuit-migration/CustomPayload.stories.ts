@@ -398,7 +398,7 @@ const CustomPayloadPage = defineComponent({
 export { CustomPayloadPage };
 
 const meta: Meta<typeof CustomPayloadPage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Custom Payload",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Custom Payload",
   component: CustomPayloadPage,
   parameters: {
     layout: 'fullscreen',

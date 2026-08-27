@@ -509,7 +509,7 @@ const CustomMdmOmaUriPage = defineComponent({
 export { CustomMdmOmaUriPage };
 
 const meta: Meta<typeof CustomMdmOmaUriPage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Custom MDM (OMA-URI)",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Custom MDM (OMA-URI)",
   component: CustomMdmOmaUriPage,
   parameters: {
     layout: 'fullscreen',

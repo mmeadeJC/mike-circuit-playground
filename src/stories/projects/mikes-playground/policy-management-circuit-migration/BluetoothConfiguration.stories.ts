@@ -600,7 +600,7 @@ const BluetoothConfigurationPage = defineComponent({
 export { BluetoothConfigurationPage };
 
 const meta: Meta<typeof BluetoothConfigurationPage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Bluetooth Configuration",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Bluetooth Configuration",
   component: BluetoothConfigurationPage,
   parameters: {
     layout: 'fullscreen',

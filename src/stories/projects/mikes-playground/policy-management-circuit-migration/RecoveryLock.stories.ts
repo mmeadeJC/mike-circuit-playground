@@ -444,7 +444,7 @@ const RecoveryLockPage = defineComponent({
 export { RecoveryLockPage };
 
 const meta: Meta<typeof RecoveryLockPage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Recovery Lock",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Recovery Lock",
   component: RecoveryLockPage,
   parameters: {
     layout: 'fullscreen',

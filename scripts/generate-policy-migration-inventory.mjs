@@ -64,7 +64,7 @@ function extract(content) {
     ...content.matchAll(/import\s+(\w+)\s+from\s+['"]@\/components\/[^'"]+['"]/g),
   ].map((m) => m[1]);
   const titleMatch = content.match(
-    /title:\s*"Projects\/Mike's Playground\/Policy Management - Circuit Migration\/([^"]+)"/,
+    /title:\s*"Projects\/Mike's Playground\/Policy Management - Circuit Migration\/(?:Canvas\/)?([^"]+)"/,
   );
   const layout = content.includes('ConfigPageLayout')
     ? 'ConfigPageLayout'
@@ -110,7 +110,7 @@ function generateMarkdown(results) {
   lines.push('# Policy Management — Circuit Migration Component Inventory');
   lines.push('');
   lines.push(
-    "Circuit DS components used in each Storybook page under **Projects → Mike's Playground → Policy Management - Circuit Migration**.",
+    "Circuit DS components used in each Storybook **Canvas** page under **Projects → Mike's Playground → Policy Management - Circuit Migration → Canvas**.",
   );
   lines.push('');
   lines.push(
@@ -194,9 +194,9 @@ function generateMarkdown(results) {
     lines.push(`### ${r.title}`);
     lines.push('');
     lines.push(`- **Story file:** \`${r.file}\``);
-    lines.push(
-      `- **Storybook path:** \`Projects/Mike's Playground/Policy Management - Circuit Migration/${r.title}\``,
-    );
+  lines.push(
+    `- **Storybook path:** \`Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/${r.title}\``,
+  );
     lines.push(`- **Layout:** \`${r.layout}\``);
     lines.push('');
     lines.push('**Circuit custom** (`@jumpcloud/circuit/components`):');

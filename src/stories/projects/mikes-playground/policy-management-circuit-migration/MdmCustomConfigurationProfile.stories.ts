@@ -427,7 +427,7 @@ const MdmCustomConfigurationProfilePage = defineComponent({
 export { MdmCustomConfigurationProfilePage };
 
 const meta: Meta<typeof MdmCustomConfigurationProfilePage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/MDM Custom Configuration Profile",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/MDM Custom Configuration Profile",
   component: MdmCustomConfigurationProfilePage,
   parameters: {
     layout: 'fullscreen',

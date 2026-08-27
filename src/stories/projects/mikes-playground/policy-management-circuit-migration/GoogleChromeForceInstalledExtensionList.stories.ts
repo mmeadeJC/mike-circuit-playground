@@ -528,7 +528,7 @@ const GoogleChromeForceInstalledExtensionListPage = defineComponent({
 export { GoogleChromeForceInstalledExtensionListPage };
 
 const meta: Meta<typeof GoogleChromeForceInstalledExtensionListPage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Google Chrome Browser Force-Installed Extension List",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Google Chrome Browser Force-Installed Extension List",
   component: GoogleChromeForceInstalledExtensionListPage,
   parameters: {
     layout: 'fullscreen',

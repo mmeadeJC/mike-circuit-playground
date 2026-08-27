@@ -420,7 +420,7 @@ const FileVault2Page = defineComponent({
 export { FileVault2Page };
 
 const meta: Meta<typeof FileVault2Page> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/FileVault 2",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/FileVault 2",
   component: FileVault2Page,
   parameters: {
     layout: 'fullscreen',

@@ -557,7 +557,7 @@ const SupervisedIosRestrictionsPage = defineComponent({
 export { SupervisedIosRestrictionsPage };
 
 const meta: Meta<typeof SupervisedIosRestrictionsPage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Supervised iOS Restrictions",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Supervised iOS Restrictions",
   component: SupervisedIosRestrictionsPage,
   parameters: {
     layout: 'fullscreen',

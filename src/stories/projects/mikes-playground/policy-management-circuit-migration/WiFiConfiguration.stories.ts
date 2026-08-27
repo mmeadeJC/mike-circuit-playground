@@ -746,7 +746,7 @@ const WiFiConfigurationPage = defineComponent({
 export { WiFiConfigurationPage };
 
 const meta: Meta<typeof WiFiConfigurationPage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/WiFi Configuration",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/WiFi Configuration",
   component: WiFiConfigurationPage,
   parameters: {
     layout: 'fullscreen',

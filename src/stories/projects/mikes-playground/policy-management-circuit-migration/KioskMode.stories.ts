@@ -679,7 +679,7 @@ const KioskModePage = defineComponent({
 export { KioskModePage };
 
 const meta: Meta<typeof KioskModePage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Kiosk Mode",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Kiosk Mode",
   component: KioskModePage,
   parameters: {
     layout: 'fullscreen',

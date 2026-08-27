@@ -1,6 +1,6 @@
 # Policy Management — Circuit Migration Component Inventory
 
-Circuit DS components used in each Storybook page under **Projects → Mike's Playground → Policy Management - Circuit Migration**.
+Circuit DS components used in each Storybook **Canvas** page under **Projects → Mike's Playground → Policy Management - Circuit Migration → Canvas**.
 
 Source: imports in `*.stories.ts` files in this directory. PrimeVue primitives listed separately — they are Circuit DS PT-styled components imported from `primevue/*`.
 
@@ -74,7 +74,7 @@ Components beyond the shared baseline on each page.
 ### Allow Activation Lock
 
 - **Story file:** `AllowActivationLock.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Allow Activation Lock`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Allow Activation Lock`
 - **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -103,7 +103,7 @@ Components beyond the shared baseline on each page.
 ### Application Restriction
 
 - **Story file:** `ApplicationRestriction.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Application Restriction`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Application Restriction`
 - **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -137,7 +137,7 @@ Components beyond the shared baseline on each page.
 ### Bluetooth Configuration
 
 - **Story file:** `BluetoothConfiguration.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Bluetooth Configuration`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Bluetooth Configuration`
 - **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -173,7 +173,7 @@ Components beyond the shared baseline on each page.
 ### Custom MDM (OMA-URI)
 
 - **Story file:** `CustomMdmOmaUri.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Custom MDM (OMA-URI)`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Custom MDM (OMA-URI)`
 - **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -205,7 +205,7 @@ Components beyond the shared baseline on each page.
 ### Custom Payload
 
 - **Story file:** `CustomPayload.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Custom Payload`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Custom Payload`
 - **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -240,7 +240,7 @@ Components beyond the shared baseline on each page.
 ### Advanced: Custom Registry Keys
 
 - **Story file:** `CustomRegistryKeys.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Advanced: Custom Registry Keys`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Advanced: Custom Registry Keys`
 - **Layout:** `ConfigPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -271,7 +271,7 @@ Components beyond the shared baseline on each page.
 ### FileVault 2
 
 - **Story file:** `FileVault2.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/FileVault 2`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/FileVault 2`
 - **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -307,7 +307,7 @@ Components beyond the shared baseline on each page.
 ### FileVault Tutorial Modal
 
 - **Story file:** `FileVaultTutorialModal.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/FileVault Tutorial Modal`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/FileVault Tutorial Modal`
 - **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -344,7 +344,7 @@ Components beyond the shared baseline on each page.
 ### Google Chrome Browser Force-Installed Extension List
 
 - **Story file:** `GoogleChromeForceInstalledExtensionList.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Google Chrome Browser Force-Installed Extension List`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Google Chrome Browser Force-Installed Extension List`
 - **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -380,7 +380,7 @@ Components beyond the shared baseline on each page.
 ### Install Certificate
 
 - **Story file:** `InstallCertificate.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Install Certificate`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Install Certificate`
 - **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -412,7 +412,7 @@ Components beyond the shared baseline on each page.
 ### Kiosk Mode
 
 - **Story file:** `KioskMode.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Kiosk Mode`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Kiosk Mode`
 - **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -446,7 +446,7 @@ Components beyond the shared baseline on each page.
 ### MDM Custom Configuration Profile
 
 - **Story file:** `MdmCustomConfigurationProfile.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/MDM Custom Configuration Profile`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/MDM Custom Configuration Profile`
 - **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -478,7 +478,7 @@ Components beyond the shared baseline on each page.
 ### MS Edge Extensions
 
 - **Story file:** `MsEdgeExtensions.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/MS Edge Extensions`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/MS Edge Extensions`
 - **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -514,7 +514,7 @@ Components beyond the shared baseline on each page.
 ### Policy Details Tab
 
 - **Story file:** `PolicyDetailsTab.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Policy Details Tab`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Policy Details Tab`
 - **Layout:** `ConfigPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -545,7 +545,7 @@ Components beyond the shared baseline on each page.
 ### Recovery Lock
 
 - **Story file:** `RecoveryLock.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Recovery Lock`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Recovery Lock`
 - **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -577,7 +577,7 @@ Components beyond the shared baseline on each page.
 ### Schedule Restart
 
 - **Story file:** `ScheduleRestart.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Schedule Restart`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Schedule Restart`
 - **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -611,7 +611,7 @@ Components beyond the shared baseline on each page.
 ### Single App Mode
 
 - **Story file:** `SingleAppMode.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Single App Mode`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Single App Mode`
 - **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -647,7 +647,7 @@ Components beyond the shared baseline on each page.
 ### Software Update Enforcement
 
 - **Story file:** `SoftwareUpdateEnforcement.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Software Update Enforcement`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Software Update Enforcement`
 - **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -680,7 +680,7 @@ Components beyond the shared baseline on each page.
 ### Supervised iOS Restrictions
 
 - **Story file:** `SupervisedIosRestrictions.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Supervised iOS Restrictions`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Supervised iOS Restrictions`
 - **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -714,7 +714,7 @@ Components beyond the shared baseline on each page.
 ### System Update
 
 - **Story file:** `SystemUpdate.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/System Update`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/System Update`
 - **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
@@ -752,7 +752,7 @@ Components beyond the shared baseline on each page.
 ### WiFi Configuration
 
 - **Story file:** `WiFiConfiguration.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/WiFi Configuration`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/WiFi Configuration`
 - **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):

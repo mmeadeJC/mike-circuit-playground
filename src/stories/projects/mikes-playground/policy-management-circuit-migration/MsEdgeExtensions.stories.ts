@@ -577,7 +577,7 @@ const MsEdgeExtensionsPage = defineComponent({
 export { MsEdgeExtensionsPage };
 
 const meta: Meta<typeof MsEdgeExtensionsPage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/MS Edge Extensions",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/MS Edge Extensions",
   component: MsEdgeExtensionsPage,
   parameters: {
     layout: 'fullscreen',

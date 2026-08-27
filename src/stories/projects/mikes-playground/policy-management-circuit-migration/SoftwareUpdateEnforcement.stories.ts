@@ -538,7 +538,7 @@ const SoftwareUpdateEnforcementPage = defineComponent({
 export { SoftwareUpdateEnforcementPage };
 
 const meta: Meta<typeof SoftwareUpdateEnforcementPage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Software Update Enforcement",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Software Update Enforcement",
   component: SoftwareUpdateEnforcementPage,
   parameters: {
     layout: 'fullscreen',

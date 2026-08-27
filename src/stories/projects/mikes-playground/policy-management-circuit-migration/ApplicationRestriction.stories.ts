@@ -733,7 +733,7 @@ const ApplicationRestrictionPage = defineComponent({
 export { ApplicationRestrictionPage };
 
 const meta: Meta<typeof ApplicationRestrictionPage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Application Restriction",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Application Restriction",
   component: ApplicationRestrictionPage,
   parameters: {
     layout: 'fullscreen',

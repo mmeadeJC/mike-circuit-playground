@@ -385,7 +385,7 @@ const AllowActivationLockPage = defineComponent({
 export { AllowActivationLockPage };
 
 const meta: Meta<typeof AllowActivationLockPage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Allow Activation Lock",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Allow Activation Lock",
   component: AllowActivationLockPage,
   parameters: {
     layout: 'fullscreen',

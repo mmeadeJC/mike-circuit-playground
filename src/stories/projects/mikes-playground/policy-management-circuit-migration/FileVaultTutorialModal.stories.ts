@@ -521,7 +521,7 @@ const FileVaultTutorialModalPage = defineComponent({
 export { FileVaultTutorialModalPage };
 
 const meta: Meta<typeof FileVaultTutorialModalPage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/FileVault Tutorial Modal",
+  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/FileVault Tutorial Modal",
   component: FileVaultTutorialModalPage,
   parameters: {
     layout: 'fullscreen',

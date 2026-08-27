@@ -41,10 +41,6 @@ import {
   MagnifyingGlassIcon,
   TrashIcon,
   PlusIcon,
-  NoSymbolIcon,
-  CubeIcon,
-  FolderIcon,
-  BuildingStorefrontIcon,
 } from '@heroicons/vue/24/outline';
 
 import {
@@ -210,10 +206,6 @@ const ApplicationRestrictionPage = defineComponent({
     MagnifyingGlassIcon,
     TrashIcon,
     PlusIcon,
-    NoSymbolIcon,
-    CubeIcon,
-    FolderIcon,
-    BuildingStorefrontIcon,
   },
   setup() {
     const { goBack, backButtonLabel } = usePolicyMigrationBackNavigation('/application-restriction');
@@ -452,9 +444,6 @@ const ApplicationRestrictionPage = defineComponent({
                 toggleable
                 header="Blocked Inline Apps &amp; Components"
               >
-                <template #titleicon="iconProps">
-                  <NoSymbolIcon :class="iconProps.class" />
-                </template>
                 <template #toggleicon="iconProps">
                   <ChevronRightIcon :class="iconProps.class" />
                 </template>
@@ -484,9 +473,6 @@ const ApplicationRestrictionPage = defineComponent({
                 toggleable
                 header="Blocked File Dimensions"
               >
-                <template #titleicon="iconProps">
-                  <CubeIcon :class="iconProps.class" />
-                </template>
                 <template #toggleicon="iconProps">
                   <ChevronRightIcon :class="iconProps.class" />
                 </template>
@@ -585,9 +571,6 @@ const ApplicationRestrictionPage = defineComponent({
                 toggleable
                 header="Blocked File Paths"
               >
-                <template #titleicon="iconProps">
-                  <FolderIcon :class="iconProps.class" />
-                </template>
                 <template #toggleicon="iconProps">
                   <ChevronRightIcon :class="iconProps.class" />
                 </template>
@@ -645,9 +628,6 @@ const ApplicationRestrictionPage = defineComponent({
                 toggleable
                 header="Blocked Microsoft Store Apps"
               >
-                <template #titleicon="iconProps">
-                  <BuildingStorefrontIcon :class="iconProps.class" />
-                </template>
                 <template #toggleicon="iconProps">
                   <ChevronRightIcon :class="iconProps.class" />
                 </template>

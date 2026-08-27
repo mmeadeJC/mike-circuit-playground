@@ -1,0 +1,226 @@
+---
+description: DataTable filter pattern — always use a filter Dialog with FormField components, draft/applied state, grouped chips, and correct toolbar events.
+alwaysApply: true
+---
+
+# DataTable Filter Pattern — Mandatory Rules
+
+> **⛔ NEVER use `FilterModal` from Circuit DS or build inline filter forms. ALWAYS use a `Dialog` with `FormField`-wrapped inputs.**
+
+Every DataTable that needs filtering MUST follow this exact pattern. No exceptions.
+
+## 1. Architecture — Draft / Applied State
+
+Filters use a **two-layer state** model managed by a composable:
+
+- **Applied** refs — drive actual data filtering and chip display
+- **Draft** refs — edited inside the Dialog; only committed on "Apply"
+
+```ts
+// Applied state (drives filtering)
+const appliedUsers = ref<string[]>([]);
+const appliedStatus = ref<string>('All');
+
+// Draft state (edited in dialog)
+const draftUsers = ref<string[]>([]);
+const draftStatus = ref<string>('All');
+```
+
+**Open dialog** → copy applied → draft. **Apply** → copy draft → applied, close. **Cancel** → just close.
+
+```ts
+function openFilterDialog() {
+  draftUsers.value = [...appliedUsers.value];
+  draftStatus.value = appliedStatus.value;
+  showFilterDialog.value = true;
+}
+
+function applyFilters() {
+  appliedUsers.value = [...draftUsers.value];
+  appliedStatus.value = draftStatus.value;
+  showFilterDialog.value = false;
+}
+
+function cancelFilterDialog() {
+  showFilterDialog.value = false;
+}
+```
+
+## 2. Filter Dialog — Always Use `Dialog` + `FormField`
+
+The filter dialog is a standard Circuit DS `Dialog` containing `FormField`-wrapped inputs.
+
+### Supported Input Types Inside FormField
+
+| Input Type | Component | Use When |
+|---|---|---|
+| Multi-select dropdown | `MultiSelect` from `primevue/multiselect` | Multiple values from a list (users, servers, tags) |
+| Single-select dropdown | `Select` from `primevue/select` | One value from a list |
+| Segmented toggle | `SelectButton` from `primevue/selectbutton` | Small set of mutually exclusive options (All/Active/Inactive) |
+| Text search | `InputText` from `primevue/inputtext` | Free-text filter |
+
+### Dialog Template
+
+```html
+<Dialog
+  :visible="showFilterDialog"
+  :draggable="false"
+  modal
+  header="Apply filters"
+  :style="{ width: '560px' }"
+  @update:visible="!$event && emit('cancelFilterDialog')"
+>
+  <template #closeicon><XMarkIcon /></template>
+
+  <div class="flex flex-col gap-md">
+    <FormField label="User">
+      <template #default="{ inputId }">
+        <MultiSelect
+          :id="inputId"
+          :modelValue="draftUsers"
+          :options="userOptions"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="All users"
+          :maxSelectedLabels="2"
+          class="w-full"
+          @update:modelValue="emit('update:draftUsers', $event)"
+        />
+      </template>
+    </FormField>
+
+    <FormField label="Status">
+      <template #default="{ inputId }">
+        <SelectButton
+          :id="inputId"
+          :modelValue="draftStatus"
+          :options="statusOptions"
+          :allowEmpty="false"
+          @update:modelValue="emit('update:draftStatus', $event)"
+        />
+      </template>
+    </FormField>
+  </div>
+
+  <!-- Footer: left info + right buttons — MUST NOT wrap -->
+  <template #footer>
+    <div class="flex items-center flex-1 min-w-0">
+      <span class="text-body-sm text-neutral-subtle">{{ draftFilterCount }} Filters applied</span>
+    </div>
+    <div class="flex gap-sm shrink-0">
+      <Button label="Cancel" severity="secondary" variant="text" @click="emit('cancelFilterDialog')" />
+      <Button label="Clear All" severity="secondary" variant="outlined" @click="emit('clearDraftFilters')" />
+      <Button label="Apply" @click="emit('applyFilters')" />
+    </div>
+  </template>
+</Dialog>
+```
+
+### Footer Layout — Buttons Must Not Wrap
+
+The footer uses two sibling divs. The left div MUST use `flex-1 min-w-0` (NOT `w-full`). The right div MUST use `shrink-0`.
+
+| Element | Classes | Why |
+|---|---|---|
+| Left info div | `flex items-center flex-1 min-w-0` | Takes remaining space without forcing buttons to wrap |
+| Right buttons div | `flex gap-sm shrink-0` | Never shrinks — prevents wrapping |
+
+```html
+<!-- ❌ WRONG — w-full pushes buttons to second line -->
+<div class="flex items-center w-full">...</div>
+<div class="flex gap-sm">...</div>
+
+<!-- ✅ CORRECT — flex-1 + shrink-0 keeps single row -->
+<div class="flex items-center flex-1 min-w-0">...</div>
+<div class="flex gap-sm shrink-0">...</div>
+```
+
+## 3. DataTableToolbar — Correct Event Names and Props
+
+The filter button and chips live in `DataTableToolbar`. Use these exact event names and props:
+
+```html
+<DataTableToolbar
+  :showFilterButton="true"
+  :showSaveViewButton="false"
+  :activeFilters="activeFilterChips"
+  :maxVisibleFilters="5"
+  @filter="emit('openFilterDialog')"
+  @clear-all="emit('clearAllFilters')"
+  @filter-remove="emit('removeFilterChip', $event)"
+/>
+```
+
+| Event | Toolbar emits | What it does |
+|---|---|---|
+| Filter button clicked | `filter` | Open the filter dialog |
+| "Clear filter" link clicked | `clear-all` | Clear all applied filters |
+| Chip X clicked | `filter-remove` | Remove one filter group |
+
+> **⛔ The toolbar emits `clear-all` and `filter-remove` — NOT `clear-filters` or `remove-filter`. Using wrong event names silently fails.**
+
+Always set `:showSaveViewButton="false"` unless saved views are explicitly needed.
+
+## 4. Filter Chips — Grouped by Filter Type
+
+Chips are **grouped per filter** — one chip per filter type, NOT one chip per value. Multi-value filters show a comma-separated summary.
+
+### Formatting Rule
+
+| Count | Display |
+|---|---|
+| 1 value | `Server \| is \| Github` |
+| 2 values | `Server \| is \| Github, Figma` |
+| 3+ values | `Server \| is \| Github, Figma, +1` |
+
+### Helper Function
+
+```ts
+function formatGroupedValues(values: string[], maxVisible = 2): string {
+  if (values.length <= maxVisible) return values.join(', ');
+  return `${values.slice(0, maxVisible).join(', ')}, +${values.length - maxVisible}`;
+}
+```
+
+### Chip Generation
+
+Each filter produces **at most one chip**. The chip `id` is the filter key (e.g. `'user'`, `'status'`).
+
+```ts
+const activeFilterChips = computed(() => {
+  const chips = [];
+  if (appliedUsers.value.length > 0) {
+    chips.push({ id: 'user', key: 'User', operator: 'is', value: formatGroupedValues(appliedUsers.value) });
+  }
+  if (appliedStatus.value !== 'All') {
+    chips.push({ id: 'status', key: 'Status', operator: 'is', value: appliedStatus.value });
+  }
+  return chips;
+});
+```
+
+### Chip Removal — Clears the Entire Group
+
+Since each chip represents a filter group, removing a chip clears **all values** for that filter:
+
+```ts
+function removeFilterChip(chip: { id?: string }) {
+  const chipId = chip.id ?? '';
+  if (chipId === 'user') appliedUsers.value = [];
+  else if (chipId === 'status') appliedStatus.value = 'All';
+}
+```
+
+## 5. Common Mistakes
+
+| Mistake | Correct Approach |
+|---|---|
+| Using `FilterModal` from Circuit DS | Use `Dialog` + `FormField` components |
+| Placing filter inputs inline in the toolbar | Put them inside a `Dialog` opened by the filter button |
+| Listening for `@clear-filters` on toolbar | Use `@clear-all` — that is the actual event name |
+| Listening for `@remove-filter` on toolbar | Use `@filter-remove` — that is the actual event name |
+| Using `w-full` on left footer div | Use `flex-1 min-w-0` to prevent button wrapping |
+| One chip per selected value | One chip per filter group with `formatGroupedValues` |
+| Removing chip removes single value | Removing chip clears the entire filter group |
+| Forgetting `:showSaveViewButton="false"` | Always set it unless saved views are needed |
+| Directly mutating applied state in dialog | Use draft refs; only copy to applied on "Apply" |

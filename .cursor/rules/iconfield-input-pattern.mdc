@@ -1,0 +1,65 @@
+---
+description: Enforces correct IconField + InputIcon usage for inputs with leading/trailing icons.
+alwaysApply: true
+---
+
+# IconField + InputIcon — Mandatory Pattern
+
+When an input needs a leading or trailing icon (e.g. search magnifying glass), **always** use `IconField` and `InputIcon` from Circuit DS primitives. Never manually position icons with absolute/relative wrappers or custom CSS.
+
+## Imports
+
+```ts
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
+import InputText from 'primevue/inputtext';
+```
+
+## Usage — Icon Goes Bare
+
+Place the icon component directly inside `InputIcon` **without any sizing classes**. Circuit's passthrough styles handle icon sizing and alignment automatically.
+
+### Leading icon (icon before input)
+
+```html
+<IconField>
+  <InputIcon>
+    <MagnifyingGlassIcon />
+  </InputIcon>
+  <InputText placeholder="Search..." />
+</IconField>
+```
+
+### Trailing icon (icon after input)
+
+```html
+<IconField>
+  <InputText placeholder="Search..." />
+  <InputIcon>
+    <MagnifyingGlassIcon />
+  </InputIcon>
+</IconField>
+```
+
+### Both leading and trailing icons
+
+```html
+<IconField>
+  <InputIcon>
+    <MagnifyingGlassIcon />
+  </InputIcon>
+  <InputText placeholder="Search..." />
+  <InputIcon>
+    <XMarkIcon />
+  </InputIcon>
+</IconField>
+```
+
+## Common Mistakes
+
+| Mistake | Correct Approach |
+|---|---|
+| Adding `class="size-4"` or other sizing classes to the icon inside `InputIcon` | Use the icon bare — Circuit PT handles sizing |
+| Using a `relative` wrapper with `absolute` positioned icon | Use `IconField` + `InputIcon` |
+| Adding `class="w-full"` to `IconField` | Omit it — `IconField` handles its own width |
+| Using `InputGroup` + `InputGroupAddon` for an icon inside the input | `InputGroup` is for prefix/suffix addons (e.g. `$`, `https://`), not for icons inside the field |

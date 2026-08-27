@@ -1,0 +1,139 @@
+---
+description: Use AdminTopBar or UserTopBar from src/components when implementing top bars from Figma designs
+globs: src/**/*.vue, src/**/*.stories.ts
+alwaysApply: false
+---
+
+# Top bar components
+
+Playground provides two top bars. **Never** recreate an admin or user portal top bar from scratch when one of these matches the design.
+
+| Component | File | Use when |
+|---|---|---|
+| **AdminTopBar** | `src/components/AdminTopBar.vue` | Admin console: search, shortcut tag, icon actions, AI assistant |
+| **UserTopBar** | `src/components/UserTopBar.vue` | User portal: thin bar with external links (e.g. Launch Admin Portal, Learn more) |
+
+## AdminTopBar
+
+### Import
+
+```typescript
+import AdminTopBar from '@/components/AdminTopBar.vue';
+```
+
+### Default behavior
+
+- **AI Search icon** (`AiSearchIcon` from `@jumpcloud/icons`)
+- **Search placeholder**: `"Search User, Devices, Apps, etc..."`
+- **Shortcut tag**: `"⌘/Ctrl + K"`
+- **Four icon buttons** (Customer Support, Lifebuoy, Flag, Checklist)
+- **AI Assistant** (`AiAgentButton` from Circuit DS)
+
+```html
+<AdminTopBar />
+```
+
+### Usage by page type
+
+| Page type | Variant | Example |
+|---|---|---|
+| Main/root pages | Default — no back button | `<AdminTopBar />` |
+| Nested/detail pages | With back button | `<AdminTopBar showBackButton backButtonLabel="Devices" @back="router.back()" />` |
+
+**Rules:**
+
+- The back button MUST navigate to the previous page (`router.back()` or equivalent). Never use it for unrelated actions.
+- `backButtonLabel` should match the previous page title when known; otherwise `"Back"`.
+
+### Props (AdminTopBar)
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `searchPlaceholder` | `string` | `'Search User, Devices, Apps, etc...'` | Placeholder in the search area |
+| `shortcutLabel` | `string` | `'⌘/Ctrl + K'` | Shortcut shown as a Tag |
+| `showSearchIcon` | `boolean` | `true` | Toggle AI search icon |
+| `iconButtons` | `AdminTopBarIconButton[]` | 4 defaults | Custom icon buttons |
+| `showBackButton` | `boolean` | `false` | Back button + divider |
+| `backButtonLabel` | `string` | `'Back'` | Back button label |
+
+### AdminTopBarIconButton
+
+```typescript
+interface AdminTopBarIconButton {
+  icon: Component;
+  label: string;
+  onClick?: () => void;
+}
+```
+
+### Events (AdminTopBar)
+
+| Event | Payload | Description |
+|---|---|---|
+| `search-click` | — | Search area clicked |
+| `icon-button-click` | `label: string` | Icon button clicked |
+| `ai-assistant-click` | `event: Event` | AI Assistant clicked |
+| `back` | — | Back clicked when `showBackButton` |
+
+### Slots (AdminTopBar)
+
+| Slot | Description |
+|---|---|
+| `search-icon` | Replace default AI search icon |
+| `icon-buttons` | Replace all default icon buttons |
+
+### Page layout (admin)
+
+Place `AdminTopBar` as the first child in the main column after `AppNavigation`:
+
+```html
+<div class="flex h-screen overflow-hidden">
+  <AppNavigation ... />
+  <div class="flex-1 flex flex-col min-w-0 overflow-auto">
+    <AdminTopBar />
+    <PageHeader title="Devices" />
+  </div>
+</div>
+```
+
+### Figma detection (admin)
+
+Use **AdminTopBar** when the bar includes search + shortcut tag + AI assistant / icon cluster. Use **back** variant when the design shows a back control with divider on the left.
+
+---
+
+## UserTopBar
+
+### Import
+
+```typescript
+import UserTopBar from '@/components/UserTopBar.vue';
+```
+
+### Behavior
+
+Right-aligned `LinkText` links with external-link icon (`showIcon`), `target="_blank"`, `rel="noopener noreferrer"`. Default labels: **Launch Admin Portal**, **Learn more**.
+
+```html
+<UserTopBar
+  adminPortalHref="https://console.example.com"
+  learnMoreHref="https://docs.example.com"
+/>
+```
+
+### Props (UserTopBar)
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `adminPortalHref` | `string` | `'#'` | Admin portal URL |
+| `learnMoreHref` | `string` | `'#'` | Learn-more URL |
+| `adminPortalLabel` | `string` | `'Launch Admin Portal'` | First link label |
+| `learnMoreLabel` | `string` | `'Learn more'` | Second link label |
+
+### Page layout (user portal)
+
+Same position as admin bar: first row in the main column after `AppNavigation`.
+
+### Figma detection (user)
+
+Use **UserTopBar** when the bar is a thin strip with text links and external-link icons only (no search, no AI button).

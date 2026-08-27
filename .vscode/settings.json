@@ -1,0 +1,9 @@
+{
+  "remote.autoForwardPorts": true,
+  "remote.portsAttributes": {
+    "6006": {
+      "label": "Storybook",
+      "onAutoForward": "openBrowser"
+    }
+  }
+}

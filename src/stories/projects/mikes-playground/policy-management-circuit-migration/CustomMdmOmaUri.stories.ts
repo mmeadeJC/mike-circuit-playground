@@ -367,7 +367,7 @@ const CustomMdmOmaUriPage = defineComponent({
                   <div
                     v-for="row in omaUriRows"
                     :key="row.id"
-                    class="flex items-start gap-md"
+                    class="flex items-start gap-sm"
                   >
                     <FormField
                       label="OMA URI"
@@ -415,7 +415,7 @@ const CustomMdmOmaUriPage = defineComponent({
                       </template>
                     </FormField>
 
-                    <div class="pt-7 shrink-0">
+                    <div class="flex items-center gap-xs pt-7 shrink-0">
                       <PvButton
                         severity="secondary"
                         variant="text"
@@ -427,21 +427,18 @@ const CustomMdmOmaUriPage = defineComponent({
                           <TrashIcon class="size-4" />
                         </template>
                       </PvButton>
+                      <PvButton
+                        severity="secondary"
+                        variant="text"
+                        size="small"
+                        aria-label="Add OMA URI row"
+                        @click="addOmaUriRow"
+                      >
+                        <template #icon>
+                          <PlusIcon class="size-4" />
+                        </template>
+                      </PvButton>
                     </div>
-                  </div>
-
-                  <div>
-                    <PvButton
-                      label="Add OMA URI"
-                      severity="secondary"
-                      variant="outlined"
-                      size="small"
-                      @click="addOmaUriRow"
-                    >
-                      <template #icon>
-                        <PlusIcon class="size-4" />
-                      </template>
-                    </PvButton>
                   </div>
                 </div>
               </CollapsiblePanel>

@@ -15,6 +15,28 @@ const storybookGoToPolicyManagement = linkTo(
   'Default',
 );
 
+const storybookGoToPolicyGroups = linkTo(
+  "Projects/Mike's Playground/Device Management/Policy Groups",
+  'Default',
+);
+
+const storybookGoToPatchManagement = linkTo(
+  "Projects/Mike's Playground/Device Management/Patch Management",
+  'Default',
+);
+
+export function storybookNavigateToPolicyManagementList(): void {
+  storybookGoToPolicyManagement();
+}
+
+export function storybookNavigateToPolicyGroups(): void {
+  storybookGoToPolicyGroups();
+}
+
+export function storybookNavigateToPatchManagement(): void {
+  storybookGoToPatchManagement();
+}
+
 const OS_TAB_LABELS: Record<string, string> = {
   windows: 'Windows',
   mac: 'Mac',

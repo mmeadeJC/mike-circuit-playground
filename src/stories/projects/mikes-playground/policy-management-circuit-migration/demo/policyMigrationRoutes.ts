@@ -9,9 +9,9 @@ export type PolicyMigrationRoute = {
 
 const pageLoaders: Record<string, () => Promise<Component>> = {
   '/patch-management': () =>
-    import('../PatchManagement.stories').then((m) => m.PatchManagementPage),
+    import('../../device-management/PatchManagement.stories').then((m) => m.PatchManagementPage),
   '/policy-groups': () =>
-    import('../PolicyGroups.stories').then((m) => m.PolicyGroupsPage),
+    import('../../device-management/PolicyGroups.stories').then((m) => m.PolicyGroupsPage),
   '/allow-activation-lock': () =>
     import('../AllowActivationLock.stories').then((m) => m.AllowActivationLockPage),
   '/application-restriction': () =>

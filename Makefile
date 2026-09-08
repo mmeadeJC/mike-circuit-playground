@@ -1,7 +1,9 @@
-STACK_NAME  := get-started
+STACK_NAME  := th-1769
 REGION      := us-east-1
-PROFILE     := 112284275763_admin
-DEMO_ID     := get-started
+PROFILE     := produx-pdlc
+DEMO_ID     := th-1769
+DOMAIN_NAME := th-1769.jcprodux.net
+HOSTED_ZONE := Z00445592TH2X5CKZ2FCI
 
 .PHONY: build-app sam-build deploy clean
 
@@ -24,7 +26,8 @@ deploy: sam-build
 		--profile $(PROFILE) \
 		--resolve-s3 \
 		--capabilities CAPABILITY_IAM \
-		--no-confirm-changeset
+		--no-confirm-changeset \
+		--parameter-overrides StackName=$(STACK_NAME) DomainName=$(DOMAIN_NAME) HostedZoneId=$(HOSTED_ZONE)
 
 ## Remove build artifacts
 clean:

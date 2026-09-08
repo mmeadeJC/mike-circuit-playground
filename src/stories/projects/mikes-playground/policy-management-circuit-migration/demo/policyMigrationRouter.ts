@@ -88,15 +88,33 @@ export function navigateToPolicyManagementList(): void {
     window.__policyMigrationGoToList();
     return;
   }
-  navigatePolicyMigration(listLocation());
+  if (getPolicyMigrationRouter()) {
+    navigatePolicyMigration(listLocation());
+    return;
+  }
+  void import('./storybookPolicyMigrationNav').then((module) => {
+    module.storybookNavigateToPolicyManagementList();
+  });
 }
 
 export function navigateToPolicyGroups(): void {
-  navigatePolicyMigration('/policy-groups');
+  if (getPolicyMigrationRouter()) {
+    navigatePolicyMigration('/policy-groups');
+    return;
+  }
+  void import('./storybookPolicyMigrationNav').then((module) => {
+    module.storybookNavigateToPolicyGroups();
+  });
 }
 
 export function navigateToPatchManagement(): void {
-  navigatePolicyMigration('/patch-management');
+  if (getPolicyMigrationRouter()) {
+    navigatePolicyMigration('/patch-management');
+    return;
+  }
+  void import('./storybookPolicyMigrationNav').then((module) => {
+    module.storybookNavigateToPatchManagement();
+  });
 }
 
 export function navigateToNewPolicyView(context: NewPolicyNavContext): void {

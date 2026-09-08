@@ -65,6 +65,11 @@ func handler(ctx context.Context, req events.APIGatewayV2HTTPRequest) (events.AP
 		return handleLogout(ctx, req)
 	}
 
+	// Static assets are public so the SPA can load JS/CSS before session is established.
+	if isPublicStaticPath(path) {
+		return serveStatic(path)
+	}
+
 	// All other routes: check session
 	sessionID := extractCookie(req.Cookies, cookieName)
 	if sessionID == "" || !validSession(ctx, sessionID) {
@@ -315,6 +320,27 @@ func redirect(location string) events.APIGatewayV2HTTPResponse {
 		StatusCode: 302,
 		Headers:    map[string]string{"Location": location},
 	}
+}
+
+func isPublicStaticPath(path string) bool {
+	if path == "/favicon.svg" {
+		return true
+	}
+	publicPrefixes := []string{
+		"/assets/",
+		"/fonts/",
+		"/logos/",
+		"/placeholders/",
+	}
+	for _, prefix := range publicPrefixes {
+		if strings.HasPrefix(path, prefix) {
+			return true
+		}
+	}
+	if strings.HasSuffix(path, ".png") || strings.HasSuffix(path, ".jpg") || strings.HasSuffix(path, ".jpeg") || strings.HasSuffix(path, ".svg") || strings.HasSuffix(path, ".webp") {
+		return true
+	}
+	return false
 }
 
 func main() {

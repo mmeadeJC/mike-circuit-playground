@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
-import { computed, defineComponent, markRaw, ref } from 'vue';
+import './PatchManagement.stories.css';
+import { computed, defineComponent, markRaw, ref, watch } from 'vue';
 import {
   ActionsToolbar,
   AppNavigation,
@@ -18,21 +19,27 @@ import SelectButton from 'primevue/selectbutton';
 import Tab from 'primevue/tab';
 import TabList from 'primevue/tablist';
 import Tabs from 'primevue/tabs';
-import { TrashIcon } from '@heroicons/vue/24/outline';
+import { ArrowPathIcon, DocumentTextIcon, PlusIcon, TrashIcon } from '@heroicons/vue/24/outline';
+import { DeviceManagementIcon } from '@jumpcloud/icons';
 
 import TopBar from '@/components/AdminTopBar.vue';
+import PatchPolicyAddDropdown, {
+  type PatchPolicyAddOption,
+} from './PatchPolicyAddDropdown.vue';
 import {
   menuItems,
   profileMenuItems,
-} from './demo/policyMigrationMenuItems';
+} from '../policy-management-circuit-migration/demo/policyMigrationMenuItems';
 
 type PatchPolicy = {
   id: string;
-  os: 'windows' | 'mac' | 'ios';
+  scope: 'os' | 'browser';
+  os?: 'windows' | 'mac' | 'ios';
+  browser?: 'chrome';
   name: string;
   description: string;
   requirements: string;
-  delayDays: number;
+  delayDays?: number;
 };
 
 type ReleaseTrain = {
@@ -57,6 +64,19 @@ const IosIcon = defineComponent({
   template: `<div class="flex items-center justify-center size-4"><div class="rounded-full flex items-center justify-center size-3.5 bg-neutral-base"><span class="text-[5px] font-semibold leading-none text-neutral-surface">iOS</span></div></div>`,
 });
 
+const LinuxLogoIcon = markRaw(defineComponent({
+  name: 'LinuxLogoIcon',
+  template: '<img src="/logos/os/linux.svg" alt="" class="size-4" />',
+}));
+
+const ADD_PATCH_POLICY_OPTIONS: PatchPolicyAddOption[] = [
+  { label: 'iOS', value: 'ios', icon: markRaw(IosIcon), isNew: true },
+  { label: 'macOS', value: 'macos', icon: markRaw(AppleIcon), isNew: true },
+  { label: 'macOS - Legacy', value: 'macos-legacy', icon: markRaw(ArrowPathIcon) },
+  { label: 'Windows', value: 'windows', icon: markRaw(WindowsIcon) },
+  { label: 'Load Default Linux Policies', value: 'linux-default', icon: LinuxLogoIcon },
+];
+
 const OsTypeIcon = markRaw(defineComponent({
   name: 'OsTypeIcon',
   props: {
@@ -64,7 +84,7 @@ const OsTypeIcon = markRaw(defineComponent({
   },
   components: { WindowsIcon, AppleIcon, IosIcon },
   template: `
-    <div class="flex items-center justify-center">
+    <div class="flex items-center justify-center w-full">
       <WindowsIcon v-if="os === 'windows'" />
       <IosIcon v-else-if="os === 'ios'" />
       <AppleIcon v-else />
@@ -72,26 +92,47 @@ const OsTypeIcon = markRaw(defineComponent({
   `,
 }));
 
+const BrowserTypeIcon = markRaw(defineComponent({
+  name: 'BrowserTypeIcon',
+  components: { DeviceManagementIcon },
+  template: `
+    <div class="flex items-center justify-center w-full">
+      <DeviceManagementIcon class="size-4 shrink-0 text-neutral-base" aria-hidden="true" />
+    </div>
+  `,
+}));
+
+/** Circuit header cells use flex; headerStyle textAlign does not center the title — override PT instead. */
+const TYPE_COLUMN_PT = {
+  columnHeaderContent: {
+    class: 'justify-center! w-full!',
+  },
+};
+
 const PATCH_POLICIES: PatchPolicy[] = [
-  { id: '1', os: 'windows', name: 'Configure Advanced Windows Updates', description: 'Configure Advanced Windows Updates', requirements: 'JumpCloud MDM enrollment', delayDays: 0 },
-  { id: '2', os: 'mac', name: 'macOS Vanguard Ring', description: 'Automatic macOS Updates - Legacy', requirements: 'JumpCloud MDM enrollment for macOS 11.0+', delayDays: 0 },
-  { id: '3', os: 'mac', name: 'macOS Early Adoption Ring', description: 'Automatic macOS Updates - Legacy', requirements: 'JumpCloud MDM enrollment for macOS 11.0+', delayDays: 1 },
-  { id: '4', os: 'mac', name: 'macOS General Adoption Ring', description: 'Automatic macOS Updates - Legacy', requirements: 'JumpCloud MDM enrollment for macOS 11.0+', delayDays: 7 },
-  { id: '5', os: 'windows', name: 'Windows Early Adoption Ring', description: 'Automatic Windows Updates - Legacy', requirements: 'JumpCloud MDM enrollment', delayDays: 1 },
-  { id: '6', os: 'windows', name: 'Windows General Adoption Ring', description: 'Automatic Windows Updates - Legacy', requirements: 'JumpCloud MDM enrollment', delayDays: 7 },
-  { id: '7', os: 'windows', name: 'Windows Vanguard Ring', description: 'Automatic Windows Updates - Legacy', requirements: 'JumpCloud MDM enrollment', delayDays: 0 },
-  { id: '8', os: 'windows', name: 'Windows Semi-Annual Channel Targeted Ring', description: 'Automatic Windows Updates - Legacy', requirements: 'JumpCloud MDM enrollment', delayDays: 15 },
-  { id: '9', os: 'windows', name: 'Windows Semi-Annual Channel Ring', description: 'Automatic Windows Updates - Legacy', requirements: 'JumpCloud MDM enrollment', delayDays: 2 },
-  { id: '10', os: 'ios', name: 'iOS Semi-Annual Channel Targeted Ring', description: 'iOS Supervised Update Policy', requirements: 'Require Supervision', delayDays: 15 },
-  { id: '11', os: 'mac', name: 'macOS Semi-Annual Channel Targeted Ring', description: 'Automatic macOS Updates - Legacy', requirements: 'JumpCloud MDM enrollment for macOS 11.0+', delayDays: 15 },
-  { id: '12', os: 'mac', name: 'macOS Semi-Annual Channel Ring', description: 'Automatic macOS Updates - Legacy', requirements: 'JumpCloud MDM enrollment for macOS 11.0+', delayDays: 2 },
-  { id: '13', os: 'ios', name: 'iOS Early Adoption Ring', description: 'iOS Supervised Update Policy', requirements: 'Require Supervision', delayDays: 1 },
-  { id: '14', os: 'ios', name: 'iOS General Adoption Ring', description: 'iOS Supervised Update Policy', requirements: 'Require Supervision', delayDays: 7 },
-  { id: '15', os: 'ios', name: 'iOS Vanguard Ring', description: 'iOS Supervised Update Policy', requirements: 'Require Supervision', delayDays: 0 },
-  { id: '16', os: 'windows', name: 'Windows Pilot Ring', description: 'Automatic Windows Updates - Legacy', requirements: 'JumpCloud MDM enrollment', delayDays: 0 },
-  { id: '17', os: 'mac', name: 'macOS Pilot Ring', description: 'Automatic macOS Updates - Legacy', requirements: 'JumpCloud MDM enrollment for macOS 11.0+', delayDays: 0 },
-  { id: '18', os: 'windows', name: 'Windows Long-Term Servicing Ring', description: 'Automatic Windows Updates - Legacy', requirements: 'JumpCloud MDM enrollment', delayDays: 30 },
-  { id: '19', os: 'mac', name: 'macOS Long-Term Servicing Ring', description: 'Automatic macOS Updates - Legacy', requirements: 'JumpCloud MDM enrollment for macOS 11.0+', delayDays: 30 },
+  { id: '1', scope: 'os', os: 'windows', name: 'Configure Advanced Windows Updates', description: 'Configure Advanced Windows Updates', requirements: 'JumpCloud MDM enrollment', delayDays: 0 },
+  { id: '2', scope: 'os', os: 'mac', name: 'macOS Vanguard Ring', description: 'Automatic macOS Updates - Legacy', requirements: 'JumpCloud MDM enrollment for macOS 11.0+', delayDays: 0 },
+  { id: '3', scope: 'os', os: 'mac', name: 'macOS Early Adoption Ring', description: 'Automatic macOS Updates - Legacy', requirements: 'JumpCloud MDM enrollment for macOS 11.0+', delayDays: 1 },
+  { id: '4', scope: 'os', os: 'mac', name: 'macOS General Adoption Ring', description: 'Automatic macOS Updates - Legacy', requirements: 'JumpCloud MDM enrollment for macOS 11.0+', delayDays: 7 },
+  { id: '5', scope: 'os', os: 'windows', name: 'Windows Early Adoption Ring', description: 'Automatic Windows Updates - Legacy', requirements: 'JumpCloud MDM enrollment', delayDays: 1 },
+  { id: '6', scope: 'os', os: 'windows', name: 'Windows General Adoption Ring', description: 'Automatic Windows Updates - Legacy', requirements: 'JumpCloud MDM enrollment', delayDays: 7 },
+  { id: '7', scope: 'os', os: 'windows', name: 'Windows Vanguard Ring', description: 'Automatic Windows Updates - Legacy', requirements: 'JumpCloud MDM enrollment', delayDays: 0 },
+  { id: '8', scope: 'os', os: 'windows', name: 'Windows Semi-Annual Channel Targeted Ring', description: 'Automatic Windows Updates - Legacy', requirements: 'JumpCloud MDM enrollment', delayDays: 15 },
+  { id: '9', scope: 'os', os: 'windows', name: 'Windows Semi-Annual Channel Ring', description: 'Automatic Windows Updates - Legacy', requirements: 'JumpCloud MDM enrollment', delayDays: 2 },
+  { id: '10', scope: 'os', os: 'ios', name: 'iOS Semi-Annual Channel Targeted Ring', description: 'iOS Supervised Update Policy', requirements: 'Require Supervision', delayDays: 15 },
+  { id: '11', scope: 'os', os: 'mac', name: 'macOS Semi-Annual Channel Targeted Ring', description: 'Automatic macOS Updates - Legacy', requirements: 'JumpCloud MDM enrollment for macOS 11.0+', delayDays: 15 },
+  { id: '12', scope: 'os', os: 'mac', name: 'macOS Semi-Annual Channel Ring', description: 'Automatic macOS Updates - Legacy', requirements: 'JumpCloud MDM enrollment for macOS 11.0+', delayDays: 2 },
+  { id: '13', scope: 'os', os: 'ios', name: 'iOS Early Adoption Ring', description: 'iOS Supervised Update Policy', requirements: 'Require Supervision', delayDays: 1 },
+  { id: '14', scope: 'os', os: 'ios', name: 'iOS General Adoption Ring', description: 'iOS Supervised Update Policy', requirements: 'Require Supervision', delayDays: 7 },
+  { id: '15', scope: 'os', os: 'ios', name: 'iOS Vanguard Ring', description: 'iOS Supervised Update Policy', requirements: 'Require Supervision', delayDays: 0 },
+  { id: '16', scope: 'os', os: 'windows', name: 'Windows Pilot Ring', description: 'Automatic Windows Updates - Legacy', requirements: 'JumpCloud MDM enrollment', delayDays: 0 },
+  { id: '17', scope: 'os', os: 'mac', name: 'macOS Pilot Ring', description: 'Automatic macOS Updates - Legacy', requirements: 'JumpCloud MDM enrollment for macOS 11.0+', delayDays: 0 },
+  { id: '18', scope: 'os', os: 'windows', name: 'Windows Long-Term Servicing Ring', description: 'Automatic Windows Updates - Legacy', requirements: 'JumpCloud MDM enrollment', delayDays: 30 },
+  { id: '19', scope: 'os', os: 'mac', name: 'macOS Long-Term Servicing Ring', description: 'Automatic macOS Updates - Legacy', requirements: 'JumpCloud MDM enrollment for macOS 11.0+', delayDays: 30 },
+  { id: 'b1', scope: 'browser', browser: 'chrome', name: 'Chrome Day Zero', description: 'Chrome Browser Management', requirements: '' },
+  { id: 'b2', scope: 'browser', browser: 'chrome', name: 'Chrome Early Adoption Ring', description: 'Chrome Browser Management', requirements: '' },
+  { id: 'b3', scope: 'browser', browser: 'chrome', name: 'Chrome General Adoption Ring', description: 'Chrome Browser Management', requirements: '' },
+  { id: 'b4', scope: 'browser', browser: 'chrome', name: 'Chrome Late Adoption Ring', description: 'Chrome Browser Management', requirements: '' },
 ];
 
 const MACOS_RELEASE_TRAINS: ReleaseTrain[] = [
@@ -117,6 +158,12 @@ const UBUNTU_RELEASE_TRAINS: ReleaseTrain[] = [
 
 const PatchManagementPage = defineComponent({
   name: 'PatchManagementPage',
+  props: {
+    initialPolicyScopeTab: {
+      type: String as () => 'os' | 'browser',
+      default: 'os',
+    },
+  },
   components: {
     ActionsToolbar,
     AppNavigation,
@@ -126,6 +173,7 @@ const PatchManagementPage = defineComponent({
     ListPageLayout,
     MessageNotification,
     PageHeader,
+    PatchPolicyAddDropdown,
     TopBar,
     PvButton: Button,
     PvSelect: Select,
@@ -133,15 +181,17 @@ const PatchManagementPage = defineComponent({
     PvTab: Tab,
     PvTabList: TabList,
     PvTabs: Tabs,
+    DocumentTextIcon,
+    PlusIcon,
   },
-  setup() {
+  setup(props) {
     const policies = ref<PatchPolicy[]>(PATCH_POLICIES.map((policy) => ({ ...policy })));
     const selectedPolicies = ref<PatchPolicy[]>([]);
     const searchQuery = ref('');
     const first = ref(0);
     const rows = ref(10);
     const activePageTab = ref('policies');
-    const policyScopeTab = ref('os');
+    const policyScopeTab = ref(props.initialPolicyScopeTab);
     const releaseTrainTab = ref('macos');
     const showLegacyBanner = ref(true);
     const eventTypeFilter = ref('all');
@@ -179,53 +229,93 @@ const PatchManagementPage = defineComponent({
       { label: 'Last 30 Days', value: '30-days' },
       { label: 'Last 90 Days', value: '90-days' },
     ];
-    const filterByOptions = [
-      { label: 'Filter by', value: 'all' },
-      { label: 'Windows', value: 'windows' },
-      { label: 'macOS', value: 'mac' },
-      { label: 'iOS', value: 'ios' },
-    ];
+    const filterByOptions = computed(() => {
+      if (policyScopeTab.value === 'browser') {
+        return [
+          { label: 'Filter by', value: 'all' },
+          { label: 'Chrome', value: 'chrome' },
+        ];
+      }
+      return [
+        { label: 'Filter by', value: 'all' },
+        { label: 'Windows', value: 'windows' },
+        { label: 'macOS', value: 'mac' },
+        { label: 'iOS', value: 'ios' },
+      ];
+    });
 
-    const columns = [
-      {
-        field: 'os',
-        header: 'Type',
-        width: '80px',
-        component: OsTypeIcon,
-        componentProps: (slotProps: { data: PatchPolicy }) => ({
-          os: slotProps.data.os,
-        }),
-      },
-      {
-        field: 'name',
-        header: 'Name',
-        sortable: true,
-        component: markRaw(DataTableCellLink),
-        componentProps: (slotProps: { data: PatchPolicy }) => ({
-          label: slotProps.data.name,
-          description: slotProps.data.description,
-          href: '#',
-        }),
-      },
-      {
-        field: 'requirements',
-        header: 'Requirements',
-        component: markRaw(DataTableCellText),
-        componentProps: (slotProps: { data: PatchPolicy }) => ({
-          label: slotProps.data.requirements,
-        }),
-      },
-      {
-        field: 'delayDays',
-        header: 'Delay For (days)',
-        sortable: true,
-        width: '160px',
-        component: markRaw(DataTableCellText),
-        componentProps: (slotProps: { data: PatchPolicy }) => ({
-          label: String(slotProps.data.delayDays),
-        }),
-      },
-    ];
+    const columns = computed(() => {
+      const typeColumn = policyScopeTab.value === 'os'
+        ? {
+            field: 'os',
+            header: 'Type',
+            width: '80px',
+            pt: TYPE_COLUMN_PT,
+            component: OsTypeIcon,
+            componentProps: (slotProps: { data: PatchPolicy }) => ({
+              os: slotProps.data.os,
+            }),
+          }
+        : {
+            field: 'browser',
+            header: 'Type',
+            width: '80px',
+            pt: TYPE_COLUMN_PT,
+            component: BrowserTypeIcon,
+            componentProps: () => ({}),
+          };
+
+      const baseColumns = [
+        typeColumn,
+        {
+          field: 'name',
+          header: 'Name',
+          sortable: true,
+          component: markRaw(DataTableCellLink),
+          componentProps: (slotProps: { data: PatchPolicy }) => ({
+            label: slotProps.data.name,
+            description: slotProps.data.description,
+            href: '#',
+          }),
+        },
+        {
+          field: 'requirements',
+          header: 'Requirements',
+          component: markRaw(DataTableCellText),
+          componentProps: (slotProps: { data: PatchPolicy }) => ({
+            label: slotProps.data.requirements || undefined,
+          }),
+        },
+      ];
+
+      if (policyScopeTab.value === 'os') {
+        baseColumns.push({
+          field: 'delayDays',
+          header: 'Delay For (days)',
+          sortable: true,
+          width: '160px',
+          component: markRaw(DataTableCellText),
+          componentProps: (slotProps: { data: PatchPolicy }) => ({
+            label: String(slotProps.data.delayDays ?? 0),
+          }),
+        });
+      }
+
+      return baseColumns;
+    });
+
+    const patchReportLabel = computed(() =>
+      policyScopeTab.value === 'browser'
+        ? 'Run Browser Patch Management Policy Report'
+        : 'Run OS Patch Management Policy Report',
+    );
+
+    watch(policyScopeTab, () => {
+      selectedPolicies.value = [];
+      first.value = 0;
+      searchQuery.value = '';
+      filterBy.value = 'all';
+    });
 
     const filteredPolicies = computed(() => {
       const query = searchQuery.value.trim().toLowerCase();
@@ -237,10 +327,9 @@ const PatchManagementPage = defineComponent({
           || policy.requirements.toLowerCase().includes(query);
         const matchesFilter =
           filterBy.value === 'all'
-          || policy.os === filterBy.value;
-        const matchesScope =
-          policyScopeTab.value === 'os'
-          || policy.description.toLowerCase().includes('browser');
+          || (policyScopeTab.value === 'os' && policy.os === filterBy.value)
+          || (policyScopeTab.value === 'browser' && policy.browser === filterBy.value);
+        const matchesScope = policy.scope === policyScopeTab.value;
         return matchesSearch && matchesFilter && matchesScope;
       });
     });
@@ -287,10 +376,20 @@ const PatchManagementPage = defineComponent({
     }
 
     function handleDeleteSelected() {
+      if (selectedPolicies.value.length === 0) return;
       handleBulkAction('delete');
     }
 
+    function handleAddPatchPolicyOption(_option?: PatchPolicyAddOption) {
+      // Prototype only — creation flows are not built yet.
+    }
+
+    function handleAddBrowserPolicy() {
+      // Prototype only — browser policy creation is not built yet.
+    }
+
     return {
+      ADD_PATCH_POLICY_OPTIONS,
       activePageTab,
       bulkActions,
       columns,
@@ -301,6 +400,8 @@ const PatchManagementPage = defineComponent({
       filterByOptions,
       filteredPolicies,
       first,
+      handleAddBrowserPolicy,
+      handleAddPatchPolicyOption,
       handleBulkAction,
       handleDeleteSelected,
       handlePageChange,
@@ -309,6 +410,7 @@ const PatchManagementPage = defineComponent({
       osHistoryFilter,
       osHistoryOptions,
       pageTabs,
+      patchReportLabel,
       policies,
       policyScopeOptions,
       policyScopeTab,
@@ -359,7 +461,7 @@ const PatchManagementPage = defineComponent({
           class="w-full! h-full! flex-1 min-h-0"
         >
           <div class="flex flex-col gap-md h-full min-h-0 overflow-auto p-md">
-            <div class="px-md py-3 border-b border-neutral-default_solid shrink-0">
+            <div class="pb-md border-b border-neutral-default_solid shrink-0">
               <PvSelectButton
                 v-model="policyScopeTab"
                 :options="policyScopeOptions"
@@ -370,7 +472,8 @@ const PatchManagementPage = defineComponent({
             </div>
 
             <MessageNotification
-              v-if="showLegacyBanner"
+              v-if="policyScopeTab === 'os' && showLegacyBanner"
+              class="[&_.text-body-sm]:block [&_.text-body-sm]:max-w-[1200px]"
               severity="warn"
               title="Prepare for Legacy macOS Patch Policy Retirement"
               detail="Legacy macOS patch policies will transition to Declarative Device Management (DDM) policies on December 31, 2024. Ensure you are prepared to migrate to DDM-based software update policies to continue managing macOS updates after this date."
@@ -378,11 +481,11 @@ const PatchManagementPage = defineComponent({
               @close="showLegacyBanner = false"
             >
               <template #button>
-                <PvButton label="Learn About DDM Policies" severity="secondary" variant="outlined" size="small" />
+                <PvButton label="Learn About DDM Policies" severity="secondary" size="small" />
               </template>
             </MessageNotification>
 
-            <div class="grid grid-cols-2 gap-md shrink-0">
+            <div v-if="policyScopeTab === 'os'" class="grid grid-cols-2 gap-md shrink-0">
               <div class="rounded-sm border border-neutral-default_solid bg-neutral-surface p-md flex flex-col gap-md min-h-72">
                 <div class="flex items-center justify-between gap-sm">
                   <span class="text-heading-4 text-neutral-base">Update History</span>
@@ -450,7 +553,7 @@ const PatchManagementPage = defineComponent({
               </div>
             </div>
 
-            <div class="flex flex-col flex-1 min-h-96 relative">
+            <div class="patch-management-policies-table flex flex-col flex-1 min-h-96 relative">
               <DataTable
                 class="flex-1 min-h-0"
                 :data="currentPagePolicies"
@@ -472,16 +575,34 @@ const PatchManagementPage = defineComponent({
                 @page-change="handlePageChange"
               >
                 <template #toolbar>
-                  <DataTableToolbar
-                    addButtonLabel="Add Patch Policy"
-                    searchPlaceholder="Search"
-                    :showFilterButton="false"
-                    :showRefreshButton="false"
-                    :showColumnsButton="false"
-                    :showDownloadButton="false"
-                    :showSaveViewButton="false"
-                    @search="handleSearch"
-                  >
+                  <div class="flex items-center gap-x-4 w-full pb-4">
+                    <PatchPolicyAddDropdown
+                      v-if="policyScopeTab === 'os'"
+                      class="shrink-0"
+                      :options="ADD_PATCH_POLICY_OPTIONS"
+                      @select="handleAddPatchPolicyOption"
+                    />
+                    <div v-else class="relative shrink-0 text-body-md">
+                      <PvButton
+                        label="Add Browser"
+                        @click="handleAddBrowserPolicy"
+                      >
+                        <template #icon="iconProps">
+                          <PlusIcon :class="iconProps.class" />
+                        </template>
+                      </PvButton>
+                    </div>
+                    <DataTableToolbar
+                      class="contents min-w-0 flex-1"
+                      searchPlaceholder="Search"
+                      :showAddButton="false"
+                      :showFilterButton="false"
+                      :showRefreshButton="false"
+                      :showColumnsButton="false"
+                      :showDownloadButton="false"
+                      :showSaveViewButton="false"
+                      @search="handleSearch"
+                    >
                     <template #saved-views>
                       <div class="flex items-center gap-sm">
                         <PvSelect
@@ -498,20 +619,22 @@ const PatchManagementPage = defineComponent({
                     </template>
 
                     <template #column-config>
-                      <PvButton
-                        label="Delete"
-                        severity="secondary"
-                        variant="outlined"
-                        size="small"
-                        :disabled="selectedPolicies.length === 0"
-                        @click="handleDeleteSelected"
-                      />
+                      <div class="flex items-center gap-md">
+                        <LinkText href="#" target="_blank" :showIcon="false">
+                          <DocumentTextIcon class="size-5 shrink-0" />
+                          {{ patchReportLabel }}
+                        </LinkText>
+                        <PvButton
+                          label="Delete"
+                          severity="secondary"
+                          size="small"
+                          :disabled="selectedPolicies.length === 0"
+                          @click="handleDeleteSelected"
+                        />
+                      </div>
                     </template>
-
-                    <template #export>
-                      <LinkText label="Run OS Patch Management Policy Report" href="#" target="_blank" />
-                    </template>
-                  </DataTableToolbar>
+                    </DataTableToolbar>
+                  </div>
                 </template>
 
                 <template #empty>
@@ -561,7 +684,7 @@ const PatchManagementPage = defineComponent({
 export { PatchManagementPage };
 
 const meta: Meta<typeof PatchManagementPage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Pages/Patch Management",
+  title: "Projects/Mike's Playground/Device Management/Patch Management",
   component: PatchManagementPage,
   parameters: {
     layout: 'fullscreen',
@@ -571,3 +694,10 @@ const meta: Meta<typeof PatchManagementPage> = {
 export default meta;
 
 export const Default: StoryObj<typeof PatchManagementPage> = {};
+
+export const BrowserPolicies: StoryObj<typeof PatchManagementPage> = {
+  render: () => ({
+    components: { PatchManagementPage },
+    template: '<PatchManagementPage initial-policy-scope-tab="browser" />',
+  }),
+};

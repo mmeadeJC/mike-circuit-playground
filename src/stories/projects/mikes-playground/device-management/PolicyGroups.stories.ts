@@ -41,7 +41,7 @@ import TopBar from '@/components/AdminTopBar.vue';
 import {
   menuItems,
   profileMenuItems,
-} from './demo/policyMigrationMenuItems';
+} from '../policy-management-circuit-migration/demo/policyMigrationMenuItems';
 
 type PolicyGroup = {
   id: string;
@@ -1155,7 +1155,7 @@ const PolicyGroupsPage = defineComponent({
 export { PolicyGroupsPage };
 
 const meta: Meta<typeof PolicyGroupsPage> = {
-  title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Pages/Policy Groups",
+  title: "Projects/Mike's Playground/Device Management/Policy Groups",
   component: PolicyGroupsPage,
   parameters: {
     layout: 'fullscreen',

@@ -8,6 +8,8 @@ export type PolicyMigrationRoute = {
 };
 
 const pageLoaders: Record<string, () => Promise<Component>> = {
+  '/policy-groups': () =>
+    import('../PolicyGroups.stories').then((m) => m.PolicyGroupsPage),
   '/allow-activation-lock': () =>
     import('../AllowActivationLock.stories').then((m) => m.AllowActivationLockPage),
   '/application-restriction': () =>
@@ -50,11 +52,18 @@ const pageLoaders: Record<string, () => Promise<Component>> = {
     import('../WiFiConfiguration.stories').then((m) => m.WiFiConfigurationPage),
 };
 
-export const policyMigrationRoutes: PolicyMigrationRoute[] = devicePolicyCatalog.map((entry) => ({
-  path: entry.path,
-  label: entry.name,
-  load: pageLoaders[entry.path],
-}));
+export const policyMigrationRoutes: PolicyMigrationRoute[] = [
+  {
+    path: '/policy-groups',
+    label: 'Policy Groups',
+    load: pageLoaders['/policy-groups'],
+  },
+  ...devicePolicyCatalog.map((entry) => ({
+    path: entry.path,
+    label: entry.name,
+    load: pageLoaders[entry.path],
+  })),
+];
 
 export const policyManagementListRoute: PolicyMigrationRoute = {
   path: '/policy-management',

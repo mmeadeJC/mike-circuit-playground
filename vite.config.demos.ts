@@ -13,10 +13,14 @@ function generateDemoEntries() {
   fs.mkdirSync(GEN_DIR, { recursive: true });
 
   for (const demo of demos) {
+    const entry = 'mount' in demo && demo.mount
+      ? `import { ${demo.mount} } from '${demo.component}';\n${demo.mount}();\n`
+      : `import { mountDemo } from '@/public-demos/bootstrap';\nimport C from '${demo.component}';\nmountDemo(C);\n`;
+
     // TS entry in .generated-demos/
     fs.writeFileSync(
       path.join(GEN_DIR, `${demo.id}.ts`),
-      `import { mountDemo } from '@/public-demos/bootstrap';\nimport C from '${demo.component}';\nmountDemo(C);\n`,
+      entry,
     );
 
     // HTML entry at project root (so Vite base: './' produces correct relative paths)
@@ -109,7 +113,14 @@ const buildInput = demoId
 export default defineConfig({
   plugins: [vue(), tailwindcss(), demoDevRouter()],
   resolve: {
-    alias: { '@': path.resolve(ROOT, 'src') },
+    alias: {
+      '@': path.resolve(ROOT, 'src'),
+      vue: 'vue/dist/vue.esm-bundler.js',
+    },
+  },
+  define: {
+    __VUE_OPTIONS_API__: 'true',
+    __VUE_PROD_DEVTOOLS__: 'false',
   },
   base: './',
   server: {

@@ -49,4 +49,11 @@ export const demos = [
     name: 'Get Started',
     component: '@/stories/projects/jakes-playground/pages/GetStartedPage.vue',
   },
+  {
+    id: 'th-1769',
+    name: 'Policy Management — Circuit Migration (TH-1769)',
+    component:
+      '@/stories/projects/mikes-playground/policy-management-circuit-migration/demo/mountPolicyMigrationDemo.ts',
+    mount: 'mountPolicyMigrationDemo',
+  },
 ];

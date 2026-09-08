@@ -27,7 +27,10 @@ import {
 } from '@jumpcloud/icons';
 import { PamIcon } from '@/stories/projects/mikes-playground/pam-unification/icons/PamIcon';
 import { VaultIcon } from '@/stories/projects/mikes-playground/pam-unification/icons/VaultIcon';
-import { navigateToPolicyManagementList } from './policyMigrationRouter';
+import {
+  navigateToPolicyGroups,
+  navigateToPolicyManagementList,
+} from './policyMigrationRouter';
 
 /** Matches PAM Unification dashboard nav (labels, flyouts, icons). */
 export const menuItems = [
@@ -64,7 +67,12 @@ export const menuItems = [
         },
       },
       { label: 'Patch Management' },
-      { label: 'Policy Groups' },
+      {
+        label: 'Policy Groups',
+        command: () => {
+          navigateToPolicyGroups();
+        },
+      },
       { label: 'Software Management' },
       { label: 'MDM' },
     ],

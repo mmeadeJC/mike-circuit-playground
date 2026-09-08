@@ -91,6 +91,10 @@ export function navigateToPolicyManagementList(): void {
   navigatePolicyMigration(listLocation());
 }
 
+export function navigateToPolicyGroups(): void {
+  navigatePolicyMigration('/policy-groups');
+}
+
 export function navigateToNewPolicyView(context: NewPolicyNavContext): void {
   writeStoredPolicyMigrationContext(context);
   writePolicyMigrationView('new-policy');

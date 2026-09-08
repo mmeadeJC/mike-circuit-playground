@@ -618,7 +618,6 @@ const PatchManagementPage = defineComponent({
                         <PvButton
                           label="Delete"
                           severity="secondary"
-                          size="small"
                           :disabled="selectedPolicies.length === 0"
                           @click="handleDeleteSelected"
                         />

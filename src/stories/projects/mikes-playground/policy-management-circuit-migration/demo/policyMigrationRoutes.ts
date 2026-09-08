@@ -8,6 +8,8 @@ export type PolicyMigrationRoute = {
 };
 
 const pageLoaders: Record<string, () => Promise<Component>> = {
+  '/patch-management': () =>
+    import('../PatchManagement.stories').then((m) => m.PatchManagementPage),
   '/policy-groups': () =>
     import('../PolicyGroups.stories').then((m) => m.PolicyGroupsPage),
   '/allow-activation-lock': () =>
@@ -53,6 +55,11 @@ const pageLoaders: Record<string, () => Promise<Component>> = {
 };
 
 export const policyMigrationRoutes: PolicyMigrationRoute[] = [
+  {
+    path: '/patch-management',
+    label: 'Patch Management',
+    load: pageLoaders['/patch-management'],
+  },
   {
     path: '/policy-groups',
     label: 'Policy Groups',

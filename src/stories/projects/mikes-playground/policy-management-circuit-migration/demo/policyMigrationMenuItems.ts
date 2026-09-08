@@ -28,6 +28,7 @@ import {
 import { PamIcon } from '@/stories/projects/mikes-playground/pam-unification/icons/PamIcon';
 import { VaultIcon } from '@/stories/projects/mikes-playground/pam-unification/icons/VaultIcon';
 import {
+  navigateToPatchManagement,
   navigateToPolicyGroups,
   navigateToPolicyManagementList,
 } from './policyMigrationRouter';
@@ -66,7 +67,12 @@ export const menuItems = [
           navigateToPolicyManagementList();
         },
       },
-      { label: 'Patch Management' },
+      {
+        label: 'Patch Management',
+        command: () => {
+          navigateToPatchManagement();
+        },
+      },
       {
         label: 'Policy Groups',
         command: () => {

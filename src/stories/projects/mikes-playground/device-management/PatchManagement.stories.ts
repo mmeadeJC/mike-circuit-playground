@@ -19,7 +19,7 @@ import SelectButton from 'primevue/selectbutton';
 import Tab from 'primevue/tab';
 import TabList from 'primevue/tablist';
 import Tabs from 'primevue/tabs';
-import { ArrowPathIcon, DocumentTextIcon, PlusIcon, TrashIcon } from '@heroicons/vue/24/outline';
+import { ArrowPathIcon, DocumentTextIcon, TrashIcon } from '@heroicons/vue/24/outline';
 import { DeviceManagementIcon } from '@jumpcloud/icons';
 
 import TopBar from '@/components/AdminTopBar.vue';
@@ -182,7 +182,6 @@ const PatchManagementPage = defineComponent({
     PvTabList: TabList,
     PvTabs: Tabs,
     DocumentTextIcon,
-    PlusIcon,
   },
   setup(props) {
     const policies = ref<PatchPolicy[]>(PATCH_POLICIES.map((policy) => ({ ...policy })));
@@ -575,32 +574,24 @@ const PatchManagementPage = defineComponent({
                 @page-change="handlePageChange"
               >
                 <template #toolbar>
-                  <div class="flex items-center gap-x-4 w-full pb-4">
+                  <div class="flex items-start gap-x-4 w-full pb-4">
                     <PatchPolicyAddDropdown
                       v-if="policyScopeTab === 'os'"
-                      class="shrink-0"
+                      class="flex shrink-0 items-center h-8"
                       :options="ADD_PATCH_POLICY_OPTIONS"
                       @select="handleAddPatchPolicyOption"
                     />
-                    <div v-else class="relative shrink-0 text-body-md">
-                      <PvButton
-                        label="Add Browser"
-                        @click="handleAddBrowserPolicy"
-                      >
-                        <template #icon="iconProps">
-                          <PlusIcon :class="iconProps.class" />
-                        </template>
-                      </PvButton>
-                    </div>
                     <DataTableToolbar
-                      class="contents min-w-0 flex-1"
+                      class="min-w-0 flex-1"
                       searchPlaceholder="Search"
-                      :showAddButton="false"
+                      :showAddButton="policyScopeTab === 'browser'"
+                      add-button-label="Add Browser"
                       :showFilterButton="false"
                       :showRefreshButton="false"
                       :showColumnsButton="false"
                       :showDownloadButton="false"
                       :showSaveViewButton="false"
+                      @add="handleAddBrowserPolicy"
                       @search="handleSearch"
                     >
                     <template #saved-views>

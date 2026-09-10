@@ -480,7 +480,10 @@ const PatchManagementPage = defineComponent({
               @close="showLegacyBanner = false"
             >
               <template #button>
-                <PvButton label="Learn About DDM Policies" severity="secondary" size="small" />
+                <!-- Opaque secondary-base backing so Circuit's semi-transparent hover token composites correctly on the warn banner. -->
+                <div class="shrink-0 self-start rounded-sm bg-button-secondary-base">
+                  <PvButton label="Learn About DDM Policies" severity="secondary" size="small" />
+                </div>
               </template>
             </MessageNotification>
 
@@ -618,7 +621,6 @@ const PatchManagementPage = defineComponent({
                         <PvButton
                           label="Delete"
                           severity="secondary"
-                          :disabled="selectedPolicies.length === 0"
                           @click="handleDeleteSelected"
                         />
                       </div>

@@ -26,6 +26,7 @@ import TopBar from '@/components/AdminTopBar.vue';
 import PatchPolicyAddDropdown, {
   type PatchPolicyAddOption,
 } from './PatchPolicyAddDropdown.vue';
+import UnifiedPatchDashboard from './UnifiedPatchDashboard.vue';
 import {
   menuItems,
   profileMenuItems,
@@ -159,6 +160,10 @@ const UBUNTU_RELEASE_TRAINS: ReleaseTrain[] = [
 const PatchManagementPage = defineComponent({
   name: 'PatchManagementPage',
   props: {
+    initialPageTab: {
+      type: String as () => 'policies' | 'dashboard',
+      default: 'policies',
+    },
     initialPolicyScopeTab: {
       type: String as () => 'os' | 'browser',
       default: 'os',
@@ -175,6 +180,7 @@ const PatchManagementPage = defineComponent({
     PageHeader,
     PatchPolicyAddDropdown,
     TopBar,
+    UnifiedPatchDashboard,
     PvButton: Button,
     PvSelect: Select,
     PvSelectButton: SelectButton,
@@ -189,7 +195,7 @@ const PatchManagementPage = defineComponent({
     const searchQuery = ref('');
     const first = ref(0);
     const rows = ref(10);
-    const activePageTab = ref('policies');
+    const activePageTab = ref(props.initialPageTab);
     const policyScopeTab = ref(props.initialPolicyScopeTab);
     const releaseTrainTab = ref('macos');
     const showLegacyBanner = ref(true);
@@ -445,29 +451,23 @@ const PatchManagementPage = defineComponent({
           @update:activeTab="activePageTab = $event"
         />
 
-        <div
-          v-if="activePageTab === 'dashboard'"
-          class="flex flex-1 items-center justify-center bg-neutral-surface p-md"
-        >
-          <div class="flex flex-col items-center gap-sm text-neutral-subtle">
-            <span class="text-body-md">Unified Patch Dashboard</span>
-            <span class="text-body-sm">Dashboard content is not included in this exploration.</span>
-          </div>
-        </div>
+        <UnifiedPatchDashboard v-if="activePageTab === 'dashboard'" />
 
         <ListPageLayout
           v-else
-          class="w-full! h-full! flex-1 min-h-0"
+          class="w-full! h-full! flex-1 min-h-0 [&_.layout-main]:!pt-md"
         >
-          <div class="flex flex-col gap-md h-full min-h-0 overflow-auto p-md">
-            <div class="pb-md border-b border-neutral-default_solid shrink-0">
-              <PvSelectButton
-                v-model="policyScopeTab"
-                :options="policyScopeOptions"
-                optionLabel="label"
-                optionValue="value"
-                :allowEmpty="false"
-              />
+          <div class="flex flex-col gap-md h-full min-h-0 overflow-auto px-md pb-md">
+            <div class="shrink-0 overflow-visible border-b border-neutral-default_solid pb-md">
+              <div class="p-px overflow-visible">
+                <PvSelectButton
+                  v-model="policyScopeTab"
+                  :options="policyScopeOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  :allowEmpty="false"
+                />
+              </div>
             </div>
 
             <MessageNotification
@@ -691,5 +691,12 @@ export const BrowserPolicies: StoryObj<typeof PatchManagementPage> = {
   render: () => ({
     components: { PatchManagementPage },
     template: '<PatchManagementPage initial-policy-scope-tab="browser" />',
+  }),
+};
+
+export const UnifiedPatchDashboardTab: StoryObj<typeof PatchManagementPage> = {
+  render: () => ({
+    components: { PatchManagementPage },
+    template: '<PatchManagementPage initial-page-tab="dashboard" />',
   }),
 };

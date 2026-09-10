@@ -112,10 +112,11 @@ function ageStatLabel(row: { patchCount: number; percent: number }) {
                 <span class="text-body-md text-neutral-base">{{ row.label }}</span>
               </div>
 
-              <div class="flex h-3 min-w-0 rounded-xs overflow-hidden bg-neutral-surface_deep">
+              <div class="flex h-3 min-w-0 rounded-xs bg-neutral-surface_deep gap-px p-px">
                 <div
                   v-for="segment in row.segments"
                   :key="segment.key"
+                  class="h-full min-w-0 first:rounded-l-xs last:rounded-r-xs"
                   :class="segment.colorClass"
                   :style="{ width: `${segmentWidthPercent(segment.count, row.pendingTotal)}%` }"
                   :title="`${segment.count}`"

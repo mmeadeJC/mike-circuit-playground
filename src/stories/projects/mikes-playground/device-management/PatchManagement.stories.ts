@@ -168,6 +168,10 @@ const PatchManagementPage = defineComponent({
       type: String as () => 'os' | 'browser',
       default: 'os',
     },
+    initialDashboardScopeTab: {
+      type: String as () => 'overview' | 'apple' | 'windows',
+      default: 'overview',
+    },
   },
   components: {
     ActionsToolbar,
@@ -430,6 +434,7 @@ const PatchManagementPage = defineComponent({
       showLegacyBanner,
       timeRangeFilter,
       timeRangeOptions,
+      initialDashboardScopeTab: props.initialDashboardScopeTab,
     };
   },
   template: `
@@ -451,7 +456,10 @@ const PatchManagementPage = defineComponent({
           @update:activeTab="activePageTab = $event"
         />
 
-        <UnifiedPatchDashboard v-if="activePageTab === 'dashboard'" />
+        <UnifiedPatchDashboard
+          v-if="activePageTab === 'dashboard'"
+          :initial-scope-tab="initialDashboardScopeTab"
+        />
 
         <ListPageLayout
           v-else
@@ -698,5 +706,19 @@ export const UnifiedPatchDashboardTab: StoryObj<typeof PatchManagementPage> = {
   render: () => ({
     components: { PatchManagementPage },
     template: '<PatchManagementPage initial-page-tab="dashboard" />',
+  }),
+};
+
+export const UnifiedPatchDashboardAppleTab: StoryObj<typeof PatchManagementPage> = {
+  render: () => ({
+    components: { PatchManagementPage },
+    template: '<PatchManagementPage initial-page-tab="dashboard" initial-dashboard-scope-tab="apple" />',
+  }),
+};
+
+export const UnifiedPatchDashboardWindowsTab: StoryObj<typeof PatchManagementPage> = {
+  render: () => ({
+    components: { PatchManagementPage },
+    template: '<PatchManagementPage initial-page-tab="dashboard" initial-dashboard-scope-tab="windows" />',
   }),
 };

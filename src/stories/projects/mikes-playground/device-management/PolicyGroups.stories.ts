@@ -699,6 +699,14 @@ const PolicyGroupsPage = defineComponent({
       deviceGroupRows.value = value;
     }
 
+    function handleSelectedPoliciesUpdate(value: PolicyAssignment[] | null) {
+      selectedPolicies.value = value ?? [];
+    }
+
+    function handleSelectedDeviceGroupsUpdate(value: DeviceGroupAssignment[] | null) {
+      selectedDeviceGroups.value = value ?? [];
+    }
+
     function resetCreateFlow() {
       groupName.value = '';
       groupDescription.value = '';
@@ -804,6 +812,8 @@ const PolicyGroupsPage = defineComponent({
       handlePolicyPageChange,
       handlePolicyRowsUpdate,
       handlePolicySearch,
+      handleSelectedDeviceGroupsUpdate,
+      handleSelectedPoliciesUpdate,
       handleSearch,
       handleTemplateCreate,
       handleTemplatePageChange,
@@ -1112,8 +1122,9 @@ const PolicyGroupsPage = defineComponent({
                     :data="currentPagePolicies"
                     :columns="policyColumns"
                     selectionMode="multiple"
-                    v-model:selection="selectedPoliciesModel"
+                    :selection="selectedPolicies"
                     dataKey="id"
+                    @update:selection="handleSelectedPoliciesUpdate"
                     :paginator="true"
                     :rows="policyRows"
                     :first="policyFirst"
@@ -1169,8 +1180,9 @@ const PolicyGroupsPage = defineComponent({
                     :data="currentPageDeviceGroups"
                     :columns="deviceGroupColumns"
                     selectionMode="multiple"
-                    v-model:selection="selectedDeviceGroupsModel"
+                    :selection="selectedDeviceGroups"
                     dataKey="id"
+                    @update:selection="handleSelectedDeviceGroupsUpdate"
                     :paginator="true"
                     :rows="deviceGroupRows"
                     :first="deviceGroupFirst"

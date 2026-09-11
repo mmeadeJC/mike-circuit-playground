@@ -14,3 +14,8 @@
 *:focus {
   outline: none;
 }
+
+/* PageSaveBar teleports to [data-circuit-modal-root] on body — stay above Drawer/Dialog masks (z-40). */
+[data-circuit-modal-root] > .fixed {
+  z-index: 60 !important;
+}

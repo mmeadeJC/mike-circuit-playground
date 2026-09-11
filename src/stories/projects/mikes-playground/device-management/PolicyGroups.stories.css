@@ -3,3 +3,10 @@
   justify-content: center;
   width: 100%;
 }
+
+/* Full-screen create drawer: keep the tab body in a flex column so content scrolls correctly. */
+.policy-group-create-drawer [data-pc-section='content'] {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}

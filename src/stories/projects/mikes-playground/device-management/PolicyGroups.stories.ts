@@ -249,6 +249,7 @@ const PolicyGroupsPage = defineComponent({
     const expandedTemplateIds = ref<string[]>([]);
     const createDrawerVisible = ref(false);
     const createTab = ref('details');
+    const groupConfigCollapsed = ref(false);
     const groupName = ref('');
     const groupDescription = ref('');
     const selectedPolicies = ref<PolicyAssignment[]>([]);
@@ -505,11 +506,7 @@ const PolicyGroupsPage = defineComponent({
       );
     });
 
-    const createSaveBarMessage = computed(() =>
-      isCreateDirty.value
-        ? 'You have unsaved changes'
-        : 'Configure your new policy group',
-    );
+    const createSaveBarMessage = computed(() => 'You have unsaved changes');
 
     watch(isCreateDirty, (dirty) => {
       if (dirty) showSavedConfirmation.value = false;
@@ -570,6 +567,7 @@ const PolicyGroupsPage = defineComponent({
       showSavedConfirmation.value = false;
       captureCreateBaseline();
       createDrawerVisible.value = true;
+      groupConfigCollapsed.value = false;
     }
 
     function returnToPolicyGroups() {
@@ -658,7 +656,7 @@ const PolicyGroupsPage = defineComponent({
       selectedDeviceGroups.value = DEVICE_GROUP_ASSIGNMENTS.filter((group) =>
         createBaseline.value.deviceGroupIds.includes(group.id),
       );
-      closeCreateFlow();
+      showSavedConfirmation.value = false;
     }
 
     async function handleCreateSave() {
@@ -720,6 +718,7 @@ const PolicyGroupsPage = defineComponent({
       filteredPolicies,
       filteredTemplates,
       first,
+      groupConfigCollapsed,
       groupDescription,
       groupName,
       groups,
@@ -947,6 +946,7 @@ const PolicyGroupsPage = defineComponent({
 
         <PvDrawer
           v-model:visible="createDrawerVisible"
+          class="policy-group-create-drawer"
           header="New Policy Group"
           position="full"
           modal
@@ -990,12 +990,15 @@ const PolicyGroupsPage = defineComponent({
                 <PvTab value="device-groups">Device Groups</PvTab>
               </PvTabList>
 
-              <PvTabPanels class="flex-1 min-h-0 overflow-auto pb-32">
+              <PvTabPanels class="flex-1 min-h-0 overflow-y-auto pb-32 px-sm">
               <PvTabPanel value="details">
                 <div class="pt-md">
-                  <CollapsiblePanel header="Group Configuration">
+                  <CollapsiblePanel v-model:collapsed="groupConfigCollapsed" toggleable header="Group Configuration">
                     <template #titleicon="iconProps">
                       <RectangleGroupIcon :class="iconProps.class" />
+                    </template>
+                    <template #toggleicon="iconProps">
+                      <ChevronRightIcon :class="iconProps.class" />
                     </template>
 
                     <div class="flex flex-col gap-md">
@@ -1156,19 +1159,21 @@ const PolicyGroupsPage = defineComponent({
               </PvTabPanel>
             </PvTabPanels>
             </PvTabs>
-
-            <PageSaveBar
-              :visible="isCreateDirty"
-              :saving="isSaving"
-              :saved="showSavedConfirmation"
-              :message="createSaveBarMessage"
-              saveLabel="Save Policy Group"
-              discardLabel="Cancel"
-              @save="handleCreateSave"
-              @discard="handleCreateDiscard"
-            />
           </div>
         </PvDrawer>
+
+        <PageSaveBar
+          v-if="createDrawerVisible"
+          :visible="isCreateDirty"
+          :saving="isSaving"
+          :saved="showSavedConfirmation"
+          :message="createSaveBarMessage"
+          saveLabel="Save Policy Group"
+          discardLabel="Cancel"
+          savedLabel="Policy group saved"
+          @save="handleCreateSave"
+          @discard="handleCreateDiscard"
+        />
       </div>
     </div>
   `,

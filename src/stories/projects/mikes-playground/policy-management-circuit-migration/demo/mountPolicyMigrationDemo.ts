@@ -5,6 +5,10 @@ import ToastService from 'primevue/toastservice';
 import Tooltip from 'primevue/tooltip';
 import circuitConfig from '@jumpcloud/circuit/primevue';
 import '@/assets/main.css';
+import {
+  registerCircuitModalRoot,
+  removeCircuitModalRoots,
+} from '@/public-demos/circuitModalRoot';
 
 import PolicyManagementCircuitMigrationApp from './PolicyManagementCircuitMigrationApp.vue';
 import {
@@ -50,9 +54,11 @@ function toHash(to: RouteLocationRaw): string {
 function clearOverlayDom(): void {
   document
     .querySelectorAll(
-      'body > .p-tieredmenu, body > .p-menu, body > .p-tooltip, body > .p-toast, body > .p-datepicker, body > .p-overlay-mask',
+      'body > .p-tieredmenu, body > .p-menu, body > .p-tooltip, body > .p-toast, body > .p-datepicker, body > .p-overlay-mask, body > [data-pc-section="mask"]',
     )
     .forEach((node) => node.remove());
+
+  removeCircuitModalRoots();
 }
 
 /**
@@ -230,5 +236,8 @@ export function mountPolicyMigrationDemo() {
   app.use(ToastService);
   app.directive('tooltip', Tooltip);
   app.config.globalProperties.$testId = (suffix: string) => suffix;
+
+  registerCircuitModalRoot(app);
+
   app.mount('#app');
 }

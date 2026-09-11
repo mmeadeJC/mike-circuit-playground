@@ -149,7 +149,7 @@ export function mountPolicyMigrationDemo() {
   const router = createRouter({
     history: createWebHashHistory(),
     routes: [
-      { path: '/', redirect: '/policy-management' },
+      { path: '/', redirect: '/patch-management' },
       {
         path: '/policy-management',
         component: PolicyManagementPage,

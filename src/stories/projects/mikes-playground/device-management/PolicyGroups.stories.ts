@@ -1066,7 +1066,7 @@ const PolicyGroupsPage = defineComponent({
                 <PvTab value="device-groups">Device Groups</PvTab>
               </PvTabList>
 
-              <PvTabPanels class="policy-group-create-tabpanels flex-1 min-h-0 px-sm">
+              <PvTabPanels class="policy-group-create-tabpanels px-sm">
               <PvTabPanel value="details" class="policy-group-create-tabpanel policy-group-create-tabpanel--details pt-md">
                 <CollapsiblePanel v-model:collapsed="groupConfigCollapsedModel" toggleable header="Group Configuration">
                   <template #titleicon="iconProps">
@@ -1107,9 +1107,8 @@ const PolicyGroupsPage = defineComponent({
                 <p class="text-body-md text-neutral-subtle mb-md shrink-0">
                   New policy group has the following policies applied:
                 </p>
-                <div class="policy-group-create-table flex flex-col flex-1 min-h-0 relative">
+                <div class="policy-group-create-table">
                   <DataTable
-                    class="flex-1 min-h-0"
                     :data="currentPagePolicies"
                     :columns="policyColumns"
                     selectionMode="multiple"
@@ -1126,8 +1125,6 @@ const PolicyGroupsPage = defineComponent({
                       { label: '10 Items per page', value: 10 },
                       { label: '25 Items per page', value: 25 },
                     ]"
-                    scrollable
-                    scrollHeight="flex"
                     @update:first="handlePolicyFirstUpdate"
                     @update:rows="handlePolicyRowsUpdate"
                     @page-change="handlePolicyPageChange"
@@ -1167,9 +1164,8 @@ const PolicyGroupsPage = defineComponent({
               </PvTabPanel>
 
               <PvTabPanel value="device-groups" class="policy-group-create-tabpanel policy-group-create-tabpanel--table pt-md">
-                <div class="policy-group-create-table flex flex-col flex-1 min-h-0 relative">
+                <div class="policy-group-create-table">
                   <DataTable
-                    class="flex-1 min-h-0"
                     :data="currentPageDeviceGroups"
                     :columns="deviceGroupColumns"
                     selectionMode="multiple"
@@ -1186,8 +1182,6 @@ const PolicyGroupsPage = defineComponent({
                       { label: '10 Items per page', value: 10 },
                       { label: '25 Items per page', value: 25 },
                     ]"
-                    scrollable
-                    scrollHeight="flex"
                     @update:first="handleDeviceGroupFirstUpdate"
                     @update:rows="handleDeviceGroupRowsUpdate"
                     @page-change="handleDeviceGroupPageChange"

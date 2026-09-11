@@ -4,42 +4,73 @@
   width: 100%;
 }
 
-/* Full-screen create drawer: flex column layout so tab tables + paginator size correctly. */
-.policy-group-create-drawer [data-pc-section='content'] {
+/* Full-screen create drawer — only style Drawer body content, not nested PrimeVue sections. */
+.policy-group-create-drawer > [data-pc-section='content'] {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  height: 100%;
   overflow: hidden;
 }
 
 .policy-group-create-drawer .policy-group-create-shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   min-height: 0;
 }
 
 .policy-group-create-drawer .policy-group-create-tabs {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   min-height: 0;
 }
 
 .policy-group-create-drawer .policy-group-create-tabpanels {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.policy-group-create-drawer .policy-group-create-tabpanel {
+  flex: 1;
   min-height: 0;
-}
-
-.policy-group-create-drawer .policy-group-create-tabpanel--details {
   overflow: auto;
 }
 
 .policy-group-create-drawer .policy-group-create-tabpanel--table {
-  display: flex;
-  flex-direction: column;
+  display: block;
 }
 
-.policy-group-create-drawer .policy-group-create-table {
-  min-height: 0;
+/* Compact tables: size to rows instead of filling the tab panel. */
+.policy-group-create-drawer .policy-group-create-table > .relative,
+.policy-group-create-drawer .policy-group-create-table .flex-1.h-full {
+  flex: 0 0 auto !important;
+  height: auto !important;
+}
+
+.policy-group-create-drawer .policy-group-create-table [data-pc-section='root'] {
+  flex: 0 0 auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+.policy-group-create-drawer .policy-group-create-table [data-pc-section='tablecontainer'] {
+  flex: 0 0 auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
+.policy-group-create-drawer .policy-group-create-table [data-pc-section='table'] {
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.policy-group-create-drawer .policy-group-create-table tbody {
+  height: auto !important;
+}
+
+/* Paginator must stay horizontal — never inherit drawer column flex. */
+.policy-group-create-drawer [data-pc-name='paginator'] [data-pc-section='content'],
+.policy-group-create-drawer [data-pc-name='paginator'] [data-pc-section='root'] {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  height: auto !important;
+  overflow: visible !important;
 }

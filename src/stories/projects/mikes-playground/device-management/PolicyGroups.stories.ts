@@ -508,6 +508,55 @@ const PolicyGroupsPage = defineComponent({
 
     const createSaveBarMessage = computed(() => 'You have unsaved changes');
 
+    const createTabModel = computed({
+      get: () => createTab.value,
+      set: (value: string) => {
+        createTab.value = value;
+      },
+    });
+
+    const groupNameModel = computed({
+      get: () => groupName.value,
+      set: (value: string) => {
+        groupName.value = value;
+      },
+    });
+
+    const groupDescriptionModel = computed({
+      get: () => groupDescription.value,
+      set: (value: string) => {
+        groupDescription.value = value;
+      },
+    });
+
+    const groupConfigCollapsedModel = computed({
+      get: () => groupConfigCollapsed.value,
+      set: (value: boolean) => {
+        groupConfigCollapsed.value = value;
+      },
+    });
+
+    const selectedPoliciesModel = computed({
+      get: () => selectedPolicies.value,
+      set: (value: PolicyAssignment[]) => {
+        selectedPolicies.value = value;
+      },
+    });
+
+    const selectedDeviceGroupsModel = computed({
+      get: () => selectedDeviceGroups.value,
+      set: (value: DeviceGroupAssignment[]) => {
+        selectedDeviceGroups.value = value;
+      },
+    });
+
+    const showBoundDeviceGroupsModel = computed({
+      get: () => showBoundDeviceGroups.value,
+      set: (value: boolean) => {
+        showBoundDeviceGroups.value = value;
+      },
+    });
+
     watch(isCreateDirty, (dirty) => {
       if (dirty) showSavedConfirmation.value = false;
     });
@@ -629,9 +678,25 @@ const PolicyGroupsPage = defineComponent({
       policyRows.value = event.rows;
     }
 
+    function handlePolicyFirstUpdate(value: number) {
+      policyFirst.value = value;
+    }
+
+    function handlePolicyRowsUpdate(value: number) {
+      policyRows.value = value;
+    }
+
     function handleDeviceGroupPageChange(event: { first: number; rows: number }) {
       deviceGroupFirst.value = event.first;
       deviceGroupRows.value = event.rows;
+    }
+
+    function handleDeviceGroupFirstUpdate(value: number) {
+      deviceGroupFirst.value = value;
+    }
+
+    function handleDeviceGroupRowsUpdate(value: number) {
+      deviceGroupRows.value = value;
     }
 
     function resetCreateFlow() {
@@ -707,6 +772,7 @@ const PolicyGroupsPage = defineComponent({
       createDrawerVisible,
       createSaveBarMessage,
       createTab,
+      createTabModel,
       currentPageDeviceGroups,
       currentPageGroups,
       currentPagePolicies,
@@ -719,17 +785,24 @@ const PolicyGroupsPage = defineComponent({
       filteredTemplates,
       first,
       groupConfigCollapsed,
+      groupConfigCollapsedModel,
       groupDescription,
+      groupDescriptionModel,
       groupName,
+      groupNameModel,
       groups,
       handleAddOption,
       handleBulkAction,
       handleCreateDiscard,
       handleCreateSave,
+      handleDeviceGroupFirstUpdate,
       handleDeviceGroupPageChange,
+      handleDeviceGroupRowsUpdate,
       handleDeviceGroupSearch,
       handlePageChange,
+      handlePolicyFirstUpdate,
       handlePolicyPageChange,
+      handlePolicyRowsUpdate,
       handlePolicySearch,
       handleSearch,
       handleTemplateCreate,
@@ -745,10 +818,13 @@ const PolicyGroupsPage = defineComponent({
       profileMenuItems,
       rows,
       selectedDeviceGroups,
+      selectedDeviceGroupsModel,
       selectedGroups,
       selectedItems,
       selectedPolicies,
+      selectedPoliciesModel,
       showBoundDeviceGroups,
+      showBoundDeviceGroupsModel,
       showSavedConfirmation,
       shieldIcon: markRaw(ShieldCheckIcon),
       templateColumns,
@@ -982,64 +1058,62 @@ const PolicyGroupsPage = defineComponent({
             </PvButton>
           </template>
 
-          <div class="flex h-full min-h-0 flex-col">
-            <PvTabs v-model:value="createTab" class="flex min-h-0 flex-1 flex-col">
+          <div class="policy-group-create-shell flex h-full min-h-0 flex-col">
+            <PvTabs v-model:value="createTabModel" class="policy-group-create-tabs flex min-h-0 flex-1 flex-col">
               <PvTabList withPadding>
                 <PvTab value="details">Details</PvTab>
                 <PvTab value="policies">Policies</PvTab>
                 <PvTab value="device-groups">Device Groups</PvTab>
               </PvTabList>
 
-              <PvTabPanels class="flex-1 min-h-0 overflow-y-auto pb-32 px-sm">
-              <PvTabPanel value="details">
-                <div class="pt-md">
-                  <CollapsiblePanel v-model:collapsed="groupConfigCollapsed" toggleable header="Group Configuration">
-                    <template #titleicon="iconProps">
-                      <RectangleGroupIcon :class="iconProps.class" />
-                    </template>
-                    <template #toggleicon="iconProps">
-                      <ChevronRightIcon :class="iconProps.class" />
-                    </template>
+              <PvTabPanels class="policy-group-create-tabpanels flex-1 min-h-0 px-sm">
+              <PvTabPanel value="details" class="policy-group-create-tabpanel policy-group-create-tabpanel--details pt-md">
+                <CollapsiblePanel v-model:collapsed="groupConfigCollapsedModel" toggleable header="Group Configuration">
+                  <template #titleicon="iconProps">
+                    <RectangleGroupIcon :class="iconProps.class" />
+                  </template>
+                  <template #toggleicon="iconProps">
+                    <ChevronRightIcon :class="iconProps.class" />
+                  </template>
 
-                    <div class="flex flex-col gap-md">
-                      <FormField label="Name" required>
-                        <template #default="{ inputId }">
-                          <PvInputText
-                            :id="inputId"
-                            v-model="groupName"
-                            class="w-full"
-                            placeholder="Group name"
-                          />
-                        </template>
-                      </FormField>
+                  <div class="flex flex-col gap-md">
+                    <FormField label="Name" required>
+                      <template #default="{ inputId }">
+                        <PvInputText
+                          :id="inputId"
+                          v-model="groupNameModel"
+                          class="w-full"
+                          placeholder="Group name"
+                        />
+                      </template>
+                    </FormField>
 
-                      <FormField label="Description">
-                        <template #default="{ inputId }">
-                          <PvTextarea
-                            :id="inputId"
-                            v-model="groupDescription"
-                            class="w-full"
-                            :rows="5"
-                            placeholder="Description"
-                          />
-                        </template>
-                      </FormField>
-                    </div>
-                  </CollapsiblePanel>
-                </div>
+                    <FormField label="Description">
+                      <template #default="{ inputId }">
+                        <PvTextarea
+                          :id="inputId"
+                          v-model="groupDescriptionModel"
+                          class="w-full"
+                          :rows="5"
+                          placeholder="Description"
+                        />
+                      </template>
+                    </FormField>
+                  </div>
+                </CollapsiblePanel>
               </PvTabPanel>
 
-              <PvTabPanel value="policies" class="h-full">
-                <div class="flex flex-col h-full relative pt-md">
-                  <p class="text-body-md text-neutral-subtle mb-md">
-                    New policy group has the following policies applied:
-                  </p>
+              <PvTabPanel value="policies" class="policy-group-create-tabpanel policy-group-create-tabpanel--table pt-md">
+                <p class="text-body-md text-neutral-subtle mb-md shrink-0">
+                  New policy group has the following policies applied:
+                </p>
+                <div class="policy-group-create-table flex flex-col flex-1 min-h-0 relative">
                   <DataTable
                     class="flex-1 min-h-0"
                     :data="currentPagePolicies"
                     :columns="policyColumns"
                     selectionMode="multiple"
-                    v-model:selection="selectedPolicies"
+                    v-model:selection="selectedPoliciesModel"
                     dataKey="id"
                     :paginator="true"
                     :rows="policyRows"
@@ -1054,8 +1128,8 @@ const PolicyGroupsPage = defineComponent({
                     ]"
                     scrollable
                     scrollHeight="flex"
-                    @update:first="policyFirst = $event"
-                    @update:rows="policyRows = $event"
+                    @update:first="handlePolicyFirstUpdate"
+                    @update:rows="handlePolicyRowsUpdate"
                     @page-change="handlePolicyPageChange"
                   >
                     <template #toolbar>
@@ -1092,14 +1166,14 @@ const PolicyGroupsPage = defineComponent({
                 </div>
               </PvTabPanel>
 
-              <PvTabPanel value="device-groups" class="h-full">
-                <div class="flex flex-col h-full relative pt-md">
+              <PvTabPanel value="device-groups" class="policy-group-create-tabpanel policy-group-create-tabpanel--table pt-md">
+                <div class="policy-group-create-table flex flex-col flex-1 min-h-0 relative">
                   <DataTable
                     class="flex-1 min-h-0"
                     :data="currentPageDeviceGroups"
                     :columns="deviceGroupColumns"
                     selectionMode="multiple"
-                    v-model:selection="selectedDeviceGroups"
+                    v-model:selection="selectedDeviceGroupsModel"
                     dataKey="id"
                     :paginator="true"
                     :rows="deviceGroupRows"
@@ -1114,8 +1188,8 @@ const PolicyGroupsPage = defineComponent({
                     ]"
                     scrollable
                     scrollHeight="flex"
-                    @update:first="deviceGroupFirst = $event"
-                    @update:rows="deviceGroupRows = $event"
+                    @update:first="handleDeviceGroupFirstUpdate"
+                    @update:rows="handleDeviceGroupRowsUpdate"
                     @page-change="handleDeviceGroupPageChange"
                   >
                     <template #toolbar>
@@ -1131,7 +1205,7 @@ const PolicyGroupsPage = defineComponent({
                       >
                         <template #saved-views>
                           <CheckboxWithLabel
-                            v-model="showBoundDeviceGroups"
+                            v-model="showBoundDeviceGroupsModel"
                             :binary="true"
                             inputId="show-bound-device-groups"
                           >
@@ -1163,8 +1237,7 @@ const PolicyGroupsPage = defineComponent({
         </PvDrawer>
 
         <PageSaveBar
-          v-if="createDrawerVisible"
-          :visible="isCreateDirty"
+          :visible="createDrawerVisible && isCreateDirty"
           :saving="isSaving"
           :saved="showSavedConfirmation"
           :message="createSaveBarMessage"

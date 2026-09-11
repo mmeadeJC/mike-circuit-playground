@@ -4,9 +4,42 @@
   width: 100%;
 }
 
-/* Full-screen create drawer: keep the tab body in a flex column so content scrolls correctly. */
+/* Full-screen create drawer: flex column layout so tab tables + paginator size correctly. */
 .policy-group-create-drawer [data-pc-section='content'] {
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.policy-group-create-drawer .policy-group-create-shell {
+  min-height: 0;
+}
+
+.policy-group-create-drawer .policy-group-create-tabs {
+  min-height: 0;
+}
+
+.policy-group-create-drawer .policy-group-create-tabpanels {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.policy-group-create-drawer .policy-group-create-tabpanel {
+  min-height: 0;
+}
+
+.policy-group-create-drawer .policy-group-create-tabpanel--details {
+  overflow: auto;
+}
+
+.policy-group-create-drawer .policy-group-create-tabpanel--table {
+  display: flex;
+  flex-direction: column;
+}
+
+.policy-group-create-drawer .policy-group-create-table {
   min-height: 0;
 }

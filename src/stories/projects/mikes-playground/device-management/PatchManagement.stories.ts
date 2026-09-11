@@ -317,6 +317,20 @@ const PatchManagementPage = defineComponent({
 
     const patchReportLabel = 'Run Policy Report';
 
+    function handlePageTabChange(tab: 'policies' | 'dashboard') {
+      activePageTab.value = tab;
+    }
+
+    function handlePolicyScopeTabChange(scope: 'os' | 'browser') {
+      policyScopeTab.value = scope;
+    }
+
+    watch(activePageTab, () => {
+      selectedPolicies.value = [];
+      showSavedConfirmation.value = false;
+      isSaving.value = false;
+    });
+
     watch(policyScopeTab, () => {
       selectedPolicies.value = [];
       first.value = 0;
@@ -427,6 +441,8 @@ const PatchManagementPage = defineComponent({
       handleAddBrowserPolicy,
       handleAddPatchPolicyOption,
       handlePageChange,
+      handlePageTabChange,
+      handlePolicyScopeTabChange,
       handleSearch,
       handleTableDiscard,
       handleTableSave,
@@ -472,7 +488,7 @@ const PatchManagementPage = defineComponent({
           title="Patch Management"
           :tabs="pageTabs"
           :activeTab="activePageTab"
-          @update:activeTab="activePageTab = $event"
+          @update:activeTab="handlePageTabChange"
         />
 
         <UnifiedPatchDashboard
@@ -488,11 +504,12 @@ const PatchManagementPage = defineComponent({
             <div class="shrink-0 overflow-visible border-b border-neutral-default_solid pb-md">
               <div class="p-px overflow-visible">
                 <PvSelectButton
-                  v-model="policyScopeTab"
+                  :modelValue="policyScopeTab"
                   :options="policyScopeOptions"
                   optionLabel="label"
                   optionValue="value"
                   :allowEmpty="false"
+                  @update:modelValue="handlePolicyScopeTabChange"
                 />
               </div>
             </div>

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
 import './PolicyGroups.stories.css';
-import { computed, defineComponent, h, markRaw, ref } from 'vue';
+import { computed, defineComponent, h, markRaw, ref, watch } from 'vue';
 import {
   ActionsToolbar,
   AppNavigation,
@@ -505,6 +505,16 @@ const PolicyGroupsPage = defineComponent({
       );
     });
 
+    const createSaveBarMessage = computed(() =>
+      isCreateDirty.value
+        ? 'You have unsaved changes'
+        : 'Configure your new policy group',
+    );
+
+    watch(isCreateDirty, (dirty) => {
+      if (dirty) showSavedConfirmation.value = false;
+    });
+
     const selectedItems = computed(() =>
       selectedGroups.value.map((group) => ({
         id: group.id,
@@ -697,6 +707,7 @@ const PolicyGroupsPage = defineComponent({
       closeCreateFlow,
       columns,
       createDrawerVisible,
+      createSaveBarMessage,
       createTab,
       currentPageDeviceGroups,
       currentPageGroups,
@@ -971,14 +982,15 @@ const PolicyGroupsPage = defineComponent({
             </PvButton>
           </template>
 
-          <PvTabs v-model:value="createTab" class="flex h-full flex-col">
-            <PvTabList withPadding>
-              <PvTab value="details">Details</PvTab>
-              <PvTab value="policies">Policies</PvTab>
-              <PvTab value="device-groups">Device Groups</PvTab>
-            </PvTabList>
+          <div class="flex h-full min-h-0 flex-col">
+            <PvTabs v-model:value="createTab" class="flex min-h-0 flex-1 flex-col">
+              <PvTabList withPadding>
+                <PvTab value="details">Details</PvTab>
+                <PvTab value="policies">Policies</PvTab>
+                <PvTab value="device-groups">Device Groups</PvTab>
+              </PvTabList>
 
-            <PvTabPanels class="flex-1 min-h-0">
+              <PvTabPanels class="flex-1 min-h-0 overflow-auto pb-32">
               <PvTabPanel value="details">
                 <div class="pt-md">
                   <CollapsiblePanel header="Group Configuration">
@@ -1143,19 +1155,20 @@ const PolicyGroupsPage = defineComponent({
                 </div>
               </PvTabPanel>
             </PvTabPanels>
-          </PvTabs>
-        </PvDrawer>
+            </PvTabs>
 
-        <PageSaveBar
-          :visible="isCreateDirty"
-          :saving="isSaving"
-          :saved="showSavedConfirmation"
-          message="You have unsaved changes"
-          saveLabel="Save Policy Group"
-          discardLabel="Cancel"
-          @save="handleCreateSave"
-          @discard="handleCreateDiscard"
-        />
+            <PageSaveBar
+              :visible="isCreateDirty"
+              :saving="isSaving"
+              :saved="showSavedConfirmation"
+              :message="createSaveBarMessage"
+              saveLabel="Save Policy Group"
+              discardLabel="Cancel"
+              @save="handleCreateSave"
+              @discard="handleCreateDiscard"
+            />
+          </div>
+        </PvDrawer>
       </div>
     </div>
   `,

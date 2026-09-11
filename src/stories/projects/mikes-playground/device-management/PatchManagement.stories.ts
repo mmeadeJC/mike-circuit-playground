@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/vue3';
 import './PatchManagement.stories.css';
 import { computed, defineComponent, markRaw, ref, watch } from 'vue';
 import {
-  ActionsToolbar,
   AppNavigation,
   DataTable,
   DataTableCellLink,
@@ -12,6 +11,7 @@ import {
   ListPageLayout,
   MessageNotification,
   PageHeader,
+  PageSaveBar,
 } from '@jumpcloud/circuit/components';
 import Button from 'primevue/button';
 import Select from 'primevue/select';
@@ -19,7 +19,7 @@ import SelectButton from 'primevue/selectbutton';
 import Tab from 'primevue/tab';
 import TabList from 'primevue/tablist';
 import Tabs from 'primevue/tabs';
-import { ArrowPathIcon, DocumentTextIcon, TrashIcon } from '@heroicons/vue/24/outline';
+import { ArrowPathIcon, DocumentTextIcon } from '@heroicons/vue/24/outline';
 import { DeviceManagementIcon } from '@jumpcloud/icons';
 
 import TopBar from '@/components/AdminTopBar.vue';
@@ -174,7 +174,6 @@ const PatchManagementPage = defineComponent({
     },
   },
   components: {
-    ActionsToolbar,
     AppNavigation,
     DataTable,
     DataTableToolbar,
@@ -182,6 +181,7 @@ const PatchManagementPage = defineComponent({
     ListPageLayout,
     MessageNotification,
     PageHeader,
+    PageSaveBar,
     PatchPolicyAddDropdown,
     TopBar,
     UnifiedPatchDashboard,
@@ -207,6 +207,8 @@ const PatchManagementPage = defineComponent({
     const osHistoryFilter = ref('all');
     const timeRangeFilter = ref('7-days');
     const filterBy = ref('all');
+    const isSaving = ref(false);
+    const showSavedConfirmation = ref(false);
 
     const pageTabs = [
       { label: 'Patch Policies', value: 'policies' },
@@ -313,17 +315,15 @@ const PatchManagementPage = defineComponent({
       return baseColumns;
     });
 
-    const patchReportLabel = computed(() =>
-      policyScopeTab.value === 'browser'
-        ? 'Run Browser Patch Management Policy Report'
-        : 'Run OS Patch Management Policy Report',
-    );
+    const patchReportLabel = 'Run Policy Report';
 
     watch(policyScopeTab, () => {
       selectedPolicies.value = [];
       first.value = 0;
       searchQuery.value = '';
       filterBy.value = 'all';
+      showSavedConfirmation.value = false;
+      isSaving.value = false;
     });
 
     const filteredPolicies = computed(() => {
@@ -354,17 +354,25 @@ const PatchManagementPage = defineComponent({
       return MACOS_RELEASE_TRAINS;
     });
 
-    const selectedItems = computed(() =>
-      selectedPolicies.value.map((policy) => ({
-        id: policy.id,
-        label: policy.name,
-        description: policy.description,
-      })),
+    const hasPendingTableActions = computed(() => selectedPolicies.value.length > 0);
+
+    const tableSaveBarMessage = computed(() => {
+      const count = selectedPolicies.value.length;
+      if (policyScopeTab.value === 'browser') {
+        if (count === 1) return '1 browser policy selected';
+        return `${count} browser policies selected`;
+      }
+      if (count === 1) return '1 policy selected';
+      return `${count} policies selected`;
+    });
+
+    const tableSaveBarSavedLabel = computed(() =>
+      policyScopeTab.value === 'browser' ? 'Browser policies deleted' : 'Policies deleted',
     );
 
-    const bulkActions = [
-      { id: 'delete', label: 'Delete', icon: markRaw(TrashIcon), class: 'text-danger-base' },
-    ];
+    watch(hasPendingTableActions, (pending) => {
+      if (pending) showSavedConfirmation.value = false;
+    });
 
     function handleSearch(query: string) {
       searchQuery.value = query;
@@ -376,17 +384,25 @@ const PatchManagementPage = defineComponent({
       rows.value = event.rows;
     }
 
-    function handleBulkAction(actionId: string) {
-      if (actionId !== 'delete') return;
+    async function handleTableSave() {
+      if (selectedPolicies.value.length === 0) return;
+
+      isSaving.value = true;
+      await new Promise((resolve) => setTimeout(resolve, 600));
       const selectedIds = new Set(selectedPolicies.value.map((policy) => policy.id));
       policies.value = policies.value.filter((policy) => !selectedIds.has(policy.id));
       selectedPolicies.value = [];
       first.value = 0;
+      isSaving.value = false;
+      showSavedConfirmation.value = true;
+      setTimeout(() => {
+        showSavedConfirmation.value = false;
+      }, 2000);
     }
 
-    function handleDeleteSelected() {
-      if (selectedPolicies.value.length === 0) return;
-      handleBulkAction('delete');
+    function handleTableDiscard() {
+      selectedPolicies.value = [];
+      showSavedConfirmation.value = false;
     }
 
     function handleAddPatchPolicyOption(_option?: PatchPolicyAddOption) {
@@ -400,7 +416,6 @@ const PatchManagementPage = defineComponent({
     return {
       ADD_PATCH_POLICY_OPTIONS,
       activePageTab,
-      bulkActions,
       columns,
       currentPagePolicies,
       eventTypeFilter,
@@ -411,10 +426,12 @@ const PatchManagementPage = defineComponent({
       first,
       handleAddBrowserPolicy,
       handleAddPatchPolicyOption,
-      handleBulkAction,
-      handleDeleteSelected,
       handlePageChange,
       handleSearch,
+      handleTableDiscard,
+      handleTableSave,
+      hasPendingTableActions,
+      isSaving,
       menuItems,
       osHistoryFilter,
       osHistoryOptions,
@@ -429,9 +446,11 @@ const PatchManagementPage = defineComponent({
       releaseTrains,
       rows,
       searchQuery,
-      selectedItems,
       selectedPolicies,
       showLegacyBanner,
+      showSavedConfirmation,
+      tableSaveBarMessage,
+      tableSaveBarSavedLabel,
       timeRangeFilter,
       timeRangeOptions,
       initialDashboardScopeTab: props.initialDashboardScopeTab,
@@ -621,17 +640,10 @@ const PatchManagementPage = defineComponent({
                     </template>
 
                     <template #column-config>
-                      <div class="flex items-center gap-md">
-                        <LinkText href="#" target="_blank" :showIcon="false">
-                          <DocumentTextIcon class="size-5 shrink-0" />
-                          {{ patchReportLabel }}
-                        </LinkText>
-                        <PvButton
-                          label="Delete"
-                          severity="secondary"
-                          @click="handleDeleteSelected"
-                        />
-                      </div>
+                      <LinkText href="#" target="_blank" :showIcon="false">
+                        <DocumentTextIcon class="size-5 shrink-0" />
+                        {{ patchReportLabel }}
+                      </LinkText>
                     </template>
                     </DataTableToolbar>
                   </div>
@@ -652,27 +664,17 @@ const PatchManagementPage = defineComponent({
                 </template>
               </DataTable>
 
-              <Transition
-                enter-active-class="transition-all duration-200 ease-out"
-                enter-from-class="opacity-0 translate-y-4"
-                enter-to-class="opacity-100 translate-y-0"
-                leave-active-class="transition-all duration-150 ease-in"
-                leave-from-class="opacity-100 translate-y-0"
-                leave-to-class="opacity-0 translate-y-4"
-              >
-                <div
-                  v-if="selectedItems.length > 0"
-                  class="absolute bottom-16 left-1/2 -translate-x-1/2 z-10"
-                >
-                  <ActionsToolbar
-                    :actions="bulkActions"
-                    :selectedItems="selectedItems"
-                    :selectionLabel="selectedItems.length === 1 ? 'Policy selected' : 'Policies selected'"
-                    @action="handleBulkAction"
-                    @close="selectedPolicies = []"
-                  />
-                </div>
-              </Transition>
+              <PageSaveBar
+                :visible="hasPendingTableActions"
+                :saving="isSaving"
+                :saved="showSavedConfirmation"
+                :message="tableSaveBarMessage"
+                saveLabel="Delete"
+                discardLabel="Cancel"
+                :savedLabel="tableSaveBarSavedLabel"
+                @save="handleTableSave"
+                @discard="handleTableDiscard"
+              />
             </div>
           </div>
         </ListPageLayout>

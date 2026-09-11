@@ -317,13 +317,19 @@ const PatchManagementPage = defineComponent({
 
     const patchReportLabel = 'Run Policy Report';
 
-    function handlePageTabChange(tab: 'policies' | 'dashboard') {
-      activePageTab.value = tab;
-    }
+    const activePageTabModel = computed({
+      get: () => activePageTab.value,
+      set: (tab: 'policies' | 'dashboard') => {
+        activePageTab.value = tab;
+      },
+    });
 
-    function handlePolicyScopeTabChange(scope: 'os' | 'browser') {
-      policyScopeTab.value = scope;
-    }
+    const policyScopeTabModel = computed({
+      get: () => policyScopeTab.value,
+      set: (scope: 'os' | 'browser') => {
+        policyScopeTab.value = scope;
+      },
+    });
 
     watch(activePageTab, () => {
       selectedPolicies.value = [];
@@ -430,6 +436,7 @@ const PatchManagementPage = defineComponent({
     return {
       ADD_PATCH_POLICY_OPTIONS,
       activePageTab,
+      activePageTabModel,
       columns,
       currentPagePolicies,
       eventTypeFilter,
@@ -441,8 +448,6 @@ const PatchManagementPage = defineComponent({
       handleAddBrowserPolicy,
       handleAddPatchPolicyOption,
       handlePageChange,
-      handlePageTabChange,
-      handlePolicyScopeTabChange,
       handleSearch,
       handleTableDiscard,
       handleTableSave,
@@ -456,6 +461,7 @@ const PatchManagementPage = defineComponent({
       policies,
       policyScopeOptions,
       policyScopeTab,
+      policyScopeTabModel,
       profileMenuItems,
       releaseTrainTab,
       releaseTrainTabs,
@@ -487,29 +493,27 @@ const PatchManagementPage = defineComponent({
         <PageHeader
           title="Patch Management"
           :tabs="pageTabs"
-          :activeTab="activePageTab"
-          @update:activeTab="handlePageTabChange"
+          v-model:activeTab="activePageTabModel"
         />
 
         <UnifiedPatchDashboard
-          v-if="activePageTab === 'dashboard'"
+          v-show="activePageTab === 'dashboard'"
           :initial-scope-tab="initialDashboardScopeTab"
         />
 
         <ListPageLayout
-          v-else
+          v-show="activePageTab === 'policies'"
           class="w-full! h-full! flex-1 min-h-0 [&_.layout-main]:!pt-md"
         >
           <div class="flex flex-col gap-md h-full min-h-0 overflow-auto px-md pb-md">
             <div class="shrink-0 overflow-visible border-b border-neutral-default_solid pb-md">
               <div class="p-px overflow-visible">
                 <PvSelectButton
-                  :modelValue="policyScopeTab"
+                  v-model="policyScopeTabModel"
                   :options="policyScopeOptions"
                   optionLabel="label"
                   optionValue="value"
                   :allowEmpty="false"
-                  @update:modelValue="handlePolicyScopeTabChange"
                 />
               </div>
             </div>

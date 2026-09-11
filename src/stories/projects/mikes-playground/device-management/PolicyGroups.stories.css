@@ -1,0 +1,5 @@
+/* Type column is the first data column after the selection checkbox. */
+.policy-groups-table th[role='columnheader']:nth-child(2) [data-pc-section='columnheadercontent'] {
+  justify-content: center;
+  width: 100%;
+}

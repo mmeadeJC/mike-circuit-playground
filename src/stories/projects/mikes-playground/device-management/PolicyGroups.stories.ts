@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
+import './PolicyGroups.stories.css';
 import { computed, defineComponent, h, markRaw, ref } from 'vue';
 import {
   ActionsToolbar,
@@ -30,7 +31,6 @@ import { useToast } from 'primevue/usetoast';
 import {
   ChevronDownIcon,
   ChevronRightIcon,
-  ComputerDesktopIcon,
   RectangleGroupIcon,
   ShieldCheckIcon,
   TrashIcon,
@@ -38,6 +38,7 @@ import {
 } from '@heroicons/vue/24/outline';
 
 import TopBar from '@/components/AdminTopBar.vue';
+import PolicyGroupAddDropdown from './PolicyGroupAddDropdown.vue';
 import {
   menuItems,
   profileMenuItems,
@@ -181,6 +182,23 @@ const TemplateDescriptionCell = markRaw(defineComponent({
   },
 }));
 
+/** Circuit header cells use flex; headerStyle textAlign does not center the title — override PT instead. */
+const TYPE_COLUMN_PT = {
+  columnHeaderContent: {
+    class: 'justify-center! w-full!',
+  },
+};
+
+const PolicyGroupTypeIcon = markRaw(defineComponent({
+  name: 'PolicyGroupTypeIcon',
+  components: { RectangleGroupIcon },
+  template: `
+    <div class="flex items-center justify-center w-full">
+      <RectangleGroupIcon class="size-5 shrink-0 text-neutral-base" aria-label="Policy group" />
+    </div>
+  `,
+}));
+
 const PolicyGroupsPage = defineComponent({
   name: 'PolicyGroupsPage',
   components: {
@@ -195,6 +213,7 @@ const PolicyGroupsPage = defineComponent({
     PageHeader,
     PageSection,
     PageSaveBar,
+    PolicyGroupAddDropdown,
     ToastNotification,
     TopBar,
     PvButton: Button,
@@ -206,7 +225,6 @@ const PolicyGroupsPage = defineComponent({
     PvTabPanels: TabPanels,
     PvTabs: Tabs,
     PvTextarea: Textarea,
-    ComputerDesktopIcon,
     RectangleGroupIcon,
     ShieldCheckIcon,
     XMarkIcon,
@@ -256,12 +274,9 @@ const PolicyGroupsPage = defineComponent({
         field: 'type',
         header: 'Type',
         width: '80px',
-        component: markRaw(DataTableCellText),
-        componentProps: {
-          label: '',
-          icon: markRaw(RectangleGroupIcon),
-          iconProps: { 'aria-label': 'Policy group' },
-        },
+        pt: TYPE_COLUMN_PT,
+        component: PolicyGroupTypeIcon,
+        componentProps: () => ({}),
       },
       {
         field: 'group',
@@ -310,17 +325,6 @@ const PolicyGroupsPage = defineComponent({
     ];
 
     const deviceGroupColumns = [
-      {
-        field: 'type',
-        header: 'Type',
-        width: '96px',
-        component: markRaw(DataTableCellText),
-        componentProps: {
-          label: '',
-          icon: markRaw(ComputerDesktopIcon),
-          iconProps: { 'aria-label': 'Device group' },
-        },
-      },
       {
         field: 'group',
         header: 'Group',
@@ -771,7 +775,7 @@ const PolicyGroupsPage = defineComponent({
         >
           <div class="flex flex-col h-full relative">
             <DataTable
-              class="flex-1 min-h-0"
+              class="policy-groups-table flex-1 min-h-0"
               :data="currentPageGroups"
               :columns="columns"
               selectionMode="multiple"
@@ -797,25 +801,30 @@ const PolicyGroupsPage = defineComponent({
               @page-change="handlePageChange"
             >
               <template #toolbar>
-                <DataTableToolbar
-                  addButtonLabel="Add Policy Group"
-                  :addButtonDropdown="true"
-                  :addButtonDropdownOptions="addOptions"
-                  searchPlaceholder="Search policy groups..."
-                  :showFilterButton="false"
-                  :showRefreshButton="true"
-                  :showColumnsButton="false"
-                  :showDownloadButton="false"
-                  :showSaveViewButton="false"
-                  @add="handleAddOption"
-                  @search="handleSearch"
-                >
-                  <template #saved-views>
-                    <span class="text-body-md text-neutral-subtle">
-                      {{ filteredGroups.length }} policy groups
-                    </span>
-                  </template>
-                </DataTableToolbar>
+                <div class="flex items-start gap-x-4 w-full pb-4">
+                  <PolicyGroupAddDropdown
+                    class="flex shrink-0 items-center h-8"
+                    :options="addOptions"
+                    @select="handleAddOption"
+                  />
+                  <DataTableToolbar
+                    class="min-w-0 flex-1"
+                    searchPlaceholder="Search policy groups..."
+                    :showAddButton="false"
+                    :showFilterButton="false"
+                    :showRefreshButton="true"
+                    :showColumnsButton="false"
+                    :showDownloadButton="false"
+                    :showSaveViewButton="false"
+                    @search="handleSearch"
+                  >
+                    <template #saved-views>
+                      <span class="text-body-md text-neutral-subtle">
+                        {{ filteredGroups.length }} policy groups
+                      </span>
+                    </template>
+                  </DataTableToolbar>
+                </div>
               </template>
 
               <template #empty>

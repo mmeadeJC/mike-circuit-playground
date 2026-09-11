@@ -11,6 +11,7 @@ declare global {
     __policyMigrationRouter?: Router;
     __policyMigrationGoToNewPolicy?: (context: NewPolicyNavContext) => void;
     __policyMigrationGoToList?: () => void;
+    __policyMigrationNavigateTo?: (to: RouteLocationRaw) => void;
   }
 }
 
@@ -98,6 +99,10 @@ export function navigateToPolicyManagementList(): void {
 }
 
 export function navigateToPolicyGroups(): void {
+  if (typeof window !== 'undefined' && window.__policyMigrationNavigateTo) {
+    window.__policyMigrationNavigateTo('/policy-groups');
+    return;
+  }
   if (getPolicyMigrationRouter()) {
     navigatePolicyMigration('/policy-groups');
     return;
@@ -108,6 +113,10 @@ export function navigateToPolicyGroups(): void {
 }
 
 export function navigateToPatchManagement(): void {
+  if (typeof window !== 'undefined' && window.__policyMigrationNavigateTo) {
+    window.__policyMigrationNavigateTo('/patch-management');
+    return;
+  }
   if (getPolicyMigrationRouter()) {
     navigatePolicyMigration('/patch-management');
     return;

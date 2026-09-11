@@ -75,6 +75,7 @@ function remountDemoAt(to: RouteLocationRaw): void {
         delete window.__policyMigrationRouter;
         delete window.__policyMigrationGoToList;
         delete window.__policyMigrationGoToNewPolicy;
+        delete window.__policyMigrationNavigateTo;
       }
 
       const el = document.querySelector('#app');
@@ -97,11 +98,24 @@ function remountDemoAt(to: RouteLocationRaw): void {
   }, 0);
 }
 
+const STORY_HUB_PATHS = new Set(['/patch-management', '/policy-groups']);
+
+function resolveNavigationPath(to: RouteLocationRaw): string {
+  if (typeof to === 'string') return to;
+  return to.path ?? '/policy-management';
+}
+
+function shouldRemountNavigation(fromPath: string, to: RouteLocationRaw): boolean {
+  if (isPolicyDetailPath(fromPath)) return true;
+  return STORY_HUB_PATHS.has(resolveNavigationPath(to));
+}
+
 function navigateToHub(to: RouteLocationRaw): void {
   const router = typeof window !== 'undefined' ? window.__policyMigrationRouter : null;
-  const fromDetail = router ? isPolicyDetailPath(router.currentRoute.value.path) : false;
+  const fromPath = router?.currentRoute.value.path ?? '/';
+  const needsRemount = router ? shouldRemountNavigation(fromPath, to) : true;
 
-  if (fromDetail) {
+  if (needsRemount) {
     remountDemoAt(to);
     return;
   }
@@ -159,6 +173,7 @@ export function mountPolicyMigrationDemo() {
   }
 
   if (typeof window !== 'undefined') {
+    window.__policyMigrationNavigateTo = navigateToHub;
     window.__policyMigrationGoToList = () => {
       writePolicyMigrationView('list');
       navigateToHub({ path: '/policy-management', query: {} });

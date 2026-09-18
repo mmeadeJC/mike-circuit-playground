@@ -247,7 +247,7 @@ const widgets: PamWidget[] = [
   <div class="flex-1 overflow-hidden bg-neutral-mid min-h-0">
     <DashboardPageLayout class="w-full! h-full!" max-width="1280">
       <div class="flex flex-col gap-md">
-        <div class="grid grid-cols-4 gap-md min-w-0">
+        <div class="grid grid-cols-3 gap-md min-w-0">
           <PamDashboardStatCard
             v-for="widget in widgets"
             :key="widget.header"

@@ -3,3 +3,68 @@
   justify-content: center;
   width: 100%;
 }
+
+/*
+ * Patch policy edit page — constrain Circuit layouts to the body height so the
+ * center column (layout-main) scrolls independently when settings panels expand.
+ */
+.patch-policy-edit-page-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.patch-policy-edit-page-body .patch-policy-detail-layout,
+.patch-policy-edit-page-body .patch-policy-config-layout {
+  min-height: 0;
+}
+
+/* BasePageLayout defaults to h-screen; fill the edit page body instead. */
+.patch-policy-edit-page-body .patch-policy-detail-layout > div,
+.patch-policy-edit-page-body .patch-policy-config-layout > div {
+  height: 100% !important;
+  min-height: 0;
+}
+
+.patch-policy-edit-page-body [data-layout='detail'],
+.patch-policy-edit-page-body [data-layout='config'] {
+  height: 100%;
+  min-height: 0;
+}
+
+.patch-policy-edit-page-body .layout-wrapper {
+  height: 100%;
+  min-height: 0;
+}
+
+.patch-policy-edit-page-body .layout-wrapper.has-sidebar {
+  flex-direction: row !important;
+  overflow: hidden !important;
+}
+
+.patch-policy-edit-page-body .layout-main.with-sidebar,
+.patch-policy-edit-page-body [data-layout='config'] .layout-main {
+  flex: 2 1 0% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+}
+
+.patch-policy-edit-page-body .layout-aside {
+  flex: 1 1 0% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  border-left-width: 1px;
+  border-left-style: solid;
+}
+
+/* Settings panel dropdowns and date/time pickers — fixed width per legacy policy UI. */
+.patch-policy-settings-control-width {
+  width: 640px;
+  max-width: 100%;
+}
+
+.patch-policy-settings-control-width-short {
+  width: 220px;
+  max-width: 100%;
+}

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
 import './PatchManagement.stories.css';
-import { computed, defineComponent, markRaw, ref, watch } from 'vue';
+import { computed, defineComponent, markRaw, ref, watch, type Component } from 'vue';
 import {
   AppNavigation,
   DataTable,
@@ -26,7 +26,13 @@ import TopBar from '@/components/AdminTopBar.vue';
 import PatchPolicyAddDropdown, {
   type PatchPolicyAddOption,
 } from './PatchPolicyAddDropdown.vue';
+import PatchPolicyEditPage from './PatchPolicyEditPage.vue';
+import ConfigureAdvancedWindowsUpdatesEditor from './policy-editors/ConfigureAdvancedWindowsUpdatesEditor.vue';
+import MacOsDdmUpdatePolicyEditor from './policy-editors/MacOsDdmUpdatePolicyEditor.vue';
+import { createMacOsLegacyEditor } from './policy-editors/createMacOsLegacyEditor';
+import { createWindowsLegacyEditor } from './policy-editors/createWindowsLegacyEditor';
 import UnifiedPatchDashboard from './UnifiedPatchDashboard.vue';
+import { AppleIcon, IosIcon, LinuxLogoIcon, WindowsIcon } from './patchPolicyIcons';
 import {
   menuItems,
   profileMenuItems,
@@ -49,26 +55,6 @@ type ReleaseTrain = {
   latestVersion: string;
   released: string;
 };
-
-const WindowsIcon = defineComponent({
-  name: 'WindowsIcon',
-  template: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4"><path d="M3 5.548l7.065-0.966v6.822H3V5.548zm0 12.904l7.065 0.966v-6.822H3v5.856zm7.937 1.085L21 21v-7.596H10.937v-0.001 8.133zm0-15.074v8.133H21V3L10.937 4.463z"/></svg>`,
-});
-
-const AppleIcon = defineComponent({
-  name: 'AppleIcon',
-  template: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>`,
-});
-
-const IosIcon = defineComponent({
-  name: 'IosIcon',
-  template: `<div class="flex items-center justify-center size-4"><div class="rounded-full flex items-center justify-center size-3.5 bg-neutral-base"><span class="text-[5px] font-semibold leading-none text-neutral-surface">iOS</span></div></div>`,
-});
-
-const LinuxLogoIcon = markRaw(defineComponent({
-  name: 'LinuxLogoIcon',
-  template: '<img src="/logos/os/linux.svg" alt="" class="size-4" />',
-}));
 
 const ADD_PATCH_POLICY_OPTIONS: PatchPolicyAddOption[] = [
   { label: 'iOS', value: 'ios', icon: markRaw(IosIcon), isNew: true },
@@ -108,6 +94,20 @@ const TYPE_COLUMN_PT = {
   columnHeaderContent: {
     class: 'justify-center! w-full!',
   },
+};
+
+/**
+ * Each patch policy type has its own set of settings panels, so Details content is
+ * registered per policy name. Policies without an entry open the drawer with a
+ * placeholder until their screen is migrated.
+ */
+const POLICY_EDITORS: Record<string, Component> = {
+  'Configure Advanced Windows Updates': markRaw(ConfigureAdvancedWindowsUpdatesEditor),
+  'macOS Vanguard Ring': markRaw(createMacOsLegacyEditor('macOS Vanguard Ring')),
+  'macOS Early Adoption Ring': markRaw(createMacOsLegacyEditor('macOS Early Adoption Ring')),
+  'macOS General Adoption Ring': markRaw(MacOsDdmUpdatePolicyEditor),
+  'Windows Early Adoption Ring': markRaw(createWindowsLegacyEditor('Windows Early Adoption Ring')),
+  'Windows General Adoption Ring': markRaw(createWindowsLegacyEditor('Windows General Adoption Ring')),
 };
 
 const PATCH_POLICIES: PatchPolicy[] = [
@@ -183,6 +183,7 @@ const PatchManagementPage = defineComponent({
     PageHeader,
     PageSaveBar,
     PatchPolicyAddDropdown,
+    PatchPolicyEditPage,
     TopBar,
     UnifiedPatchDashboard,
     PvButton: Button,
@@ -209,6 +210,8 @@ const PatchManagementPage = defineComponent({
     const filterBy = ref('all');
     const isSaving = ref(false);
     const showSavedConfirmation = ref(false);
+    const editingPolicy = ref<PatchPolicy | null>(null);
+    const activeView = ref<'list' | 'edit'>('list');
 
     const pageTabs = [
       { label: 'Patch Policies', value: 'policies' },
@@ -287,6 +290,10 @@ const PatchManagementPage = defineComponent({
             label: slotProps.data.name,
             description: slotProps.data.description,
             href: '#',
+            onClick: (event: MouseEvent) => {
+              event.preventDefault();
+              openPolicyEditor(slotProps.data);
+            },
           }),
         },
         {
@@ -376,6 +383,10 @@ const PatchManagementPage = defineComponent({
 
     const hasPendingTableActions = computed(() => selectedPolicies.value.length > 0);
 
+    const editingPolicyEditor = computed(() =>
+      editingPolicy.value ? POLICY_EDITORS[editingPolicy.value.name] ?? null : null,
+    );
+
     const tableSaveBarMessage = computed(() => {
       const count = selectedPolicies.value.length;
       if (policyScopeTab.value === 'browser') {
@@ -425,6 +436,16 @@ const PatchManagementPage = defineComponent({
       showSavedConfirmation.value = false;
     }
 
+    function openPolicyEditor(policy: PatchPolicy) {
+      editingPolicy.value = policy;
+      activeView.value = 'edit';
+    }
+
+    function closePolicyEditor() {
+      activeView.value = 'list';
+      editingPolicy.value = null;
+    }
+
     function handleAddPatchPolicyOption(_option?: PatchPolicyAddOption) {
       // Prototype only — creation flows are not built yet.
     }
@@ -437,8 +458,12 @@ const PatchManagementPage = defineComponent({
       ADD_PATCH_POLICY_OPTIONS,
       activePageTab,
       activePageTabModel,
+      activeView,
+      closePolicyEditor,
       columns,
       currentPagePolicies,
+      editingPolicy,
+      editingPolicyEditor,
       eventTypeFilter,
       eventTypeOptions,
       filterBy,
@@ -479,7 +504,14 @@ const PatchManagementPage = defineComponent({
     };
   },
   template: `
-    <div class="flex h-screen overflow-hidden">
+    <PatchPolicyEditPage
+      v-if="activeView === 'edit' && editingPolicy"
+      :policy="editingPolicy"
+      :editor="editingPolicyEditor"
+      @back="closePolicyEditor"
+    />
+
+    <div v-else class="flex h-screen overflow-hidden">
       <AppNavigation
         :menuItems="menuItems"
         :profileMenuItems="profileMenuItems"

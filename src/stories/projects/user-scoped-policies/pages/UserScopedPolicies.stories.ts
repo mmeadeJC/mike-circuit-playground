@@ -61,6 +61,7 @@ import {
   filterDevicePolicyTemplates,
   type DevicePolicyTemplate,
 } from '@/stories/projects/mikes-playground/policy-management-circuit-migration/demo/devicePolicyCatalog';
+import { navigationNewBadgeClass } from '@/stories/projects/mikes-playground/policy-management-circuit-migration/demo/navigationNewBadge';
 import { usePolicyMigrationNav, readPolicyMigrationView, readStoredPolicyMigrationContext, writePolicyMigrationView, writeStoredPolicyMigrationContext } from '@/stories/projects/mikes-playground/policy-management-circuit-migration/demo/policyMigrationNav';
 import {
   menuItems,
@@ -654,6 +655,7 @@ const UserScopedPoliciesPage = defineComponent({
       policyData, policyColumns, exportOptions,
       legacyUserPolicyTemplates,
       filteredPolicyTemplates,
+      navigationNewBadgeClass,
       bindingUsersData, bindingUsersColumns,
       bindingDevicesData, bindingDevicesColumns,
       policyGroupsData, policyGroupColumns,
@@ -875,7 +877,13 @@ const UserScopedPoliciesPage = defineComponent({
               class="flex items-center px-6 h-[92px] bg-neutral-base rounded-lg shadow-e100"
             >
               <div class="w-[240px] shrink-0 pr-4">
-                <p class="text-body-md text-neutral-base truncate">{{ tpl.name }}</p>
+                <div class="flex min-w-0 items-center gap-1.5">
+                  <p class="text-body-md-semi-bold text-neutral-base truncate">{{ tpl.name }}</p>
+                  <span
+                    v-if="'isNew' in tpl && tpl.isNew"
+                    :class="navigationNewBadgeClass"
+                  >NEW</span>
+                </div>
                 <p class="text-body-sm text-neutral-muted truncate">{{ tpl.nameDesc }}</p>
               </div>
               <div class="w-[80px] shrink-0">

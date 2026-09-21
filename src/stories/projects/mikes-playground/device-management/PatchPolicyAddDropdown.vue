@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import type { FunctionalComponent } from 'vue';
 import Button from 'primevue/button';
 import { PlusIcon } from '@heroicons/vue/24/outline';
+import { navigationNewBadgeClass } from '@/stories/projects/mikes-playground/policy-management-circuit-migration/demo/navigationNewBadge';
 
 export type PatchPolicyAddOption = {
   label: string;
@@ -20,10 +21,6 @@ const emit = defineEmits<{
 }>();
 
 const isOpen = ref(false);
-
-/** Same classes as AppNavigation `isNew` badge in NavigationMenuItemContent. */
-const newBadgeClass =
-  'select-none inline-flex shrink-0 items-center bg-purple-500 text-purple-1000 font-bold text-[0.5rem] leading-none py-0.5 px-1 rounded-xs';
 
 function toggleMenu() {
   isOpen.value = !isOpen.value;
@@ -63,7 +60,7 @@ function handleSelect(option: PatchPolicyAddOption) {
           <component :is="option.icon" v-if="option.icon" class="size-4 shrink-0" />
           <div class="flex min-w-0 flex-1 items-center justify-between gap-2">
             <span class="text-body-md">{{ option.label }}</span>
-            <span v-if="option.isNew" :class="newBadgeClass">NEW</span>
+            <span v-if="option.isNew" :class="navigationNewBadgeClass">NEW</span>
           </div>
         </button>
       </div>

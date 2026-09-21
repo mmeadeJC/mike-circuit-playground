@@ -8,6 +8,7 @@ export type DevicePolicyTemplate = {
   description: string;
   os: DevicePolicyOs[];
   path: string;
+  isNew?: boolean;
 };
 
 /** Device policy templates from Policy Management — Circuit Migration stories. */
@@ -41,6 +42,7 @@ export const devicePolicyCatalog: DevicePolicyTemplate[] = [
       'This policy automates device restarts to ensure timely application of critical updates.',
     os: ['windows'],
     path: '/schedule-restart',
+    isNew: true,
   },
   {
     id: 'application-restriction',
@@ -51,6 +53,7 @@ export const devicePolicyCatalog: DevicePolicyTemplate[] = [
       'This policy restricts application execution from common locations on Windows devices.',
     os: ['windows'],
     path: '/application-restriction',
+    isNew: true,
   },
   {
     id: 'bluetooth-configuration',

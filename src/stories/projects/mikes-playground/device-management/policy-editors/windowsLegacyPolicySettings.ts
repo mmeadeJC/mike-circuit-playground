@@ -104,6 +104,7 @@ export const UPGRADE_CHANNEL_OPTIONS = [
 ];
 
 export const UPDATE_INSTALLATION_GRACE_PERIOD_OPTIONS = [
+  { label: '1', value: '1' },
   { label: '2', value: '2' },
   { label: '3', value: '3' },
   { label: '5', value: '5' },
@@ -121,6 +122,7 @@ export const UPDATE_RESTART_GRACE_PERIOD_OPTIONS = [
 export const WINDOWS_LEGACY_POLICY_PROFILE_BY_NAME: Record<string, WindowsLegacyPolicyProfile> = {
   'Windows Early Adoption Ring': 'early-adoption',
   'Windows General Adoption Ring': 'general-adoption',
+  'Windows Vanguard Ring': 'vanguard',
 };
 
 function createEarlyAdoptionSettings(): WindowsLegacyPolicySettings {
@@ -184,11 +186,12 @@ function createGeneralAdoptionSettings(): WindowsLegacyPolicySettings {
 function createVanguardSettings(): WindowsLegacyPolicySettings {
   return {
     ...createEarlyAdoptionSettings(),
-    deferUpdates: false,
     deferUpdatesDays: '0',
-    deferFeatureUpgrades: false,
     deferFeatureUpgradesDays: '0',
-    automaticUpdateDeadlines: false,
+    qualityUpdateInstallationGracePeriod: '1',
+    qualityUpdateCommitRestartGracePeriod: '2',
+    featureUpdateInstallationGracePeriod: '1',
+    featureUpdateCommitRestartGracePeriod: '2',
   };
 }
 

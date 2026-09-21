@@ -108,6 +108,7 @@ const POLICY_EDITORS: Record<string, Component> = {
   'macOS General Adoption Ring': markRaw(MacOsDdmUpdatePolicyEditor),
   'Windows Early Adoption Ring': markRaw(createWindowsLegacyEditor('Windows Early Adoption Ring')),
   'Windows General Adoption Ring': markRaw(createWindowsLegacyEditor('Windows General Adoption Ring')),
+  'Windows Vanguard Ring': markRaw(createWindowsLegacyEditor('Windows Vanguard Ring')),
 };
 
 const PATCH_POLICIES: PatchPolicy[] = [

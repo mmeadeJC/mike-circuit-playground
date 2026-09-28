@@ -30,6 +30,7 @@ import PatchPolicyEditPage from './PatchPolicyEditPage.vue';
 import ConfigureAdvancedWindowsUpdatesEditor from './policy-editors/ConfigureAdvancedWindowsUpdatesEditor.vue';
 import MacOsDdmUpdatePolicyEditor from './policy-editors/MacOsDdmUpdatePolicyEditor.vue';
 import { createMacOsLegacyEditor } from './policy-editors/createMacOsLegacyEditor';
+import { createIosDdmEditor } from './policy-editors/createIosDdmEditor';
 import { createWindowsLegacyEditor } from './policy-editors/createWindowsLegacyEditor';
 import UnifiedPatchDashboard from './UnifiedPatchDashboard.vue';
 import { AppleIcon, IosIcon, LinuxLogoIcon, WindowsIcon } from './patchPolicyIcons';
@@ -109,6 +110,9 @@ const POLICY_EDITORS: Record<string, Component> = {
   'Windows Early Adoption Ring': markRaw(createWindowsLegacyEditor('Windows Early Adoption Ring')),
   'Windows General Adoption Ring': markRaw(createWindowsLegacyEditor('Windows General Adoption Ring')),
   'Windows Vanguard Ring': markRaw(createWindowsLegacyEditor('Windows Vanguard Ring')),
+  'iOS Early Adoption Ring': markRaw(createIosDdmEditor('iOS Early Adoption Ring')),
+  'iOS General Adoption Ring': markRaw(createIosDdmEditor('iOS General Adoption Ring')),
+  'iOS Vanguard Ring': markRaw(createIosDdmEditor('iOS Vanguard Ring')),
 };
 
 const PATCH_POLICIES: PatchPolicy[] = [

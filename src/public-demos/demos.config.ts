@@ -56,4 +56,9 @@ export const demos = [
       '@/stories/projects/mikes-playground/policy-management-circuit-migration/demo/mountPolicyMigrationDemo.ts',
     mount: 'mountPolicyMigrationDemo',
   },
+  {
+    id: 'plxb-357',
+    name: 'Customize Email — CTA Toggle (PLXB-357)',
+    component: '@/stories/projects/mikes-playground/settings/CustomizeEmailCtaPage.vue',
+  },
 ];

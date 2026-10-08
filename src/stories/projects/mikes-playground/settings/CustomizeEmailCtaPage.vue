@@ -359,39 +359,42 @@ export default defineComponent({
                 <div class="px-3" style="margin-top:-27px;"><a href="#" class="text-body-xs text-info-base" @click.prevent>View Available Tokens</a></div>
 
                 <!-- Call to action: toggle + progressive disclosure -->
-                <div class="flex flex-col gap-3 rounded-md border border-neutral-default_solid p-4">
-                  <div class="flex items-start justify-between gap-4">
-                    <div class="flex flex-col gap-1 min-w-0">
-                      <span class="text-neutral-base" style="font-size:12px; line-height:16px; font-weight:600;">Show call-to-action button</span>
-                      <span class="text-body-sm text-neutral-subtle">
-                        <template v-if="template.ctaRequired">
-                          This button is required for the {{ template.name }} email and can't be removed.
-                        </template>
-                        <template v-else>
-                          Include a button that links recipients to the next step.
-                        </template>
-                      </span>
-                    </div>
-                    <ToggleSwitch
+                <div class="flex flex-col gap-1">
+                  <span id="cta-group-label" class="text-sm font-bold leading-4">Button<span class="text-error-base">*</span></span>
+                  <div role="group" aria-labelledby="cta-group-label" class="flex flex-col gap-3 rounded-md border border-neutral-default_solid p-4">
+                    <div class="flex items-start justify-between gap-4">
+                      <div class="flex flex-col gap-1 min-w-0">
+                        <span class="text-neutral-base" style="font-size:12px; line-height:16px; font-weight:600;">Show call-to-action button</span>
+                        <span class="text-body-sm text-neutral-subtle">
+                          <template v-if="template.ctaRequired">
+                            This button is required for the {{ template.name }} email and can't be removed.
+                          </template>
+                          <template v-else>
+                            Include a button that links recipients to the next step.
+                          </template>
+                        </span>
+                      </div>
+                      <ToggleSwitch
                       
-                      :model-value="form.showCta"
-                      @update:model-value="setShowCta"
-                      :disabled="template.ctaRequired"
-                      aria-label="Show call-to-action button"
+                        :model-value="form.showCta"
+                        @update:model-value="setShowCta"
+                        :disabled="template.ctaRequired"
+                        aria-label="Show call-to-action button"
+                      />
+                    </div>
+
+                    <FormField v-if="form.showCta" label="Button Call to Action" required>
+                      <template #default="{ inputId }">
+                        <InputText :id="inputId" v-model="form.ctaLabel" class="w-full" />
+                      </template>
+                    </FormField>
+
+                    <MessageNotification
+                      v-else-if="messageMentionsButton"
+                      severity="warning"
+                      detail="Your message still refers to the button. Review it before saving."
                     />
                   </div>
-
-                  <FormField v-if="form.showCta" label="Button Call to Action" required>
-                    <template #default="{ inputId }">
-                      <InputText :id="inputId" v-model="form.ctaLabel" class="w-full" />
-                    </template>
-                  </FormField>
-
-                  <MessageNotification
-                    v-else-if="messageMentionsButton"
-                    severity="warning"
-                    detail="Your message still refers to the button. Review it before saving."
-                  />
                 </div>
 
                 <FormField label="Footer" required>

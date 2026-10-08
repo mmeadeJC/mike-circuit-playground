@@ -542,7 +542,7 @@ const PatchManagementPage = defineComponent({
           v-show="activePageTab === 'policies'"
           class="w-full! h-full! flex-1 min-h-0 [&_.layout-main]:!pt-md"
         >
-          <div class="flex flex-col gap-md h-full min-h-0 overflow-auto px-md pb-md">
+          <div class="flex flex-col gap-md h-full min-h-0 overflow-auto -mr-6 pr-6 pb-md">
             <div class="shrink-0 overflow-visible border-b border-neutral-default_solid pb-md">
               <div class="p-px overflow-visible">
                 <PvSelectButton

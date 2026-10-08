@@ -362,7 +362,7 @@ export default defineComponent({
                 <div class="flex flex-col gap-3 rounded-md border border-neutral-default_solid p-4">
                   <div class="flex items-start justify-between gap-4">
                     <div class="flex flex-col gap-1 min-w-0">
-                      <span class="text-body-md text-neutral-base" style="font-weight:600;">Show call-to-action button</span>
+                      <span class="text-neutral-base" style="font-size:12px; line-height:16px; font-weight:600;">Show call-to-action button</span>
                       <span class="text-body-sm text-neutral-subtle">
                         <template v-if="template.ctaRequired">
                           This button is required for the {{ template.name }} email and can't be removed.

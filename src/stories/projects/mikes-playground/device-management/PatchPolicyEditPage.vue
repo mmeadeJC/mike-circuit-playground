@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { computed, markRaw, ref, type Component } from 'vue';
+import { computed, markRaw, provide, ref, type Component } from 'vue';
 import { AppNavigation, PageHeader } from '@jumpcloud/circuit/components';
 import Divider from 'primevue/divider';
 import Tag from 'primevue/tag';
 import { ComputerDesktopIcon, ShieldCheckIcon } from '@heroicons/vue/24/outline';
 
 import TopBar from '@/components/AdminTopBar.vue';
+import {
+  PATCH_POLICY_EDITOR_CONTEXT,
+} from './policy-editors/shared/patchPolicyEditorContext';
 import {
   menuItems,
   profileMenuItems,
@@ -15,17 +18,28 @@ export type PatchPolicyEditTarget = {
   name: string;
   description: string;
   scope: 'os' | 'browser';
-  os?: 'windows' | 'mac' | 'ios';
+  os?: 'windows' | 'mac' | 'ios' | 'linux';
 };
 
 const props = defineProps<{
   policy: PatchPolicyEditTarget;
   editor: Component | null;
+  /** 'create' = Add Patch Policy flow: title is "New Policy" and Save adds it to the list. */
+  mode?: 'edit' | 'create';
 }>();
 
 const emit = defineEmits<{
   back: [];
+  created: [policyName: string];
 }>();
+
+provide(PATCH_POLICY_EDITOR_CONTEXT, {
+  isNew: props.mode === 'create',
+  onCreated: (policyName) => emit('created', policyName),
+  onCancel: () => emit('back'),
+});
+
+const pageTitle = computed(() => (props.mode === 'create' ? 'New Policy' : props.policy.name));
 
 const detailTabs = [
   { label: 'Details', value: 'details' },
@@ -65,7 +79,7 @@ function handleBack() {
       />
 
       <PageHeader
-        :title="policy.name"
+        :title="pageTitle"
         :icon="shieldIcon"
         :tabs="detailTabs"
         :activeTab="activeTab"

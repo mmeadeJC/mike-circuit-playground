@@ -73,13 +73,17 @@ const DEFERRAL_DAY_FIELDS: {
 ];
 
 const DDM_DESCRIPTION_BULLETS = [
-  'Defer and enforce major upgrades and minor updates',
-  'Allow specific account types to defer updates',
-  'Configure update notifications',
-  'Manage Rapid Security Responses and Beta program enrollment',
+  'Defer and/or enforce major upgrades and minor updates.',
+  'Allow specific account types to perform updates.',
+  'Configure user notifications.',
+  "Optionally offer Rapid Security Responses and participate in Apple's Beta program.",
 ];
 
-const policyName = ref('macOS General Adoption Ring');
+const props = withDefaults(defineProps<{ initialPolicyName?: string }>(), {
+  initialPolicyName: 'macOS General Adoption Ring',
+});
+
+const policyName = ref(props.initialPolicyName);
 const policyNotes = ref('');
 const settings = ref<MacOsDdmPolicySettings>(createDefaultMacOsDdmPolicySettings());
 
@@ -170,10 +174,11 @@ const {
                 </li>
               </ul>
               <p class="text-body-md m-0 text-neutral-subtle">
-                Updates are enforced using SoftwareUpdateEnforcementSpecific and
-                SoftwareUpdateSettings DDM configurations.
+                Updates are enforced using the SoftwareUpdateEnforcementSpecific DDM
+                configuration and the settings are enforced using the SoftwareUpdateSettings
+                DDM configuration.
                 <LinkText
-                  label="Learn more"
+                  label="Learn More"
                   href="#"
                   target="_blank"
                   :showIcon="false"
@@ -185,10 +190,12 @@ const {
             <div class="flex flex-col gap-xs">
               <h4 class="text-body-md-bold m-0 text-neutral-base">Policy Behavior</h4>
               <p class="text-body-md m-0 text-neutral-subtle">
-                This policy prompts users to install updates according to the configured
-                settings. When deferral is enabled, update notifications are hidden until
-                the deferral period expires. When enforcement is enabled, users are prompted
-                daily and enforcement escalates until the configured deadline is met.
+                Prompts users to install major upgrades and minor updates according to your
+                settings. Updates are immediately available unless a deferral is specified,
+                which hides notifications on devices until the deferral period ends.
+                Enforcement prompts users daily via system notifications until the final
+                day, where notification frequency then escalates until devices comply or the
+                deadline is reached, and updates become mandatory.
               </p>
             </div>
 
@@ -466,7 +473,7 @@ const {
       :saving="isSaving"
       :saved="showSavedConfirmation"
       message="You have unsaved changes"
-      saveLabel="Save"
+      saveLabel="Save Policy"
       discardLabel="Cancel"
       savedLabel="Policy saved"
       @save="handleSave"

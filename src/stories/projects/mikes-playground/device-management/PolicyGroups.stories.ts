@@ -248,6 +248,8 @@ const PolicyGroupsPage = defineComponent({
     const templateRows = ref(10);
     const expandedTemplateIds = ref<string[]>([]);
     const createDrawerVisible = ref(false);
+    /** Set when the drawer is editing an existing group instead of creating one. */
+    const editingGroupId = ref<string | null>(null);
     const createTab = ref('details');
     const groupConfigCollapsed = ref(false);
     const groupName = ref('');
@@ -288,6 +290,10 @@ const PolicyGroupsPage = defineComponent({
           label: slotProps.data.group,
           description: slotProps.data.description,
           href: '#',
+          onClick: (event: MouseEvent) => {
+            event.preventDefault();
+            openGroupEditor(slotProps.data);
+          },
         }),
       },
     ];
@@ -507,6 +513,8 @@ const PolicyGroupsPage = defineComponent({
     });
 
     const createSaveBarMessage = computed(() => 'You have unsaved changes');
+    const isEditing = computed(() => editingGroupId.value !== null);
+    const drawerTitle = computed(() => (isEditing.value ? createBaseline.value.groupName || 'Policy Group' : 'New Policy Group'));
 
     const createTabModel = computed({
       get: () => createTab.value,
@@ -603,8 +611,27 @@ const PolicyGroupsPage = defineComponent({
       }
       if (option?.value !== 'policy-group') return;
 
+      editingGroupId.value = null;
       createTab.value = 'details';
       groupName.value = 'New Policy Group';
+      groupDescription.value = '';
+      selectedPolicies.value = [];
+      selectedDeviceGroups.value = [];
+      policySearch.value = '';
+      deviceGroupSearch.value = '';
+      showBoundDeviceGroups.value = false;
+      policyFirst.value = 0;
+      deviceGroupFirst.value = 0;
+      showSavedConfirmation.value = false;
+      captureCreateBaseline();
+      createDrawerVisible.value = true;
+      groupConfigCollapsed.value = false;
+    }
+
+    function openGroupEditor(group: PolicyGroup) {
+      editingGroupId.value = group.id;
+      createTab.value = 'details';
+      groupName.value = group.group;
       groupDescription.value = '';
       selectedPolicies.value = [];
       selectedDeviceGroups.value = [];
@@ -708,6 +735,7 @@ const PolicyGroupsPage = defineComponent({
     }
 
     function resetCreateFlow() {
+      editingGroupId.value = null;
       groupName.value = '';
       groupDescription.value = '';
       selectedPolicies.value = [];
@@ -737,17 +765,24 @@ const PolicyGroupsPage = defineComponent({
 
       isSaving.value = true;
       await new Promise((resolve) => setTimeout(resolve, 600));
-      groups.value = [
-        {
-          id: String(nextId++),
-          type: 'Policy group',
-          group: groupName.value.trim(),
-          description: 'Group of Policies',
-        },
-        ...groups.value,
-      ];
+      if (editingGroupId.value) {
+        const editedId = editingGroupId.value;
+        groups.value = groups.value.map((group) =>
+          group.id === editedId ? { ...group, group: groupName.value.trim() } : group,
+        );
+      } else {
+        groups.value = [
+          {
+            id: String(nextId++),
+            type: 'Policy group',
+            group: groupName.value.trim(),
+            description: 'Group of Policies',
+          },
+          ...groups.value,
+        ];
+        first.value = 0;
+      }
       captureCreateBaseline();
-      first.value = 0;
       isSaving.value = false;
       showSavedConfirmation.value = true;
       setTimeout(() => {
@@ -778,6 +813,8 @@ const PolicyGroupsPage = defineComponent({
       closeCreateFlow,
       columns,
       createDrawerVisible,
+      drawerTitle,
+      isEditing,
       createSaveBarMessage,
       createTab,
       createTabModel,
@@ -1033,7 +1070,7 @@ const PolicyGroupsPage = defineComponent({
         <PvDrawer
           v-model:visible="createDrawerVisible"
           class="policy-group-create-drawer"
-          header="New Policy Group"
+          :header="drawerTitle"
           position="full"
           modal
           :dismissable="false"
@@ -1047,9 +1084,11 @@ const PolicyGroupsPage = defineComponent({
                 <RectangleGroupIcon class="size-5 text-neutral-base" />
               </div>
               <div class="flex flex-col">
-                <span class="text-heading-3 text-neutral-base">New Policy Group</span>
+                <span class="text-heading-3 text-neutral-base">{{ drawerTitle }}</span>
                 <span class="text-body-sm text-neutral-subtle">
-                  Configure the group, then select policies and device groups.
+                  {{ isEditing
+                    ? 'Update the group, then adjust its policies and device groups.'
+                    : 'Configure the group, then select policies and device groups.' }}
                 </span>
               </div>
             </div>
@@ -1059,7 +1098,7 @@ const PolicyGroupsPage = defineComponent({
               severity="secondary"
               variant="text"
               size="small"
-              aria-label="Close new policy group"
+              :aria-label="isEditing ? 'Close policy group' : 'Close new policy group'"
               @click="btnProps.closeCallback"
             >
               <template #icon="iconProps">
@@ -1115,7 +1154,7 @@ const PolicyGroupsPage = defineComponent({
 
               <PvTabPanel value="policies" class="policy-group-create-tabpanel policy-group-create-tabpanel--table pt-md">
                 <p class="text-body-md text-neutral-subtle mb-md shrink-0">
-                  New policy group has the following policies applied:
+                  {{ isEditing ? 'This policy group has the following policies applied:' : 'New policy group has the following policies applied:' }}
                 </p>
                 <div class="policy-group-create-table">
                   <DataTable

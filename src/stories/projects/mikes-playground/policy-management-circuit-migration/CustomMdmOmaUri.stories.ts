@@ -51,6 +51,8 @@ import {
 } from '@jumpcloud/icons';
 
 import TopBar from '@/components/AdminTopBar.vue';
+import PolicyVariablesPanel from '@/components/PolicyVariablesPanel.vue';
+import VariableInput from '@/components/VariableInput.vue';
 
 import { menuItems, profileMenuItems } from './demo/policyMigrationMenuItems';
 
@@ -122,6 +124,8 @@ const CustomMdmOmaUriPage = defineComponent({
     MessageNotification,
     DetailPageLayout,
     PageSaveBar,
+    PolicyVariablesPanel,
+    VariableInput,
     TopBar,
     PvButton: Button,
     PvTag: Tag,
@@ -406,11 +410,11 @@ const CustomMdmOmaUriPage = defineComponent({
                       class="flex-1 min-w-0"
                     >
                       <template #default="{ inputId }">
-                        <PvTextarea
+                        <VariableInput
                           :id="inputId"
                           v-model="row.value"
+                          multiline
                           :rows="2"
-                          class="w-full"
                         />
                       </template>
                     </FormField>
@@ -442,6 +446,8 @@ const CustomMdmOmaUriPage = defineComponent({
                   </div>
                 </div>
               </CollapsiblePanel>
+
+              <PolicyVariablesPanel :scan-text="omaUriRows.map((row) => row.value)" />
             </div>
 
             <template #sidebar>

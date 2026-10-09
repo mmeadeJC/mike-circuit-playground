@@ -24,6 +24,7 @@ import {
   TrashIcon,
 } from '@heroicons/vue/24/outline';
 import PatchPolicyDetailLayout from './shared/PatchPolicyDetailLayout.vue';
+import { usePatchPolicyEditorContext } from './shared/patchPolicyEditorContext';
 import PatchPolicyIosDdmSidebar from './shared/PatchPolicyIosDdmSidebar.vue';
 import PolicySettingCheckbox from './PolicySettingCheckbox.vue';
 import PolicySettingRadioField from './PolicySettingRadioField.vue';
@@ -65,8 +66,13 @@ const POLICY_BEHAVIOR_BY_PROFILE: Record<IosDdmPolicyProfile, string> = {
     'This policy manages the update by prompting users to install updates. Updates can be applied without delay unless a defer period is set. When deferral and/or enforcement is enabled, users receive prompts or daily notifications, with each day increasing notification frequency up until the final day when updates become mandatory.',
 };
 
-const policyBehaviorText = computed(
-  () => POLICY_BEHAVIOR_BY_PROFILE[resolvedProfile.value],
+const NEW_POLICY_BEHAVIOR =
+  'Prompts users to install major upgrades and minor updates according to your settings. Updates are immediately available unless a deferral is specified, which hides notifications on devices until the deferral period ends. Enforcement prompts users daily via system notifications until the final day, where notification frequency then escalates until devices comply or the deadline is reached, and updates become mandatory.';
+
+const isNewPolicy = usePatchPolicyEditorContext()?.isNew ?? false;
+
+const policyBehaviorText = computed(() =>
+  isNewPolicy ? NEW_POLICY_BEHAVIOR : POLICY_BEHAVIOR_BY_PROFILE[resolvedProfile.value],
 );
 
 const policyName = ref(props.initialPolicyName);
@@ -79,9 +85,9 @@ const DEFERRAL_DAYS_HELP = 'Specify a value between 1-90';
 const GRACE_PERIOD_HELP = 'Specify a value between 0-365';
 
 const DDM_DESCRIPTION_BULLETS = [
-  'Defer and/or enforce major or minor OS updates',
-  'Configure user notifications',
-  "Optionally offer Rapid Security Responses and participate in Apple's Beta program",
+  'Defer and/or enforce major or minor OS updates.',
+  'Configure user notifications.',
+  "Optionally offer Rapid Security Responses and participate in Apple's Beta program.",
 ];
 
 const generalSettingsCollapsed = ref(true);
@@ -174,11 +180,12 @@ const {
                   {{ bullet }}
                 </li>
               </ul>
-              <p v-if="showBetaUpdatesPanel" class="text-body-md m-0 text-neutral-subtle">
-                Updates are enforced using SoftwareUpdateEnforcementSpecific and
-                SoftwareUpdateSettings DDM configurations.
+              <p v-if="showBetaUpdatesPanel || isNewPolicy" class="text-body-md m-0 text-neutral-subtle">
+                Updates are enforced using the SoftwareUpdateEnforcementSpecific DDM
+                configuration and settings are enforced using the SoftwareUpdateSettings DDM
+                configuration.
                 <LinkText
-                  label="Learn more"
+                  label="Learn More"
                   href="#"
                   target="_blank"
                   :showIcon="false"
@@ -459,7 +466,7 @@ const {
       :saving="isSaving"
       :saved="showSavedConfirmation"
       message="You have unsaved changes"
-      saveLabel="Save"
+      saveLabel="Save Policy"
       discardLabel="Cancel"
       savedLabel="Policy saved"
       @save="handleSave"

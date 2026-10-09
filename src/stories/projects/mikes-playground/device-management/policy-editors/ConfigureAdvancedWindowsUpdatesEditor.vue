@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import {
   CollapsiblePanel,
   ConfigPageLayout,
@@ -19,6 +19,7 @@ import {
   ShieldCheckIcon,
 } from '@heroicons/vue/24/outline';
 import PolicySettingCheckbox from './PolicySettingCheckbox.vue';
+import { usePatchPolicyEditor } from './shared/usePatchPolicyEditor';
 
 /** Details tab for the "Configure Advanced Windows Updates" patch policy. */
 
@@ -205,9 +206,6 @@ const notificationSettingsCollapsed = ref(true);
 const deferralSettingsCollapsed = ref(true);
 const enforcementSettingsCollapsed = ref(true);
 
-const isSaving = ref(false);
-const showSavedConfirmation = ref(false);
-
 type PolicySnapshot = {
   policyName: string;
   policyNotes: string;
@@ -224,30 +222,20 @@ function currentSnapshot(): PolicySnapshot {
   };
 }
 
-const baseline = ref<PolicySnapshot>(currentSnapshot());
-
-const isDirty = computed(
-  () => JSON.stringify(currentSnapshot()) !== JSON.stringify(baseline.value),
-);
-
-function handleDiscard() {
-  policyName.value = baseline.value.policyName;
-  policyNotes.value = baseline.value.policyNotes;
-  detectionFrequencyHours.value = baseline.value.detectionFrequencyHours;
-  toggles.value = { ...baseline.value.toggles };
-  showSavedConfirmation.value = false;
+function restoreFromSnapshot(snapshot: PolicySnapshot) {
+  policyName.value = snapshot.policyName;
+  policyNotes.value = snapshot.policyNotes;
+  detectionFrequencyHours.value = snapshot.detectionFrequencyHours;
+  toggles.value = { ...snapshot.toggles };
 }
 
-async function handleSave() {
-  isSaving.value = true;
-  await new Promise((resolve) => setTimeout(resolve, 600));
-  baseline.value = currentSnapshot();
-  isSaving.value = false;
-  showSavedConfirmation.value = true;
-  setTimeout(() => {
-    showSavedConfirmation.value = false;
-  }, 2000);
-}
+const {
+  isDirty,
+  isSaving,
+  showSavedConfirmation,
+  handleDiscard,
+  handleSave,
+} = usePatchPolicyEditor(currentSnapshot, restoreFromSnapshot);
 </script>
 
 <template>
@@ -433,7 +421,7 @@ async function handleSave() {
       :saving="isSaving"
       :saved="showSavedConfirmation"
       message="You have unsaved changes"
-      saveLabel="Save"
+      saveLabel="Save Policy"
       discardLabel="Cancel"
       savedLabel="Policy saved"
       @save="handleSave"

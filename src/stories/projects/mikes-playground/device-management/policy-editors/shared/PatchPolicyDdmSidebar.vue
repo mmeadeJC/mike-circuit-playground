@@ -9,9 +9,9 @@ import {
 } from '@heroicons/vue/24/outline';
 
 const ENROLLMENT_TYPES = [
-  { label: 'User-Enrolled', supported: false },
-  { label: 'Device-Enrolled', supported: true },
-  { label: 'Auto-Enrolled', supported: true },
+  { label: 'User-Enrolled Devices', supported: false },
+  { label: 'Device-Enrolled Devices', supported: true },
+  { label: 'Auto-Enrolled Devices', supported: true },
 ];
 </script>
 
@@ -59,7 +59,7 @@ const ENROLLMENT_TYPES = [
         <span class="text-body-md-semi-bold text-neutral-base block w-full">
           Minimum Supported Version
         </span>
-        <p class="text-body-md text-neutral-base m-0 w-full">macOS 13.0 or later</p>
+        <p class="text-body-md text-neutral-base m-0 w-full">macOS 15.0 or later</p>
       </div>
       <div class="flex flex-col gap-sm w-full">
         <span class="text-body-md-semi-bold text-neutral-base">Supported Enrollment Types</span>

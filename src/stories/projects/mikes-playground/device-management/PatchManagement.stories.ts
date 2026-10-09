@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
 import './PatchManagement.stories.css';
-import { computed, defineComponent, markRaw, ref, watch, type Component } from 'vue';
+import { computed, defineComponent, h, markRaw, ref, watch, type Component } from 'vue';
 import {
   AppNavigation,
   DataTable,
@@ -32,6 +32,7 @@ import MacOsDdmUpdatePolicyEditor from './policy-editors/MacOsDdmUpdatePolicyEdi
 import { createMacOsLegacyEditor } from './policy-editors/createMacOsLegacyEditor';
 import { createIosDdmEditor } from './policy-editors/createIosDdmEditor';
 import { createWindowsLegacyEditor } from './policy-editors/createWindowsLegacyEditor';
+import UbuntuUpdatePolicyEditor from './policy-editors/UbuntuUpdatePolicyEditor.vue';
 import UnifiedPatchDashboard from './UnifiedPatchDashboard.vue';
 import { AppleIcon, IosIcon, LinuxLogoIcon, WindowsIcon } from './patchPolicyIcons';
 import {
@@ -42,7 +43,7 @@ import {
 type PatchPolicy = {
   id: string;
   scope: 'os' | 'browser';
-  os?: 'windows' | 'mac' | 'ios';
+  os?: 'windows' | 'mac' | 'ios' | 'linux';
   browser?: 'chrome';
   name: string;
   description: string;
@@ -62,19 +63,62 @@ const ADD_PATCH_POLICY_OPTIONS: PatchPolicyAddOption[] = [
   { label: 'macOS', value: 'macos', icon: markRaw(AppleIcon), isNew: true },
   { label: 'macOS - Legacy', value: 'macos-legacy', icon: markRaw(ArrowPathIcon) },
   { label: 'Windows', value: 'windows', icon: markRaw(WindowsIcon) },
-  { label: 'Load Default Linux Policies', value: 'linux-default', icon: LinuxLogoIcon },
+  { label: 'Linux', value: 'linux', icon: markRaw(LinuxLogoIcon) },
 ];
+
+/** Editors and defaults for the Add Patch Policy flow, keyed by the dropdown option value. */
+const NEW_POLICY_FLOWS: Record<
+  string,
+  { os: NonNullable<PatchPolicy['os']>; description: string; requirements: string; editor: Component }
+> = {
+  ios: {
+    os: 'ios',
+    description: 'iOS Supervised Update Policy',
+    requirements: 'Require Supervision',
+    editor: markRaw(createIosDdmEditor('Automatic iOS Updates', 'general-adoption')),
+  },
+  macos: {
+    os: 'mac',
+    description: 'Automatic macOS Updates',
+    requirements: 'Require Supervision',
+    editor: markRaw(
+      defineComponent({
+        name: 'NewMacOsDdmEditor',
+        setup: () => () => h(MacOsDdmUpdatePolicyEditor, { initialPolicyName: 'Automatic macOS Updates' }),
+      }),
+    ),
+  },
+  'macos-legacy': {
+    os: 'mac',
+    description: 'Automatic macOS Updates - Legacy',
+    requirements: 'JumpCloud MDM enrollment for macOS 11.0+',
+    editor: markRaw(createMacOsLegacyEditor('Automatic macOS Updates - Legacy')),
+  },
+  windows: {
+    os: 'windows',
+    description: 'Configure Advanced Windows Updates',
+    requirements: 'JumpCloud MDM enrollment',
+    editor: markRaw(ConfigureAdvancedWindowsUpdatesEditor),
+  },
+  linux: {
+    os: 'linux',
+    description: 'Configure Ubuntu Updates',
+    requirements: '',
+    editor: markRaw(UbuntuUpdatePolicyEditor),
+  },
+};
 
 const OsTypeIcon = markRaw(defineComponent({
   name: 'OsTypeIcon',
   props: {
     os: { type: String, default: 'windows' },
   },
-  components: { WindowsIcon, AppleIcon, IosIcon },
+  components: { WindowsIcon, AppleIcon, IosIcon, LinuxLogoIcon },
   template: `
     <div class="flex items-center justify-center w-full">
       <WindowsIcon v-if="os === 'windows'" />
       <IosIcon v-else-if="os === 'ios'" />
+      <LinuxLogoIcon v-else-if="os === 'linux'" />
       <AppleIcon v-else />
     </div>
   `,
@@ -388,9 +432,12 @@ const PatchManagementPage = defineComponent({
 
     const hasPendingTableActions = computed(() => selectedPolicies.value.length > 0);
 
-    const editingPolicyEditor = computed(() =>
-      editingPolicy.value ? POLICY_EDITORS[editingPolicy.value.name] ?? null : null,
-    );
+    const creatingFlow = ref<string | null>(null);
+
+    const editingPolicyEditor = computed(() => {
+      if (creatingFlow.value) return NEW_POLICY_FLOWS[creatingFlow.value].editor;
+      return editingPolicy.value ? POLICY_EDITORS[editingPolicy.value.name] ?? null : null;
+    });
 
     const tableSaveBarMessage = computed(() => {
       const count = selectedPolicies.value.length;
@@ -449,10 +496,35 @@ const PatchManagementPage = defineComponent({
     function closePolicyEditor() {
       activeView.value = 'list';
       editingPolicy.value = null;
+      creatingFlow.value = null;
     }
 
-    function handleAddPatchPolicyOption(_option?: PatchPolicyAddOption) {
-      // Prototype only — creation flows are not built yet.
+    function handleAddPatchPolicyOption(option: PatchPolicyAddOption) {
+      const flow = NEW_POLICY_FLOWS[option.value];
+      if (!flow) return;
+      creatingFlow.value = option.value;
+      editingPolicy.value = {
+        id: `new-${Date.now()}`,
+        scope: 'os',
+        os: flow.os,
+        name: 'New Policy',
+        description: flow.description,
+        requirements: flow.requirements,
+        delayDays: 0,
+      };
+      activeView.value = 'edit';
+    }
+
+    function handlePolicyCreated(policyName: string) {
+      const draft = editingPolicy.value;
+      if (draft) {
+        policies.value = [
+          { ...draft, name: policyName || draft.description },
+          ...policies.value,
+        ];
+      }
+      first.value = 0;
+      closePolicyEditor();
     }
 
     function handleAddBrowserPolicy() {
@@ -477,6 +549,8 @@ const PatchManagementPage = defineComponent({
       first,
       handleAddBrowserPolicy,
       handleAddPatchPolicyOption,
+      handlePolicyCreated,
+      creatingFlow,
       handlePageChange,
       handleSearch,
       handleTableDiscard,
@@ -513,7 +587,9 @@ const PatchManagementPage = defineComponent({
       v-if="activeView === 'edit' && editingPolicy"
       :policy="editingPolicy"
       :editor="editingPolicyEditor"
+      :mode="creatingFlow ? 'create' : 'edit'"
       @back="closePolicyEditor"
+      @created="handlePolicyCreated"
     />
 
     <div v-else class="flex h-screen overflow-hidden">

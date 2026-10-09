@@ -648,7 +648,7 @@ const {
       :saving="isSaving"
       :saved="showSavedConfirmation"
       message="You have unsaved changes"
-      saveLabel="Save"
+      saveLabel="Save Policy"
       discardLabel="Cancel"
       savedLabel="Policy saved"
       @save="handleSave"

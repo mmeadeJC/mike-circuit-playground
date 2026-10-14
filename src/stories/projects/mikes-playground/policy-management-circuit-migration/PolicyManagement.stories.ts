@@ -58,6 +58,7 @@ import { DeviceManagementIcon } from '@jumpcloud/icons';
 
 import TopBar from '../../../../components/AdminTopBar.vue';
 import {
+  devicePolicyCatalog,
   filterDevicePolicyTemplates,
   type DevicePolicyTemplate,
 } from '@/stories/projects/mikes-playground/policy-management-circuit-migration/demo/devicePolicyCatalog';
@@ -98,13 +99,18 @@ const IosIcon = defineComponent({
   template: `<div class="flex items-center justify-center" style="width: 16px; height: 16px;"><div class="rounded-full flex items-center justify-center" style="width: 13.33px; height: 13.33px; background-color: #1a2233;"><span class="font-semibold leading-none" style="font-size: 5px; color: #ffffff;">iOS</span></div></div>`,
 });
 
+const AndroidIcon = defineComponent({
+  template: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85a.637.637 0 00-.83.22l-1.88 3.24a11.43 11.43 0 00-8.94 0L5.65 5.67a.643.643 0 00-.87-.2c-.28.18-.37.54-.22.83L6.4 9.48A10.78 10.78 0 001 18h22a10.78 10.78 0 00-5.4-8.52zM7 15.25a1.25 1.25 0 110-2.5 1.25 1.25 0 010 2.5zm10 0a1.25 1.25 0 110-2.5 1.25 1.25 0 010 2.5z"/></svg>`,
+});
+
 const OsTypeIcon = defineComponent({
   props: { os: { type: String, default: 'windows' } },
-  components: { WindowsIcon, AppleIcon, IosIcon },
+  components: { WindowsIcon, AppleIcon, IosIcon, AndroidIcon },
   template: `
     <div class="flex items-center justify-center">
       <WindowsIcon v-if="os === 'windows'" />
       <IosIcon v-else-if="os === 'ios'" />
+      <AndroidIcon v-else-if="os === 'android'" />
       <AppleIcon v-else />
     </div>
   `,
@@ -112,17 +118,15 @@ const OsTypeIcon = defineComponent({
 
 // ─── Policy List Data ──────────────────────────────────────────────
 
-const policyData = [
-  { id: 1, os: 'windows', name: 'Mike Meade 01', description: 'Description text', policyLevel: 'User', requirements: 'JumpCloud MDM Enrollment' },
-  { id: 2, os: 'windows', name: 'Mike Meade 01', description: 'Description text', policyLevel: 'User', requirements: 'JumpCloud MDM Enrollment' },
-  { id: 3, os: 'ios', name: 'Allow Activation Lock', description: 'Description text', policyLevel: 'Device', requirements: 'JumpCloud MDM Enrollment' },
-  { id: 4, os: 'mac', name: 'Allow Activation Lock', description: 'Description text', policyLevel: 'Device', requirements: 'JumpCloud MDM Enrollment' },
-  { id: 5, os: 'mac', name: 'Mike Meade 01', description: 'Description text', policyLevel: 'User', requirements: 'JumpCloud MDM Enrollment' },
-  { id: 6, os: 'windows', name: 'Allow Activation Lock', description: 'Description text', policyLevel: 'Device', requirements: 'JumpCloud MDM Enrollment' },
-  { id: 7, os: 'windows', name: 'Mike Meade 01', description: 'Description text', policyLevel: 'User', requirements: 'JumpCloud MDM Enrollment' },
-  { id: 8, os: 'ios', name: 'Allow Activation Lock', description: 'Description text', policyLevel: 'Device', requirements: 'JumpCloud MDM Enrollment' },
-  { id: 9, os: 'windows', name: 'Mike Meade 01', description: 'Description text', policyLevel: 'User', requirements: 'Jumpcloud MDM Enrollment' },
-];
+// One row per Canvas story in this folder (device policies only).
+const policyData = devicePolicyCatalog.map((tpl, i) => ({
+  id: i + 1,
+  os: tpl.os[0],
+  name: tpl.name,
+  description: tpl.description,
+  policyLevel: 'Device',
+  requirements: tpl.type === 'MDM' ? 'JumpCloud MDM Enrollment' : 'JumpCloud Agent',
+}));
 
 const policyColumns = [
   {
@@ -794,8 +798,6 @@ const UserScopedPoliciesPage = defineComponent({
               :paginator="true"
               :rows="listRows"
               :first="listFirst"
-              :totalRecords="435"
-              :lazy="true"
               scrollable
               scrollHeight="flex"
               :rowsPerPageOptions="[

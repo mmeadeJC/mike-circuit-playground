@@ -271,8 +271,8 @@ const defaultEnrollmentTypes = [
   'Auto-Enrolled Devices',
 ];
 
-const UserScopedPoliciesPage = defineComponent({
-  name: 'UserScopedPoliciesPage',
+const PolicyManagementPage = defineComponent({
+  name: 'PolicyManagementPage',
   components: {
     AppNavigation, PageHeader, CollapsiblePanel, CircuitDataTable, DataTableToolbar,
     CheckboxWithLabel, FormField, MessageNotification, LinkText,
@@ -1166,10 +1166,10 @@ const UserScopedPoliciesPage = defineComponent({
 });
 
 
-export { UserScopedPoliciesPage };
-const meta: Meta<typeof UserScopedPoliciesPage> = {
+export { PolicyManagementPage };
+const meta: Meta<typeof PolicyManagementPage> = {
   title: "Projects/Mike's Playground/Policy Management - Circuit Migration/Policy Management",
-  component: UserScopedPoliciesPage,
+  component: PolicyManagementPage,
   parameters: {
     layout: 'fullscreen',
   },
@@ -1177,6 +1177,6 @@ const meta: Meta<typeof UserScopedPoliciesPage> = {
 
 export default meta;
 
-type Story = StoryObj<typeof UserScopedPoliciesPage>;
+type Story = StoryObj<typeof PolicyManagementPage>;
 
 export const Default: Story = {};

@@ -62,6 +62,7 @@ import {
   filterDevicePolicyTemplates,
   type DevicePolicyTemplate,
 } from '@/stories/projects/mikes-playground/policy-management-circuit-migration/demo/devicePolicyCatalog';
+import { storybookNavigateToPolicy } from '@/stories/projects/mikes-playground/policy-management-circuit-migration/demo/storybookPolicyMigrationNav';
 import { navigationNewBadgeClass } from '@/stories/projects/mikes-playground/policy-management-circuit-migration/demo/navigationNewBadge';
 import { usePolicyMigrationNav, readPolicyMigrationView, readStoredPolicyMigrationContext, writePolicyMigrationView, writeStoredPolicyMigrationContext } from '@/stories/projects/mikes-playground/policy-management-circuit-migration/demo/policyMigrationNav';
 import {
@@ -125,6 +126,7 @@ const policyData = devicePolicyCatalog.map((tpl, i) => ({
   name: tpl.name,
   description: tpl.description,
   policyLevel: 'Device',
+  path: tpl.path,
   requirements: tpl.type === 'MDM' ? 'JumpCloud MDM Enrollment' : 'JumpCloud Agent',
 }));
 
@@ -567,6 +569,14 @@ const UserScopedPoliciesPage = defineComponent({
 
     function openDetailFromRow(event: { data: Record<string, unknown> }) {
       const row = event.data;
+      const rowPath = row.path as string | undefined;
+      if (rowPath) {
+        if (policyMigrationNav) {
+          policyMigrationNav.goToPolicy(rowPath, { policyType: 'device', osTab: (row.os as string) || 'windows' });
+          return;
+        }
+        if (storybookNavigateToPolicy(rowPath)) return;
+      }
       policyType.value = row.policyLevel === 'User' ? 'user' : 'device';
       detailIsEditFlow.value = true;
       detailOs.value = (row.os as string) || 'windows';
@@ -650,6 +660,7 @@ const UserScopedPoliciesPage = defineComponent({
         });
         return;
       }
+      if ('path' in tpl && tpl.path && storybookNavigateToPolicy(tpl.path)) return;
       if (tpl.id === 2) openDetail();
     }
 

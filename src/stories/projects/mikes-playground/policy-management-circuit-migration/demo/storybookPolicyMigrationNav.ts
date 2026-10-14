@@ -11,7 +11,7 @@ import {
 } from './policyMigrationRouter';
 
 const storybookGoToPolicyManagement = linkTo(
-  "Projects/Mike's Playground/User Scoped Policies/Pages/Policy Management",
+  "Projects/Mike's Playground/Policy Management - Circuit Migration/Policy Management",
   'Default',
 );
 
@@ -24,6 +24,41 @@ const storybookGoToPatchManagement = linkTo(
   "Projects/Mike's Playground/Device Management/Patch Management",
   'Default',
 );
+
+const CANVAS_TITLE_PREFIX = "Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/";
+
+/** Demo route path → Canvas story title (relative to the Canvas folder). */
+const CANVAS_STORY_TITLES: Record<string, string> = {
+  '/custom-registry-keys': 'Advanced: Custom Registry Keys',
+  '/policy-details-tab': 'Policy Details Tab',
+  '/schedule-restart': 'Schedule Restart',
+  '/application-restriction': 'Application Restriction',
+  '/bluetooth-configuration': 'Bluetooth Configuration',
+  '/custom-mdm-oma-uri': 'Custom MDM (OMA-URI)',
+  '/google-chrome-extensions': 'Google Chrome Browser Force-Installed Extension List',
+  '/install-certificate': 'Install Certificate',
+  '/ms-edge-extensions': 'MS Edge Extensions',
+  '/wifi-configuration': 'WiFi Configuration',
+  '/allow-activation-lock': 'Allow Activation Lock',
+  '/filevault-2': 'FileVault 2',
+  '/filevault-tutorial-modal': 'FileVault Tutorial Modal',
+  '/mdm-custom-configuration-profile': 'MDM Custom Configuration Profile',
+  '/recovery-lock': 'Recovery Lock',
+  '/software-update-enforcement': 'Software Update Enforcement',
+  '/custom-payload': 'Custom Payload',
+  '/kiosk-mode': 'Kiosk Mode',
+  '/system-update': 'System Update',
+  '/single-app-mode': 'Single App Mode',
+  '/supervised-ios-restrictions': 'Supervised iOS Restrictions',
+};
+
+/** Jump to a policy's Canvas story in Storybook. Returns false if the path has no story. */
+export function storybookNavigateToPolicy(path: string): boolean {
+  const title = CANVAS_STORY_TITLES[path];
+  if (!title) return false;
+  linkTo(CANVAS_TITLE_PREFIX + title, 'Default')();
+  return true;
+}
 
 export function storybookNavigateToPolicyManagementList(): void {
   storybookGoToPolicyManagement();

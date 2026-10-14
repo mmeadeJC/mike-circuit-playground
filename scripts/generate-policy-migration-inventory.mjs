@@ -123,7 +123,7 @@ function generateMarkdown(results) {
   lines.push('');
   lines.push('---');
   lines.push('');
-  lines.push('## Shared baseline (all 21 pages)');
+  lines.push('## Shared baseline (all 20 pages)');
   lines.push('');
   lines.push(
     'Every migration page includes these components. They are omitted from the per-page "extras" columns below.',
@@ -153,7 +153,7 @@ function generateMarkdown(results) {
   lines.push('');
   lines.push('- **19 pages** use `DetailPageLayout` (main column + sidebar).');
   lines.push(
-    '- **2 pages** use `ConfigPageLayout` (single column, no sidebar): **Policy Details Tab**, **Advanced: Custom Registry Keys**.',
+    '- **1 page** uses `ConfigPageLayout` (single column, no sidebar): **Advanced: Custom Registry Keys**.',
   );
   lines.push('');
   lines.push('---');

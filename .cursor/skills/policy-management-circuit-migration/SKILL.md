@@ -22,7 +22,7 @@ Create Storybook pages that migrate legacy Policy Management detail views to Cir
 | Story title | `"Projects/Mike's Playground/Policy Management - Circuit Migration/{Display Name}"` |
 | Component name | `{PolicyName}Page` via `defineComponent` |
 
-**Reference stories:** `PolicyDetailsTab`, `FileVault2`, `WiFiConfiguration`, `GoogleChromeForceInstalledExtensionList`, `CustomMdmOmaUri`, `FileVaultTutorialModal`
+**Reference stories:** `CustomRegistryKeys`, `FileVault2`, `WiFiConfiguration`, `GoogleChromeForceInstalledExtensionList`, `CustomMdmOmaUri`, `FileVaultTutorialModal`
 
 Legacy screenshots (when available): `exports/` at repo root.
 
@@ -118,7 +118,7 @@ Only implement **Details** tab content. Other tabs use a centered placeholder:
 
 | Layout | Use when |
 |--------|----------|
-| `ConfigPageLayout` | Single column, no sidebar (e.g. Policy Details Tab) — `class="w-full! h-full!"` `maxWidth="1024"` |
+| `ConfigPageLayout` | Single column, no sidebar (e.g. Custom Registry Keys) — `class="w-full! h-full!"` `maxWidth="1024"` |
 | `DetailPageLayout` | Main content + sidebar (e.g. FileVault, WiFi) — `class="w-full! min-h-full"` `max-width="1440"` `:show-sidebar="true"` |
 
 Import layouts from `@jumpcloud/circuit/components`, not local re-exports.

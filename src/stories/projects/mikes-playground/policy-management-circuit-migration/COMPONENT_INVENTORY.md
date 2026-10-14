@@ -8,7 +8,7 @@ Regenerate: `npm run inventory:policy-migration` (or automatically while Storybo
 
 ---
 
-## Shared baseline (all 21 pages)
+## Shared baseline (all 20 pages)
 
 Every migration page includes these components. They are omitted from the per-page "extras" columns below.
 
@@ -35,7 +35,7 @@ Every migration page includes these components. They are omitted from the per-pa
 ### Layout
 
 - **19 pages** use `DetailPageLayout` (main column + sidebar).
-- **2 pages** use `ConfigPageLayout` (single column, no sidebar): **Policy Details Tab**, **Advanced: Custom Registry Keys**.
+- **1 page** uses `ConfigPageLayout` (single column, no sidebar): **Advanced: Custom Registry Keys**.
 
 ---
 
@@ -48,7 +48,7 @@ Components beyond the shared baseline on each page.
 | Allow Activation Lock | `DetailPageLayout` | — | — | — |
 | Application Restriction | `DetailPageLayout` | `MessageNotification` | `Button`, `IconField`, `InputIcon`, `Select` | — |
 | Bluetooth Configuration | `DetailPageLayout` | `CheckboxWithLabel`, `MessageNotification` | `Button` | `v-tooltip` directive |
-| Custom MDM (OMA-URI) | `DetailPageLayout` | `MessageNotification` | `Button`, `Select` | — |
+| Custom MDM (OMA-URI) | `DetailPageLayout` | `MessageNotification` | `Button`, `Select` | `PolicyVariablesPanel`, `VariableInput` |
 | Custom Payload | `DetailPageLayout` | `CopyButton` | `Button` | `v-tooltip` directive |
 | Advanced: Custom Registry Keys | `ConfigPageLayout` | — | `Button`, `Select` | — |
 | FileVault 2 | `DetailPageLayout` | `CheckboxWithLabel`, `MessageNotification` | `Button` | `v-tooltip` directive |
@@ -58,7 +58,7 @@ Components beyond the shared baseline on each page.
 | Kiosk Mode | `DetailPageLayout` | `RadioButtonWithLabel` | `Button`, `MultiSelect`, `Select`, `SelectButton` | — |
 | MDM Custom Configuration Profile | `DetailPageLayout` | `CheckboxWithLabel`, `CopyButton` | — | `CircuitFileUpload` |
 | MS Edge Extensions | `DetailPageLayout` | `CheckboxWithLabel`, `MessageNotification`, `RadioButtonWithLabel` | — | `v-tooltip` directive |
-| Policy Details Tab | `ConfigPageLayout` | — | `Button`, `Select` | — |
+| Policy Management | `DetailPageLayout` | `CheckboxWithLabel`, `DataTable`, `DataTableCellLink`, `DataTableCellText`, `DataTableCellToken`, `DataTableToolbar`, `KeyValue`, `MessageNotification` | `Button`, `IconField`, `InputIcon`, `Menu`, `Tab`, `TabList`, `Tabs` | — |
 | Recovery Lock | `DetailPageLayout` | `CheckboxWithLabel`, `MessageNotification`, `RadioButtonWithLabel` | — | — |
 | Schedule Restart | `DetailPageLayout` | `DatePicker`, `MessageNotification` | `InputGroup`, `InputGroupAddon`, `Select` | — |
 | Single App Mode | `DetailPageLayout` | `CheckboxWithLabel`, `Paginator`, `RadioButtonWithLabel` | `Button`, `Dialog`, `IconField`, `InputIcon`, `RadioButton` | — |
@@ -198,7 +198,9 @@ Components beyond the shared baseline on each page.
 
 **Playground local:**
 
+- `PolicyVariablesPanel` (`@/components/`)
 - `TopBar` (`@/components/`)
+- `VariableInput` (`@/components/`)
 
 ---
 
@@ -511,34 +513,42 @@ Components beyond the shared baseline on each page.
 
 ---
 
-### Policy Details Tab
+### Policy Management
 
-- **Story file:** `PolicyDetailsTab.stories.ts`
-- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Policy Details Tab`
-- **Layout:** `ConfigPageLayout`
+- **Story file:** `PolicyManagement.stories.ts`
+- **Storybook path:** `Projects/Mike's Playground/Policy Management - Circuit Migration/Canvas/Policy Management`
+- **Layout:** `DetailPageLayout`
 
 **Circuit custom** (`@jumpcloud/circuit/components`):
 
 - `AppNavigation`
+- `CheckboxWithLabel`
 - `CollapsiblePanel`
-- `ConfigPageLayout`
+- `DataTable`
+- `DataTableCellLink`
+- `DataTableCellText`
+- `DataTableCellToken`
+- `DataTableToolbar`
+- `DetailPageLayout`
 - `FormField`
+- `KeyValue`
 - `LinkText`
+- `MessageNotification`
 - `PageHeader`
-- `PageSaveBar`
 
 **PrimeVue primitives** (`primevue/*`):
 
 - `Button`
 - `Divider`
+- `IconField`
+- `InputIcon`
 - `InputText`
-- `Select`
+- `Menu`
+- `Tab`
+- `TabList`
+- `Tabs`
 - `Tag`
 - `Textarea`
-
-**Playground local:**
-
-- `TopBar` (`@/components/`)
 
 ---
 
@@ -790,16 +800,22 @@ Components beyond the shared baseline on each page.
 
 All components used anywhere in this folder.
 
-### Circuit custom (15)
+### Circuit custom (21)
 
 - `AppNavigation`
 - `CheckboxWithLabel`
 - `CollapsiblePanel`
 - `ConfigPageLayout`
 - `CopyButton`
+- `DataTable`
+- `DataTableCellLink`
+- `DataTableCellText`
+- `DataTableCellToken`
+- `DataTableToolbar`
 - `DatePicker`
 - `DetailPageLayout`
 - `FormField`
+- `KeyValue`
 - `LinkText`
 - `MessageNotification`
 - `PageHeader`
@@ -808,7 +824,7 @@ All components used anywhere in this folder.
 - `Password`
 - `RadioButtonWithLabel`
 
-### PrimeVue primitives (14)
+### PrimeVue primitives (18)
 
 - `Button`
 - `Dialog`
@@ -818,17 +834,23 @@ All components used anywhere in this folder.
 - `InputGroupAddon`
 - `InputIcon`
 - `InputText`
+- `Menu`
 - `MultiSelect`
 - `RadioButton`
 - `Select`
 - `SelectButton`
+- `Tab`
+- `TabList`
+- `Tabs`
 - `Tag`
 - `Textarea`
 
-### Playground local (2)
+### Playground local (4)
 
 - `CircuitFileUpload`
+- `PolicyVariablesPanel`
 - `TopBar`
+- `VariableInput`
 
 ### Directives
 

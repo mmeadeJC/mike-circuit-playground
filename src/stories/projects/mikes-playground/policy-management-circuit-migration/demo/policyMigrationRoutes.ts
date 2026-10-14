@@ -39,8 +39,6 @@ const pageLoaders: Record<string, () => Promise<Component>> = {
     ),
   '/ms-edge-extensions': () =>
     import('../MsEdgeExtensions.stories').then((m) => m.MsEdgeExtensionsPage),
-  '/policy-details-tab': () =>
-    import('../PolicyDetailsTab.stories').then((m) => m.PolicyDetailsTabPage),
   '/recovery-lock': () => import('../RecoveryLock.stories').then((m) => m.RecoveryLockPage),
   '/schedule-restart': () =>
     import('../ScheduleRestart.stories').then((m) => m.ScheduleRestartPage),

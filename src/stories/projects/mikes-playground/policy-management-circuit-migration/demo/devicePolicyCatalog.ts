@@ -24,16 +24,6 @@ export const devicePolicyCatalog: DevicePolicyTemplate[] = [
     path: '/custom-registry-keys',
   },
   {
-    id: 'policy-details-tab',
-    name: 'Policy Details Tab',
-    nameDesc: 'Enterprise Settings, Configuration',
-    type: 'Agent',
-    description:
-      'Custom policies allow you to configure registry keys on Windows systems.',
-    os: ['windows'],
-    path: '/policy-details-tab',
-  },
-  {
     id: 'schedule-restart',
     name: 'Schedule Restart',
     nameDesc: 'Enterprise Settings, Configuration',

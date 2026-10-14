@@ -30,7 +30,6 @@ const CANVAS_TITLE_PREFIX = "Projects/Mike's Playground/Policy Management - Circ
 /** Demo route path → Canvas story title (relative to the Canvas folder). */
 const CANVAS_STORY_TITLES: Record<string, string> = {
   '/custom-registry-keys': 'Advanced: Custom Registry Keys',
-  '/policy-details-tab': 'Policy Details Tab',
   '/schedule-restart': 'Schedule Restart',
   '/application-restriction': 'Application Restriction',
   '/bluetooth-configuration': 'Bluetooth Configuration',

@@ -21,7 +21,7 @@ export const Default: Story = {
         <div class="flex flex-col gap-md p-md">
           <h3 class="text-heading-3 text-neutral-base m-0">Single-column config page</h3>
           <p class="text-body-md text-neutral-subtle m-0">
-            Used on Policy Details Tab and Custom Registry Keys where no sidebar is required.
+            Used on Custom Registry Keys where no sidebar is required.
           </p>
         </div>
       </ConfigPageLayout>

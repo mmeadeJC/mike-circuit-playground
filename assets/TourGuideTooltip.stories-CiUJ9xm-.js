@@ -1,3 +1,0 @@
-import"./iframe-BF79XtSp.js";import"./RichText.vue-CqGWfsH6.js";import{T as p}from"./TourGuideTooltip.vue-DMf7rsQL.js";import"./preload-helper-Dp1pzeXC.js";import"./index-DR5Ktjtn.js";import"./index-DTZ-8UWl.js";import"./index-dcWUga6b.js";import"./index-Du18TKou.js";import"./index-xyLKPl8B.js";import"./index-ZhWAdK_X.js";import"./index-BVIEBy36.js";import"./_plugin-vue_export-helper-DlAUqK2U.js";const D={title:"Circuit DS/Components/TourGuideTooltip",component:p,tags:["autodocs"]},o={args:{}};var r,t,e;o.parameters={...o.parameters,docs:{...(r=o.parameters)==null?void 0:r.docs,source:{originalSource:`{
-  args: {}
-}`,...(e=(t=o.parameters)==null?void 0:t.docs)==null?void 0:e.source}}};const x=["Default"];export{o as Default,x as __namedExportsOrder,D as default};

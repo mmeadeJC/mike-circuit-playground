@@ -5,7 +5,8 @@ import {
   PageHeader,
   CollapsiblePanel,
   DataTable as CircuitDataTable,
-  DataTableToolbar,
+  ActionsToolbar,
+  SeverityDialog,
   DataTableCellText,
   DataTableCellToken,
   DataTableCellLink,
@@ -120,7 +121,7 @@ const OsTypeIcon = defineComponent({
 // ─── Policy List Data ──────────────────────────────────────────────
 
 // One row per Canvas story in this folder (device policies only).
-const policyData = devicePolicyCatalog.map((tpl, i) => ({
+const policyRows = devicePolicyCatalog.map((tpl, i) => ({
   id: i + 1,
   os: tpl.os[0],
   name: tpl.name,
@@ -158,10 +159,6 @@ const policyColumns = [
   },
 ];
 
-const exportOptions = [
-  { id: 'csv', label: 'Export as CSV' },
-  { id: 'json', label: 'Export as JSON' },
-];
 
 // ─── User policy template data (legacy placeholders) ───────────────
 
@@ -274,7 +271,7 @@ const defaultEnrollmentTypes = [
 const PolicyManagementPage = defineComponent({
   name: 'PolicyManagementPage',
   components: {
-    AppNavigation, PageHeader, CollapsiblePanel, CircuitDataTable, DataTableToolbar,
+    AppNavigation, PageHeader, CollapsiblePanel, CircuitDataTable, ActionsToolbar, SeverityDialog,
     CheckboxWithLabel, FormField, MessageNotification, LinkText,
     PvButton: Button, PvTag: Tag, PvInputText: InputText, PvTextarea: Textarea,
     PvTabs: Tabs, PvTabList: TabList, PvTab: Tab, PvDivider: Divider, PvMenu: Menu,
@@ -292,7 +289,36 @@ const PolicyManagementPage = defineComponent({
     // ── List view state ──
     const showRecommendations = ref(true);
     const recommendationsCollapsed = ref(false);
-    const selectedPolicies = ref([]);
+    const selectedPolicies = ref<Array<Record<string, unknown>>>([]);
+    const policyData = ref([...policyRows]);
+    const bulkActions = [{ id: 'delete', label: 'Delete' }];
+    const toolbarSelectedItems = computed(() =>
+      selectedPolicies.value.map((p) => ({ id: String(p.id), label: p.name as string })),
+    );
+    const showDeleteDialog = ref(false);
+    const deleteDialogContent = computed(() => {
+      const n = selectedPolicies.value.length;
+      return n === 1
+        ? `This will delete **${selectedPolicies.value[0]?.name}**. Devices will no longer receive this policy.`
+        : `This will delete **${n} policies**. Devices will no longer receive these policies.`;
+    });
+    function handleBulkAction(action: { id: string }) {
+      if (action.id === 'delete') showDeleteDialog.value = true;
+    }
+    function handleDeselectItem(item: { id: string }) {
+      selectedPolicies.value = selectedPolicies.value.filter((p) => String(p.id) !== item.id);
+    }
+    function clearSelection() { selectedPolicies.value = []; }
+    function confirmDelete() {
+      const ids = new Set(selectedPolicies.value.map((p) => p.id));
+      const n = ids.size;
+      policyData.value = policyData.value.filter((p) => !ids.has(p.id));
+      selectedPolicies.value = [];
+      showDeleteDialog.value = false;
+      successToastMessage.value = n === 1 ? 'Policy deleted.' : `${n} policies deleted.`;
+      showSuccessToast.value = true;
+      setTimeout(() => { showSuccessToast.value = false; }, 4000);
+    }
     const listFirst = ref(0);
     const listRows = ref(10);
     const showSuccessToast = ref(false);
@@ -667,7 +693,8 @@ const PolicyManagementPage = defineComponent({
 
     return {
       menuItems, profileMenuItems,
-      policyData, policyColumns, exportOptions,
+      policyData, policyColumns, bulkActions, toolbarSelectedItems, showDeleteDialog, deleteDialogContent,
+      handleBulkAction, handleDeselectItem, clearSelection, confirmDelete,
       legacyUserPolicyTemplates,
       filteredPolicyTemplates,
       navigationNewBadgeClass,
@@ -787,16 +814,12 @@ const PolicyManagementPage = defineComponent({
                 <PvInputIcon class="flex items-center justify-center"><MagnifyingGlassIcon class="w-4 h-4" /></PvInputIcon>
                 <PvInputText placeholder="Search" class="w-full" />
               </PvIconField>
-              <div class="flex-1 flex items-center min-w-0 [&_[data-pc-name=iconfield]]:hidden [&>div]:pb-0">
-                <DataTableToolbar
-                  :showAddButton="false"
-                  :showFilterButton="true"
-                  :showRefreshButton="true"
-                  :showColumnsButton="true"
-                  :showDownloadButton="true"
-                  :exportOptions="exportOptions"
-                />
-              </div>
+              <PvButton severity="secondary" variant="text" aria-label="Filter" v-tooltip.top="'Filter'">
+                <template #icon="iconProps"><FunnelIcon :class="iconProps.class" /></template>
+              </PvButton>
+              <PvButton severity="secondary" variant="text" aria-label="Refresh" v-tooltip.top="'Refresh'">
+                <template #icon="iconProps"><ArrowPathIcon :class="iconProps.class" /></template>
+              </PvButton>
             </div>
 
             <CircuitDataTable
@@ -822,6 +845,39 @@ const PolicyManagementPage = defineComponent({
               @row-click="openDetailFromRow"
             />
           </div>
+
+          <!-- Floating bulk actions -->
+          <Transition
+            enter-active-class="transition-all duration-200 ease-out"
+            enter-from-class="opacity-0 translate-y-2"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition-all duration-150 ease-in"
+            leave-from-class="opacity-100 translate-y-0"
+            leave-to-class="opacity-0 translate-y-2"
+          >
+            <div v-if="selectedPolicies.length > 0" class="absolute bottom-16 left-1/2 -translate-x-1/2 z-10">
+              <ActionsToolbar
+                :actions="bulkActions"
+                :selectedItems="toolbarSelectedItems"
+                @action="handleBulkAction"
+                @deselect="handleDeselectItem"
+                @close="clearSelection"
+              />
+            </div>
+          </Transition>
+
+          <SeverityDialog
+            v-model:visible="showDeleteDialog"
+            dialogTitle="Delete policies"
+            variant="sev2"
+            messageTitle="This can't be undone"
+            messageContent="Deleted policies are removed from all bound devices and groups."
+            :dialogContent="deleteDialogContent"
+            actionText="Delete"
+            cancelText="Cancel"
+            @action="confirmDelete"
+            @cancel="showDeleteDialog = false"
+          />
         </div>
       </div>
     </div>

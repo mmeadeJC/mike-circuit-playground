@@ -1,3 +1,7 @@
 /** Same classes as AppNavigation `isNew` badge in NavigationMenuItemContent. */
 export const navigationNewBadgeClass =
   'select-none inline-flex shrink-0 items-center bg-purple-500 text-purple-1000 font-bold text-[0.5rem] leading-none py-0.5 px-1 rounded-xs';
+
+/** Same shape as the NEW badge, using Circuit Tag/Primary colors (Tag/Primary/BG + Tag/Primary/Text). */
+export const navigationUpdateBadgeClass =
+  'select-none inline-flex shrink-0 items-center bg-tag-primary text-tag-primary-text font-bold text-[0.5rem] leading-none py-0.5 px-1 rounded-xs';

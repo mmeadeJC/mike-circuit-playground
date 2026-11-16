@@ -9,6 +9,7 @@ export type DevicePolicyTemplate = {
   os: DevicePolicyOs[];
   path: string;
   isNew?: boolean;
+  isUpdated?: boolean;
 };
 
 /** Device policy templates from Policy Management — Circuit Migration stories. */
@@ -53,6 +54,7 @@ export const devicePolicyCatalog: DevicePolicyTemplate[] = [
     description: 'This policy configures Bluetooth restrictions for Windows 10 and 11 devices.',
     os: ['windows'],
     path: '/bluetooth-configuration',
+    isUpdated: true,
   },
   {
     id: 'custom-mdm-oma-uri',
@@ -63,6 +65,7 @@ export const devicePolicyCatalog: DevicePolicyTemplate[] = [
       'This policy allows administrators to create custom settings not covered in built-in MDM policies.',
     os: ['windows'],
     path: '/custom-mdm-oma-uri',
+    isUpdated: true,
   },
   {
     id: 'google-chrome-extensions',

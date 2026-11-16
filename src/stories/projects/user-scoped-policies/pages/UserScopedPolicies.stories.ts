@@ -61,7 +61,7 @@ import {
   filterDevicePolicyTemplates,
   type DevicePolicyTemplate,
 } from '@/stories/projects/mikes-playground/policy-management-circuit-migration/demo/devicePolicyCatalog';
-import { navigationNewBadgeClass } from '@/stories/projects/mikes-playground/policy-management-circuit-migration/demo/navigationNewBadge';
+import { navigationNewBadgeClass, navigationUpdateBadgeClass } from '@/stories/projects/mikes-playground/policy-management-circuit-migration/demo/navigationNewBadge';
 import { usePolicyMigrationNav, readPolicyMigrationView, readStoredPolicyMigrationContext, writePolicyMigrationView, writeStoredPolicyMigrationContext } from '@/stories/projects/mikes-playground/policy-management-circuit-migration/demo/policyMigrationNav';
 import {
   menuItems,
@@ -656,6 +656,7 @@ const UserScopedPoliciesPage = defineComponent({
       legacyUserPolicyTemplates,
       filteredPolicyTemplates,
       navigationNewBadgeClass,
+      navigationUpdateBadgeClass,
       bindingUsersData, bindingUsersColumns,
       bindingDevicesData, bindingDevicesColumns,
       policyGroupsData, policyGroupColumns,
@@ -884,6 +885,10 @@ const UserScopedPoliciesPage = defineComponent({
                     :class="navigationNewBadgeClass"
                   >NEW</span>
                 </div>
+                  <span
+                    v-else-if="'isUpdated' in tpl && tpl.isUpdated"
+                    :class="navigationUpdateBadgeClass"
+                  >UPDATE</span>
                 <p class="text-body-sm text-neutral-muted truncate">{{ tpl.nameDesc }}</p>
               </div>
               <div class="w-[80px] shrink-0">

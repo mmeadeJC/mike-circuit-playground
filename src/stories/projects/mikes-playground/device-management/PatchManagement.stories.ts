@@ -23,6 +23,13 @@ import { ArrowPathIcon, DocumentTextIcon } from '@heroicons/vue/24/outline';
 import { DeviceManagementIcon } from '@jumpcloud/icons';
 
 import TopBar from '@/components/AdminTopBar.vue';
+import StackedBarChart from '@/components/StackedBarChart.vue';
+import {
+  buildUpdateHistory,
+  type UpdateHistoryEventType,
+  type UpdateHistoryOs,
+  type UpdateHistoryRange,
+} from './data/patchUpdateHistoryData';
 import PatchPolicyAddDropdown, {
   type PatchPolicyAddOption,
 } from './PatchPolicyAddDropdown.vue';
@@ -228,6 +235,7 @@ const PatchManagementPage = defineComponent({
     DataTableToolbar,
     LinkText,
     ListPageLayout,
+    StackedBarChart,
     MessageNotification,
     PageHeader,
     PageSaveBar,
@@ -430,6 +438,14 @@ const PatchManagementPage = defineComponent({
       return MACOS_RELEASE_TRAINS;
     });
 
+    const updateHistory = computed(() =>
+      buildUpdateHistory(
+        timeRangeFilter.value as UpdateHistoryRange,
+        osHistoryFilter.value as UpdateHistoryOs,
+        eventTypeFilter.value as UpdateHistoryEventType,
+      ),
+    );
+
     const hasPendingTableActions = computed(() => selectedPolicies.value.length > 0);
 
     const creatingFlow = ref<string | null>(null);
@@ -579,6 +595,7 @@ const PatchManagementPage = defineComponent({
       tableSaveBarSavedLabel,
       timeRangeFilter,
       timeRangeOptions,
+      updateHistory,
       initialDashboardScopeTab: props.initialDashboardScopeTab,
     };
   },
@@ -679,9 +696,23 @@ const PatchManagementPage = defineComponent({
                   />
                 </div>
 
-                <div class="flex flex-1 flex-col items-center justify-center gap-sm rounded-sm border border-neutral-default_solid bg-neutral-base px-md py-xl text-center">
+                <div
+                  v-if="updateHistory.hasData"
+                  class="flex min-h-56 flex-1 flex-col rounded-sm border border-neutral-default_solid bg-neutral-base p-md"
+                >
+                  <StackedBarChart
+                    :buckets="updateHistory.buckets"
+                    :series="updateHistory.series"
+                    :xAxisTitle="updateHistory.xAxisTitle"
+                    :labelEvery="updateHistory.labelEvery"
+                  />
+                </div>
+                <div
+                  v-else
+                  class="flex flex-1 flex-col items-center justify-center gap-sm rounded-sm border border-neutral-default_solid bg-neutral-base px-md py-xl text-center"
+                >
                   <span class="text-body-md text-neutral-subtle">No recent activity for this time frame</span>
-                  <span class="text-body-xs text-neutral-muted">Time Range by Day</span>
+                  <span class="text-body-xs text-neutral-muted">{{ updateHistory.xAxisTitle }}</span>
                 </div>
               </div>
 

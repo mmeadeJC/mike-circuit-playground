@@ -7,8 +7,8 @@ export type UpdateHistoryOs = 'all' | 'mac' | 'windows' | 'ios';
 export type UpdateHistoryEventType = 'all' | 'installed' | 'failed';
 
 export const UPDATE_HISTORY_SERIES: StackedBarSeries[] = [
-  { key: 'installed', label: 'Installed', barClass: 'bg-chart-success-base', swatchClass: 'bg-chart-success-base' },
-  { key: 'failed', label: 'Failed', barClass: 'bg-chart-danger-base', swatchClass: 'bg-chart-danger-base' },
+  { key: 'installed', label: 'Installed', barClass: 'bg-chart-success-lightest', swatchClass: 'bg-chart-success-lightest' },
+  { key: 'failed', label: 'Failed', barClass: 'bg-chart-danger-lightest', swatchClass: 'bg-chart-danger-lightest' },
 ];
 
 const OS_KEYS = ['mac', 'windows', 'ios'] as const;
